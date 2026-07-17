@@ -84,3 +84,34 @@ export function pickExtrapolated(
 export function pickToleranceRad(pixelRadius: number, viewportHeightPx: number, fovYDeg: number): number {
   return (pixelRadius / viewportHeightPx) * (fovYDeg * Math.PI) / 180;
 }
+
+interface Object3DLike {
+  matrixWorld: {
+    clone(): { invert(): { elements: number[] | Float32Array } };
+  };
+}
+
+/**
+ * Transform a world-space ray into an object's local frame (for picking
+ * layers parented under the rotating earth-fixed group). Assumes a rigid
+ * transform (rotation + translation), which every EarthOS group is.
+ */
+export function rayToLocal(
+  object: Object3DLike,
+  origin: readonly [number, number, number],
+  dir: readonly [number, number, number],
+): { origin: [number, number, number]; dir: [number, number, number] } {
+  const e = object.matrixWorld.clone().invert().elements;
+  const o: [number, number, number] = [
+    e[0]! * origin[0] + e[4]! * origin[1] + e[8]! * origin[2] + e[12]!,
+    e[1]! * origin[0] + e[5]! * origin[1] + e[9]! * origin[2] + e[13]!,
+    e[2]! * origin[0] + e[6]! * origin[1] + e[10]! * origin[2] + e[14]!,
+  ];
+  const d: [number, number, number] = [
+    e[0]! * dir[0] + e[4]! * dir[1] + e[8]! * dir[2],
+    e[1]! * dir[0] + e[5]! * dir[1] + e[9]! * dir[2],
+    e[2]! * dir[0] + e[6]! * dir[1] + e[10]! * dir[2],
+  ];
+  const len = Math.hypot(...d) || 1;
+  return { origin: o, dir: [d[0] / len, d[1] / len, d[2] / len] };
+}

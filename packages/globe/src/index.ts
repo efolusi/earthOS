@@ -4,7 +4,7 @@ export {
   type ExtrapolatedPointsOptions,
   type BatchView,
 } from './points/extrapolated-points';
-export { pickExtrapolated, pickToleranceRad, type PickSource } from './points/pick';
+export { pickExtrapolated, pickToleranceRad, rayToLocal, type PickSource } from './points/pick';
 export {
   createGlobeMaterial,
   setGlobeTextures,

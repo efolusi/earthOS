@@ -88,6 +88,15 @@ export class EarthEngine {
       this.store.getState().setTimeCtl(snap);
       this.events.emit('core:time:change', snap);
     });
+
+    // Selection changes become canonical events (renderers subscribe there).
+    let prevPicked = this.store.getState().selection.picked;
+    this.store.subscribe((state) => {
+      if (state.selection.picked !== prevPicked) {
+        prevPicked = state.selection.picked;
+        this.events.emit('core:selection', prevPicked);
+      }
+    });
   }
 
   // -------------------------------------------------------------------------

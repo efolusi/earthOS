@@ -8,15 +8,21 @@
  */
 export function pluginPreset(overrides = {}) {
   const { entry = {}, ...rest } = overrides;
+  // Merge extra entries over the defaults; a falsy value removes a default
+  // (e.g. `{ provider: false }` for computed plugins without a provider).
+  const mergedEntry = {
+    index: 'src/index.ts',
+    plugin: 'src/plugin.ts',
+    provider: 'src/provider.ts',
+    renderer: 'src/renderer.tsx', // renderers are React; override for .ts
+    settings: 'src/settings.ts',
+    ...entry,
+  };
+  for (const key of Object.keys(mergedEntry)) {
+    if (!mergedEntry[key]) delete mergedEntry[key];
+  }
   return {
-    entry: {
-      index: 'src/index.ts',
-      plugin: 'src/plugin.ts',
-      provider: 'src/provider.ts',
-      renderer: 'src/renderer.ts',
-      settings: 'src/settings.ts',
-      ...entry,
-    },
+    entry: mergedEntry,
     format: ['esm'],
     dts: true,
     sourcemap: true,

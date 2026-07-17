@@ -1,0 +1,4 @@
+{
+  "extends": "@earthos/config/tsconfig/plugin.json",
+  "include": ["src", "tests"]
+}

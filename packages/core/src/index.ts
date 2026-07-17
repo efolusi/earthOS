@@ -29,6 +29,13 @@ export {
   type SettingsField,
   type SettingsValues,
   type SettingsValidation,
+  type TextField,
+  type SecretField,
+  type NumberField,
+  type BooleanField,
+  type RangeField,
+  type SelectField,
+  type ColorField,
 } from './settings';
 export {
   definePlugin,

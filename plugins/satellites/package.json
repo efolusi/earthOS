@@ -1,7 +1,7 @@
 {
-  "name": "@earthos/globe",
+  "name": "@earthos/plugin-satellites",
   "version": "0.1.0",
-  "description": "EarthOS globe renderer: shader Earth, atmosphere, camera, 100k points pipeline",
+  "description": "EarthOS satellites layer: CelesTrak GP catalog propagated with SGP4 in workers (Starlink, ISS, GPS, active catalog)",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
@@ -9,6 +9,25 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./plugin": {
+      "types": "./dist/plugin.d.ts",
+      "import": "./dist/plugin.js"
+    },
+    "./provider": {
+      "types": "./dist/provider.d.ts",
+      "import": "./dist/provider.js"
+    },
+    "./renderer": {
+      "types": "./dist/renderer.d.ts",
+      "import": "./dist/renderer.js"
+    },
+    "./settings": {
+      "types": "./dist/settings.d.ts",
+      "import": "./dist/settings.js"
+    },
+    "./propagate.worker": {
+      "import": "./dist/propagate.worker.js"
     }
   },
   "files": [
@@ -23,17 +42,19 @@
   },
   "dependencies": {
     "@earthos/core": "workspace:*",
-    "@earthos/gis": "workspace:*"
+    "@earthos/gis": "workspace:*",
+    "@earthos/providers": "workspace:*"
   },
   "peerDependencies": {
-    "@react-three/drei": "^9.0.0 || ^10.0.0",
+    "@earthos/globe": "workspace:^",
     "@react-three/fiber": "^9.0.0",
     "react": "^19.0.0",
     "three": ">=0.170.0"
   },
   "devDependencies": {
     "@earthos/config": "workspace:*",
-    "@react-three/drei": "^10.7.0",
+    "@earthos/globe": "workspace:*",
+    "@earthos/testing": "workspace:*",
     "@react-three/fiber": "^9.6.0",
     "@types/react": "^19.0.0",
     "@types/three": "^0.185.0",
@@ -41,12 +62,17 @@
     "react": "^19.0.0",
     "react-dom": "^19.2.7",
     "three": "^0.185.0",
-    "three-stdlib": "^2.36.1",
     "tsup": "^8.3.5",
     "typescript": "^5.7.2",
     "vitest": "^3.0.0"
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "keywords": [
+    "earthos-plugin",
+    "satellites",
+    "sgp4",
+    "starlink"
+  ]
 }

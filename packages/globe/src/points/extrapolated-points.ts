@@ -232,6 +232,20 @@ export class ExtrapolatedPointsLayer {
     this.markRange(this.metaAttr, base, 4);
   }
 
+  /** Batch visibility flags from a worker validity mask (decayed objects). */
+  applyValidity(offset: number, valid: Uint8Array): void {
+    for (let i = 0; i < valid.length; i++) {
+      this.meta[(offset + i) * 4 + 2] = valid[i]! ? 1 : 0;
+    }
+    this.markRange(this.metaAttr, offset * 4, valid.length * 4);
+  }
+
+  /** Update one palette slot in place (settings-driven recolor). */
+  setPaletteColor(index: number, color: string): void {
+    const arr = this.material.uniforms.uPalette!.value as Color[];
+    arr[index]?.set(color);
+  }
+
   /** Fill meta for a range in one call (initial load). */
   fillMeta(offset: number, count: number, paletteIndex: number, sizePx: number): void {
     for (let i = offset; i < offset + count; i++) {
