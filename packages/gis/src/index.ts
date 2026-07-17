@@ -15,6 +15,7 @@ export {
   sceneToEci,
   geodeticToScene,
   eciToEcefAt,
+  enuVelocityToScene,
 } from './frames';
 export {
   parseTle,

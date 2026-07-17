@@ -8,6 +8,7 @@ import { EarthCanvas } from '@earthos/globe';
 import { CommandPalette, Inspector, LayerPanel, StatusBar, Timeline } from '@earthos/ui';
 
 import satellitesPlugin from '@earthos/plugin-satellites';
+import aircraftPlugin from '@earthos/plugin-aircraft';
 import earthquakesPlugin from '@earthos/plugin-earthquakes';
 import daynightPlugin from '@earthos/plugin-daynight';
 import geojsonPlugin from '@earthos/plugin-geojson';
@@ -19,6 +20,7 @@ import geojsonPlugin from '@earthos/plugin-geojson';
  */
 const PLUGINS: EarthOSPlugin[] = [
   satellitesPlugin,
+  aircraftPlugin,
   daynightPlugin,
   earthquakesPlugin,
   geojsonPlugin,
@@ -54,6 +56,11 @@ export function EarthApp() {
       const satSettings = engine.getContext('satellites')?.settings;
       if (satSettings && !(satSettings.get() as { endpoint?: string }).endpoint) {
         satSettings.patch({ endpoint: '/api/proxy/celestrak' });
+      }
+      // OpenSky's CORS only allows its own origin: browsers must proxy.
+      const airSettings = engine.getContext('aircraft')?.settings;
+      if (airSettings && !(airSettings.get() as { endpoint?: string }).endpoint) {
+        airSettings.patch({ endpoint: '/api/proxy/opensky' });
       }
       if (cancelled) return;
       setReady(true);
@@ -123,7 +130,7 @@ export function EarthApp() {
           </div>
 
           <div className="flex items-end justify-between gap-4">
-            <StatusBar attribution="CelesTrak / USGS / NASA imagery" />
+            <StatusBar attribution="CelesTrak / OpenSky / USGS / NASA imagery" />
             <Timeline />
           </div>
         </div>

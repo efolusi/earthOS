@@ -7,6 +7,7 @@ import {
   eciToEcefAt,
   geodeticToScene,
 } from '../src/frames';
+import * as frames from '../src/frames';
 
 describe('scene swizzle', () => {
   it('maps (x, y, z) -> (x, z, -y) and inverts cleanly', () => {
@@ -95,6 +96,30 @@ describe('texture alignment invariants', () => {
   it('north pole lands on local +Y', () => {
     const [, y] = geodeticToScene(90, 0, 0);
     expect(y).toBeGreaterThan(6000);
+  });
+});
+
+describe('enuVelocityToScene', () => {
+  it('east at the equator/prime meridian is ECEF +Y (scene -Z)', () => {
+    const { enuVelocityToScene } = frames;
+    const v = enuVelocityToScene(0, 0, 1, 0, 0);
+    expect(v[0]).toBeCloseTo(0, 9);
+    expect(v[1]).toBeCloseTo(0, 9);
+    expect(v[2]).toBeCloseTo(-1, 9);
+  });
+
+  it('north at the equator is ECEF +Z (scene +Y); up is radial +X', () => {
+    const { enuVelocityToScene } = frames;
+    const north = enuVelocityToScene(0, 0, 0, 1, 0);
+    expect(north[1]).toBeCloseTo(1, 9);
+    const up = enuVelocityToScene(0, 0, 0, 0, 1);
+    expect(up[0]).toBeCloseTo(1, 9);
+  });
+
+  it('preserves magnitude at arbitrary points', () => {
+    const { enuVelocityToScene } = frames;
+    const v = enuVelocityToScene(-37.4, 145.2, 0.2, -0.1, 0.05);
+    expect(Math.hypot(...v)).toBeCloseTo(Math.hypot(0.2, -0.1, 0.05), 12);
   });
 });
 

@@ -17,6 +17,7 @@
     "@earthos/core": "workspace:*",
     "@earthos/gis": "workspace:*",
     "@earthos/globe": "workspace:*",
+    "@earthos/plugin-aircraft": "workspace:*",
     "@earthos/plugin-daynight": "workspace:*",
     "@earthos/plugin-earthquakes": "workspace:*",
     "@earthos/plugin-geojson": "workspace:*",

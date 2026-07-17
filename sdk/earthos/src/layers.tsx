@@ -79,3 +79,21 @@ export function LayerGeoJson({ enabled, ...settings }: LayerGeoJsonProps) {
     />
   );
 }
+
+export interface LayerAircraftProps extends CommonLayerProps {
+  pointSize?: number;
+  color?: string;
+  showOnGround?: boolean;
+  maxAircraft?: number;
+  endpoint?: string;
+}
+
+export function LayerAircraft({ enabled, ...settings }: LayerAircraftProps) {
+  return (
+    <Layer
+      manifest={() => import('@earthos/plugin-aircraft')}
+      enabled={enabled}
+      settings={settings}
+    />
+  );
+}

@@ -3,10 +3,12 @@ export { Earth, type EarthProps } from './earth';
 export { Layer, type LayerProps } from './layer';
 export {
   LayerSatellites,
+  LayerAircraft,
   LayerEarthquakes,
   LayerDayNight,
   LayerGeoJson,
   type LayerSatellitesProps,
+  type LayerAircraftProps,
   type LayerEarthquakesProps,
   type LayerDayNightProps,
   type LayerGeoJsonProps,

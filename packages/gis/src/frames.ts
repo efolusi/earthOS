@@ -55,6 +55,32 @@ export function geodeticToScene(latDeg: number, lonDeg: number, altKm = 0, out?:
   return ecefToScene(ecef[0], ecef[1], ecef[2], out);
 }
 
+/**
+ * Local ENU velocity (east/north/up, km/s) at a geodetic point -> the
+ * earth-fixed group's LOCAL scene frame. Used by surface traffic layers
+ * (aircraft, ships) whose feeds report ground speed + track.
+ */
+export function enuVelocityToScene(
+  latDeg: number,
+  lonDeg: number,
+  vEast: number,
+  vNorth: number,
+  vUp: number,
+  out?: Vec3,
+): Vec3 {
+  const lat = (latDeg * Math.PI) / 180;
+  const lon = (lonDeg * Math.PI) / 180;
+  const sinLat = Math.sin(lat);
+  const cosLat = Math.cos(lat);
+  const sinLon = Math.sin(lon);
+  const cosLon = Math.cos(lon);
+  // ENU basis in ECEF.
+  const x = -sinLon * vEast - sinLat * cosLon * vNorth + cosLat * cosLon * vUp;
+  const y = cosLon * vEast - sinLat * sinLon * vNorth + cosLat * sinLon * vUp;
+  const z = cosLat * vNorth + sinLat * vUp;
+  return ecefToScene(x, y, z, out);
+}
+
 /** ECI km -> ECEF km at a given time (rotation about z by -gmst). */
 export function eciToEcefAt(x: number, y: number, z: number, epochMs: number, out?: Vec3): Vec3 {
   const g = gmstRad(epochMs);
