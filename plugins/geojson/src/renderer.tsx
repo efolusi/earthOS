@@ -5,7 +5,12 @@ import { createPortal, useFrame, useThree } from '@react-three/fiber';
 import { BufferAttribute, BufferGeometry, Color, LineBasicMaterial, LineSegments } from 'three';
 import type { FeatureCollection } from 'geojson';
 import type { LayerRenderer, PluginContext } from '@earthos/core';
-import { ExtrapolatedPointsLayer, useEarthFixed } from '@earthos/globe';
+import {
+  ExtrapolatedPointsLayer,
+  localPointToWorld,
+  registerTracker,
+  useEarthFixed,
+} from '@earthos/globe';
 import { buildGeometry, type BuiltGeometry } from './build-geometry';
 
 const CAPACITY = 50_000;
@@ -86,6 +91,20 @@ function GeoJsonLayer({ ctx }: { ctx: PluginContext }) {
     lines.geometry.setAttribute('position', new BufferAttribute(result.linePositions, 3));
     lines.geometry.setDrawRange(0, result.linePositions.length / 3);
 
+    const disposeTracker = registerTracker(ctx, (entityId, _epochMs, out) => {
+      const idx = Number(entityId);
+      if (!Number.isInteger(idx) || idx < 0 || idx >= pointCount || !earthFixed) return false;
+      const b = idx * 6;
+      localPointToWorld(
+        earthFixed,
+        result.pointsPosVel[b]!,
+        result.pointsPosVel[b + 1]!,
+        result.pointsPosVel[b + 2]!,
+        out,
+      );
+      return true;
+    });
+
     const disposeSource = ctx.entities.registerSource({
       search: (query, limit) => {
         const q = query.toLowerCase();
@@ -119,8 +138,11 @@ function GeoJsonLayer({ ctx }: { ctx: PluginContext }) {
         };
       },
     });
-    return disposeSource;
-  }, [ctx, layer, lines, collection]);
+    return () => {
+      disposeSource();
+      disposeTracker();
+    };
+  }, [ctx, layer, lines, collection, earthFixed]);
 
   // Live recolor/resize.
   useEffect(() => {

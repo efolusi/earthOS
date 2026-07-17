@@ -6,9 +6,11 @@ import { Raycaster, Vector2 } from 'three';
 import type { LayerRenderer, PluginContext } from '@earthos/core';
 import {
   ExtrapolatedPointsLayer,
+  localPointToWorld,
   pickExtrapolated,
   pickToleranceRad,
   rayToLocal,
+  registerTracker,
   useEarthFixed,
 } from '@earthos/globe';
 import { geodeticToScene } from '@earthos/gis';
@@ -98,6 +100,18 @@ function EarthquakesLayer({ ctx }: { ctx: PluginContext }) {
       );
     }
 
+    const idToIndex = new Map(filtered.map((f, i) => [f.id, i]));
+    // Static layer, but the tracker gives the selection marker and follow
+    // camera a live world position as the Earth rotates underneath.
+    const disposeTracker = registerTracker(ctx, (entityId, _epochMs, out) => {
+      const idx = idToIndex.get(entityId);
+      if (idx === undefined || !earthFixed) return false;
+      const v = layer.views();
+      const b = idx * 3;
+      localPointToWorld(earthFixed, v.position[b]!, v.position[b + 1]!, v.position[b + 2]!, out);
+      return true;
+    });
+
     const disposeSource = ctx.entities.registerSource({
       search: (query, limit) => {
         const q = query.toLowerCase();
@@ -130,8 +144,11 @@ function EarthquakesLayer({ ctx }: { ctx: PluginContext }) {
         };
       },
     });
-    return disposeSource;
-  }, [ctx, layer, features, minMag]);
+    return () => {
+      disposeSource();
+      disposeTracker();
+    };
+  }, [ctx, layer, features, minMag, earthFixed]);
 
   // Click picking (ray transformed into the rotating earth-fixed frame).
   useEffect(() => {

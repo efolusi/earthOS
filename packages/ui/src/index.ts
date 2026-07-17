@@ -5,3 +5,4 @@ export { Timeline } from './timeline';
 export { Inspector } from './inspector';
 export { CommandPalette } from './command-palette';
 export { StatusBar } from './status-bar';
+export { HoverCard } from './hover-card';

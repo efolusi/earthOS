@@ -26,6 +26,25 @@ export function trackersOf(engine: EarthEngine): Map<string, EntityTracker> {
   return created;
 }
 
+/**
+ * Transform a point from an object's local frame to world coordinates using
+ * its matrixWorld (rigid transforms only). Earth-fixed layers use this in
+ * their trackers so the follow camera and selection marker get world space.
+ */
+export function localPointToWorld(
+  object: { matrixWorld: { elements: ArrayLike<number> } },
+  x: number,
+  y: number,
+  z: number,
+  out: [number, number, number],
+): [number, number, number] {
+  const e = object.matrixWorld.elements;
+  out[0] = e[0]! * x + e[4]! * y + e[8]! * z + e[12]!;
+  out[1] = e[1]! * x + e[5]! * y + e[9]! * z + e[13]!;
+  out[2] = e[2]! * x + e[6]! * y + e[10]! * z + e[14]!;
+  return out;
+}
+
 /** Plugin-side helper: register this layer's tracker; returns a disposer. */
 export function registerTracker(ctx: PluginContext, tracker: EntityTracker): () => void {
   const map = ctx.getExtension<Map<string, EntityTracker>>(TRACKERS_EXTENSION);

@@ -6,6 +6,7 @@ import { Raycaster, Vector2 } from 'three';
 import type { LayerRenderer, PluginContext } from '@earthos/core';
 import {
   ExtrapolatedPointsLayer,
+  localPointToWorld,
   pickExtrapolated,
   pickToleranceRad,
   rayToLocal,
@@ -46,6 +47,7 @@ function AircraftLayer({ ctx }: { ctx: PluginContext }) {
   const icaoToIndex = useRef(new Map<string, number>());
   const feedEpochMs = useRef<number | null>(null);
   const hoverIndex = useRef(-1);
+  const selectedIdx = useRef(-1);
   const [showOnGround, setShowOnGround] = useState(
     () => (ctx.settings.get() as AircraftSettings).showOnGround ?? false,
   );
@@ -173,15 +175,13 @@ function AircraftLayer({ ctx }: { ctx: PluginContext }) {
       const dt = (clampedMs - feed.time * 1000) / 1000;
       const b = idx * 3;
       // Local earth-fixed position; transform to world via the group matrix.
-      const local = {
-        x: v.position[b]! + v.vel[b]! * dt,
-        y: v.position[b + 1]! + v.vel[b + 1]! * dt,
-        z: v.position[b + 2]! + v.vel[b + 2]! * dt,
-      };
-      const e = earthFixed.matrixWorld.elements;
-      out[0] = e[0]! * local.x + e[4]! * local.y + e[8]! * local.z + e[12]!;
-      out[1] = e[1]! * local.x + e[5]! * local.y + e[9]! * local.z + e[13]!;
-      out[2] = e[2]! * local.x + e[6]! * local.y + e[10]! * local.z + e[14]!;
+      localPointToWorld(
+        earthFixed,
+        v.position[b]! + v.vel[b]! * dt,
+        v.position[b + 1]! + v.vel[b + 1]! * dt,
+        v.position[b + 2]! + v.vel[b + 2]! * dt,
+        out,
+      );
       return true;
     });
 
@@ -190,6 +190,24 @@ function AircraftLayer({ ctx }: { ctx: PluginContext }) {
       disposeTracker();
     };
   }, [ctx, layer, feed, showOnGround, earthFixed]);
+
+  // Selection highlight (the on-globe marker rides the tracker; the dot
+  // itself also brightens so the pair reads as one indicator).
+  useEffect(() => {
+    const apply = (picked: { layerId: string; entityId: string } | null) => {
+      if (selectedIdx.current >= 0) layer.setHighlight(selectedIdx.current, 0);
+      selectedIdx.current = -1;
+      if (picked && picked.layerId === ctx.pluginId) {
+        const idx = icaoToIndex.current.get(picked.entityId) ?? -1;
+        if (idx >= 0) {
+          selectedIdx.current = idx;
+          layer.setHighlight(idx, 1);
+        }
+      }
+    };
+    apply(ctx.selection.getSelected());
+    return ctx.events.on<{ layerId: string; entityId: string } | null>('core:selection', apply);
+  }, [ctx, layer, feed]);
 
   // Click picking in the rotating frame.
   useEffect(() => {
@@ -247,8 +265,10 @@ function AircraftLayer({ ctx }: { ctx: PluginContext }) {
         pickToleranceRad(8, size.height, 50),
       );
       if (hit === hoverIndex.current) return;
-      if (hoverIndex.current >= 0) layer.setHighlight(hoverIndex.current, 0);
-      if (hit >= 0) layer.setHighlight(hit, 0.45);
+      if (hoverIndex.current >= 0 && hoverIndex.current !== selectedIdx.current) {
+        layer.setHighlight(hoverIndex.current, 0);
+      }
+      if (hit >= 0 && hit !== selectedIdx.current) layer.setHighlight(hit, 0.45);
       hoverIndex.current = hit;
       dom.style.cursor = hit >= 0 ? 'pointer' : '';
       const aircraft = hit >= 0 ? visible.current[hit] : undefined;

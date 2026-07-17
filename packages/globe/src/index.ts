@@ -13,7 +13,14 @@ export {
 } from './materials/globe-material';
 export { createAtmosphereMaterial, setAtmosphereSunDir } from './materials/atmosphere-material';
 export { loadTexture, useOptionalTexture, type GlobeTextureUrls } from './textures';
-export { trackersOf, registerTracker, TRACKERS_EXTENSION, type EntityTracker } from './trackers';
+export {
+  trackersOf,
+  registerTracker,
+  localPointToWorld,
+  TRACKERS_EXTENSION,
+  type EntityTracker,
+} from './trackers';
+export { SelectionMarker } from './components/SelectionMarker';
 export { EarthFixedGroup, useEarthFixed } from './components/EarthFixedGroup';
 export { Stars } from './components/Stars';
 export { GlobeScene, type GlobeSceneProps } from './components/GlobeScene';

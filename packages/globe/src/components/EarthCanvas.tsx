@@ -11,6 +11,7 @@ import { EarthFixedGroup } from './EarthFixedGroup';
 import { GlobeScene } from './GlobeScene';
 import { GlobeCamera } from './GlobeCamera';
 import { PluginLayersHost } from './PluginLayersHost';
+import { SelectionMarker } from './SelectionMarker';
 
 function EngineBridges({ engine }: { engine: EarthEngine }) {
   const invalidate = useThree((s) => s.invalidate);
@@ -63,6 +64,7 @@ export function EarthCanvas({
           <GlobeScene textures={textures} stars={stars} moon={moon} />
           <GlobeCamera />
           <PluginLayersHost />
+          <SelectionMarker />
           {children}
         </EarthFixedGroup>
       </Canvas>

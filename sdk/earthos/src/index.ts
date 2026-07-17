@@ -21,6 +21,7 @@ export {
   Inspector,
   CommandPalette,
   StatusBar,
+  HoverCard,
   GlassPanel,
   SettingsForm,
 } from '@earthos/ui';

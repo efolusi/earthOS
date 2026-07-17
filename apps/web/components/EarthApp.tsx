@@ -5,7 +5,7 @@ import { createEarthEngine, type EarthOSPlugin } from '@earthos/core';
 import { EarthEngineProvider } from '@earthos/core/react';
 import { createDefaultCache } from '@earthos/providers';
 import { EarthCanvas } from '@earthos/globe';
-import { CommandPalette, Inspector, LayerPanel, StatusBar, Timeline } from '@earthos/ui';
+import { CommandPalette, HoverCard, Inspector, LayerPanel, StatusBar, Timeline } from '@earthos/ui';
 
 import satellitesPlugin from '@earthos/plugin-satellites';
 import aircraftPlugin from '@earthos/plugin-aircraft';
@@ -139,6 +139,7 @@ export function EarthApp() {
         </div>
 
         <CommandPalette />
+        <HoverCard />
       </div>
     </EarthEngineProvider>
   );
