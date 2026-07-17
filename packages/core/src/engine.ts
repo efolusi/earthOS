@@ -211,6 +211,11 @@ export class EarthEngine {
     return this.plugins.get(id)?.plugin;
   }
 
+  /** The plugin's context, e.g. for the R3F host to pass into renderers. */
+  getContext(id: string): PluginContext | undefined {
+    return this.plugins.get(id)?.ctx;
+  }
+
   listPlugins(): EarthOSPlugin[] {
     return [...this.plugins.values()].map((e) => e.plugin);
   }
@@ -287,6 +292,10 @@ export class EarthEngine {
 
   provideExtension(key: string, value: unknown): void {
     this.extensions.set(key, value);
+  }
+
+  getExtension<T = unknown>(key: string): T | undefined {
+    return this.extensions.get(key) as T | undefined;
   }
 
   // -------------------------------------------------------------------------

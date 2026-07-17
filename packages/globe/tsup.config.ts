@@ -1,18 +1,13 @@
 import { defineConfig } from 'tsup';
 import { packagePreset } from '@earthos/config/tsup-package';
 
-export default defineConfig([
+export default defineConfig(
   packagePreset({
     entry: ['src/index.ts'],
-    external: ['react'],
-  }),
-  packagePreset({
-    entry: ['src/react.tsx'],
-    external: ['react', 'zustand', '@earthos/core'],
-    clean: false,
-    // esbuild drops "use client" from sources; restore the RSC boundary.
+    external: ['react', 'three', '@react-three/fiber', '@react-three/drei'],
+    // The whole package is client-side 3D; keep the RSC boundary marker.
     // (rollup treeshake would strip the banner again, so keep it off here)
     banner: { js: '"use client";' },
     treeshake: false,
   }),
-]);
+);
