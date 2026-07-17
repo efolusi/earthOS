@@ -1,0 +1,39 @@
+{
+  "name": "@earthos/testing",
+  "version": "0.1.0",
+  "description": "EarthOS plugin test harness: mock contexts, fixtures, contract tests",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint src tests",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@earthos/core": "workspace:*",
+    "@earthos/providers": "workspace:*"
+  },
+  "peerDependencies": {
+    "vitest": ">=2.0.0"
+  },
+  "devDependencies": {
+    "@earthos/config": "workspace:*",
+    "eslint": "^9.17.0",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "vitest": "^3.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

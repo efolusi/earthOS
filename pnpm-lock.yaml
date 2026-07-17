@@ -132,6 +132,56 @@ importers:
         specifier: ^3.0.0
         version: 3.2.7
 
+  packages/providers:
+    dependencies:
+      '@earthos/core':
+        specifier: workspace:*
+        version: link:../core
+      idb:
+        specifier: ^8.0.0
+        version: 8.0.3
+    devDependencies:
+      '@earthos/config':
+        specifier: workspace:*
+        version: link:../config
+      eslint:
+        specifier: ^9.17.0
+        version: 9.39.5
+      tsup:
+        specifier: ^8.3.5
+        version: 8.5.1(postcss@8.5.19)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+      vitest:
+        specifier: ^3.0.0
+        version: 3.2.7
+
+  packages/testing:
+    dependencies:
+      '@earthos/core':
+        specifier: workspace:*
+        version: link:../core
+      '@earthos/providers':
+        specifier: workspace:*
+        version: link:../providers
+    devDependencies:
+      '@earthos/config':
+        specifier: workspace:*
+        version: link:../config
+      eslint:
+        specifier: ^9.17.0
+        version: 9.39.5
+      tsup:
+        specifier: ^8.3.5
+        version: 8.5.1(postcss@8.5.19)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+      vitest:
+        specifier: ^3.0.0
+        version: 3.2.7
+
 packages:
 
   '@babel/runtime@7.29.7':
@@ -1328,6 +1378,9 @@ packages:
   iconv-lite@0.7.3:
     resolution: {integrity: sha512-IKXpvIzjnC9XTAUbVBcMfGS0EPaIXtW6v+zr+RRp+hqULEpo0owZax6wyRwPOJbWbzjYspQwusTsfVr0ifh4uQ==}
     engines: {node: '>=0.10.0'}
+
+  idb@8.0.3:
+    resolution: {integrity: sha512-LtwtVyVYO5BqRvcsKuB2iUMnHwPVByPCXFXOpuU96IZPPoPN6xjOGxZQ74pgSVVLQWtUOYgyeL4GE98BY5D3wg==}
 
   ieee754@1.2.1:
     resolution: {integrity: sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==}
@@ -3190,6 +3243,8 @@ snapshots:
   iconv-lite@0.7.3:
     dependencies:
       safer-buffer: 2.1.2
+
+  idb@8.0.3: {}
 
   ieee754@1.2.1: {}
 
