@@ -67,15 +67,11 @@ export interface ColorField {
 }
 
 export type SettingsField =
-  | TextField
-  | SecretField
-  | NumberField
-  | BooleanField
-  | RangeField
-  | SelectField
-  | ColorField;
+  TextField | SecretField | NumberField | BooleanField | RangeField | SelectField | ColorField;
 
-export interface SettingsSchema<F extends Record<string, SettingsField> = Record<string, SettingsField>> {
+export interface SettingsSchema<
+  F extends Record<string, SettingsField> = Record<string, SettingsField>,
+> {
   version: number;
   fields: F;
   /** Upgrade persisted values written by an older schema version. */
@@ -152,8 +148,7 @@ function validateField(field: SettingsField, value: unknown): string | null {
 }
 
 export type SettingsValidation =
-  | { ok: true; value: Record<string, unknown> }
-  | { ok: false; errors: Record<string, string> };
+  { ok: true; value: Record<string, unknown> } | { ok: false; errors: Record<string, string> };
 
 /** Validate a partial patch against a schema. Unknown keys are rejected. */
 export function validateSettingsPatch(

@@ -98,10 +98,7 @@ export class GeoGrid {
 
     const latIdxMin = Math.max(0, Math.floor((latMin + 90) / this.cellSizeDeg));
     const latIdxMax = Math.min(this.nLat - 1, Math.floor((latMax + 90) / this.cellSizeDeg));
-    const lonSpanCells = Math.min(
-      this.nLon,
-      2 * Math.ceil(dLon / this.cellSizeDeg) + 1,
-    );
+    const lonSpanCells = Math.min(this.nLon, 2 * Math.ceil(dLon / this.cellSizeDeg) + 1);
     const lonIdxCenter = Math.floor((((lonDeg % 360) + 360) % 360) / this.cellSizeDeg);
 
     let hits = 0;

@@ -4,7 +4,10 @@ import type { Disposer, Logger } from './types';
 export interface WorkerLike {
   postMessage(message: unknown, transfer?: Transferable[]): void;
   terminate(): void;
-  addEventListener(type: 'message' | 'error', listener: (ev: MessageEvent | ErrorEvent) => void): void;
+  addEventListener(
+    type: 'message' | 'error',
+    listener: (ev: MessageEvent | ErrorEvent) => void,
+  ): void;
   removeEventListener(
     type: 'message' | 'error',
     listener: (ev: MessageEvent | ErrorEvent) => void,
@@ -18,7 +21,11 @@ export interface WorkerHandle {
   post(message: unknown, transfer?: Transferable[]): void;
   onMessage<T = unknown>(cb: (message: T) => void): Disposer;
   /** RPC round trip. The worker side must use `exposeWorker`. */
-  request<TRes = unknown>(type: string, payload?: unknown, transfer?: Transferable[]): Promise<TRes>;
+  request<TRes = unknown>(
+    type: string,
+    payload?: unknown,
+    transfer?: Transferable[],
+  ): Promise<TRes>;
   terminate(): void;
 }
 
@@ -49,7 +56,10 @@ export class WorkerPool {
   spawn(factory: WorkerFactory): WorkerHandle {
     const worker = factory();
     const listeners = new Set<(message: unknown) => void>();
-    const pending = new Map<number, { resolve: (v: unknown) => void; reject: (e: Error) => void }>();
+    const pending = new Map<
+      number,
+      { resolve: (v: unknown) => void; reject: (e: Error) => void }
+    >();
 
     const onMessage = (ev: MessageEvent | ErrorEvent) => {
       const data = (ev as MessageEvent).data;

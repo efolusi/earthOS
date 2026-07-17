@@ -61,14 +61,12 @@ export function moonEquatorial(epochMs: number): EquatorialDir {
     0.28 * Math.sin(M + F) +
     0.28 * Math.sin(M - F) -
     0.17 * Math.sin(2 * D - F);
-  const distKm =
-    385001 - 20905 * Math.cos(M) - 3699 * Math.cos(2 * D - M) - 2956 * Math.cos(2 * D);
+  const distKm = 385001 - 20905 * Math.cos(M) - 3699 * Math.cos(2 * D - M) - 2956 * Math.cos(2 * D);
 
   const lambda = lonDeg * DEG2RAD;
   const beta = latDeg * DEG2RAD;
   const eps = (23.439 - 0.013 * T) * DEG2RAD;
-  const sinDec =
-    Math.sin(beta) * Math.cos(eps) + Math.cos(beta) * Math.sin(eps) * Math.sin(lambda);
+  const sinDec = Math.sin(beta) * Math.cos(eps) + Math.cos(beta) * Math.sin(eps) * Math.sin(lambda);
   const decRad = Math.asin(sinDec);
   const raRad = Math.atan2(
     Math.sin(lambda) * Math.cos(eps) - Math.tan(beta) * Math.sin(eps),
@@ -125,8 +123,7 @@ export function terminatorRing(epochMs: number, steps = 128): Array<[number, num
     // Circle of 90 deg angular radius around the subsolar point.
     const bearing = (i / steps) * 2 * Math.PI;
     const lat = Math.asin(Math.cos(lat0) * Math.cos(bearing));
-    const lon =
-      lon0 + Math.atan2(Math.sin(bearing) * 1, -Math.sin(lat0) * Math.cos(bearing) * 1);
+    const lon = lon0 + Math.atan2(Math.sin(bearing) * 1, -Math.sin(lat0) * Math.cos(bearing) * 1);
     points.push([normalizeLonDeg(lon * RAD2DEG), lat * RAD2DEG]);
   }
   return points;

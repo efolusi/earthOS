@@ -72,12 +72,12 @@ function SatellitesLayer({ ctx }: { ctx: PluginContext }) {
 
   const orbitLine = useMemo(() => {
     const geometry = new BufferGeometry();
-    geometry.setAttribute(
-      'position',
-      new BufferAttribute(new Float32Array(ORBIT_SAMPLES * 3), 3),
-    );
+    geometry.setAttribute('position', new BufferAttribute(new Float32Array(ORBIT_SAMPLES * 3), 3));
     geometry.setDrawRange(0, 0);
-    const line = new Line(geometry, new LineBasicMaterial({ color: '#fbbf24', transparent: true, opacity: 0.7 }));
+    const line = new Line(
+      geometry,
+      new LineBasicMaterial({ color: '#fbbf24', transparent: true, opacity: 0.7 }),
+    );
     line.frustumCulled = false;
     return line;
   }, []);
@@ -133,6 +133,7 @@ function SatellitesLayer({ ctx }: { ctx: PluginContext }) {
   useEffect(() => {
     if (records.length === 0) return;
     let disposed = false;
+    ctx.logger.debug(`catalog: ${records.length} records, sharding into workers`);
 
     idToIndex.current.clear();
     satrecCache.current.clear();
@@ -163,8 +164,9 @@ function SatellitesLayer({ ctx }: { ctx: PluginContext }) {
       shards.push(shard);
       void handle
         .request<InitResult>('init', { records: records.slice(offset, offset + count) })
-        .then(() => {
+        .then((result) => {
           if (!disposed) shard.ready = true;
+          ctx.logger.debug(`shard @${offset}: ${result.parsed}/${result.total} satrecs parsed`);
         })
         .catch((err) => ctx.logger.error('shard init failed', err));
     }
@@ -174,7 +176,12 @@ function SatellitesLayer({ ctx }: { ctx: PluginContext }) {
     const disposeSource = ctx.entities.registerSource({
       search: (query, limit) => {
         const q = query.toLowerCase();
-        const hits: Array<{ ref: { layerId: string; entityId: string }; label: string; detail?: string; score?: number }> = [];
+        const hits: Array<{
+          ref: { layerId: string; entityId: string };
+          label: string;
+          detail?: string;
+          score?: number;
+        }> = [];
         for (const r of records) {
           const name = r.OBJECT_NAME ?? '';
           const norad = String(r.NORAD_CAT_ID);
@@ -200,9 +207,7 @@ function SatellitesLayer({ ctx }: { ctx: PluginContext }) {
         return {
           ref: { layerId: ctx.pluginId, entityId },
           label: record.OBJECT_NAME ?? entityId,
-          ...(geo
-            ? { position: { lat: geo.latDeg, lon: geo.lonDeg, altKm: geo.altKm } }
-            : {}),
+          ...(geo ? { position: { lat: geo.latDeg, lon: geo.lonDeg, altKm: geo.altKm } } : {}),
           properties: {
             'NORAD ID': record.NORAD_CAT_ID,
             'Intl designator': record.OBJECT_ID,
@@ -210,8 +215,8 @@ function SatellitesLayer({ ctx }: { ctx: PluginContext }) {
               ? {
                   'Altitude (km)': Math.round(geo.altKm),
                   'Speed (km/s)': Number(geo.speedKms.toFixed(2)),
-                  'Latitude': Number(geo.latDeg.toFixed(2)),
-                  'Longitude': Number(geo.lonDeg.toFixed(2)),
+                  Latitude: Number(geo.latDeg.toFixed(2)),
+                  Longitude: Number(geo.lonDeg.toFixed(2)),
                 }
               : {}),
             'Period (min)': satrec ? Number(orbitalPeriodMin(satrec).toFixed(1)) : null,
@@ -300,7 +305,7 @@ function SatellitesLayer({ ctx }: { ctx: PluginContext }) {
     applySelection(ctx.selection.getSelected());
     let prev = ctx.selection.getSelected();
     // Poll selection through the store subscription (cheap, change-driven).
-    const unsub = (ctxStoreSubscribe(ctx))((picked) => {
+    const unsub = ctxStoreSubscribe(ctx)((picked) => {
       if (picked !== prev) {
         prev = picked;
         applySelection(picked);

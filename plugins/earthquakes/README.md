@@ -5,16 +5,19 @@ Live seismic events from the USGS GeoJSON summary feeds, rendered as magnitude-s
 ## Usage
 
 ```tsx
-<Layer manifest={() => import('@earthos/plugin-earthquakes')} settings={{ feed: 'all_week', minMagnitude: 4.5 }} />
+<Layer
+  manifest={() => import('@earthos/plugin-earthquakes')}
+  settings={{ feed: 'all_week', minMagnitude: 4.5 }}
+/>
 ```
 
 ## Settings
 
-| Key | Default | Notes |
-|---|---|---|
-| `feed` | `all_day` | USGS window: `all_hour` / `all_day` / `all_week` / `all_month` |
-| `minMagnitude` | 2.5 | client-side filter |
-| `endpoint` | (blank) | proxy override |
+| Key            | Default   | Notes                                                          |
+| -------------- | --------- | -------------------------------------------------------------- |
+| `feed`         | `all_day` | USGS window: `all_hour` / `all_day` / `all_week` / `all_month` |
+| `minMagnitude` | 2.5       | client-side filter                                             |
+| `endpoint`     | (blank)   | proxy override                                                 |
 
 Colors: red = shallow (< 70 km), orange = intermediate (< 300 km), violet = deep focus. Click a marker for place, time, depth, and a link to the USGS event page.
 

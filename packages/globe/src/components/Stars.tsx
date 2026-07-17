@@ -1,12 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import {
-  AdditiveBlending,
-  BufferAttribute,
-  BufferGeometry,
-  PointsMaterial,
-} from 'three';
+import { AdditiveBlending, BufferAttribute, BufferGeometry, PointsMaterial } from 'three';
 import { STARFIELD_RADIUS } from '../constants';
 
 function lcg(seed: number): () => number {

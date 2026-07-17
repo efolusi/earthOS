@@ -12,7 +12,13 @@
     "./tsup-plugin": "./tsup/plugin.js",
     "./vitest": "./vitest/preset.js"
   },
-  "files": ["eslint", "prettier", "tsconfig", "tsup", "vitest"],
+  "files": [
+    "eslint",
+    "prettier",
+    "tsconfig",
+    "tsup",
+    "vitest"
+  ],
   "scripts": {
     "lint": "echo 'config package: nothing to lint'",
     "typecheck": "echo 'config package: nothing to typecheck'"

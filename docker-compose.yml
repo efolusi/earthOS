@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: apps/web/Dockerfile
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - NODE_ENV=production
       # Server-side keys for proxied providers (never shipped to the client).

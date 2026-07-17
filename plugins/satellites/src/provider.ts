@@ -24,8 +24,7 @@ export class CelestrakGpProvider extends DataProvider<SatCatalog> {
       typeof io.settings.endpoint === 'string' && io.settings.endpoint.length > 0
         ? io.settings.endpoint
         : DEFAULT_ENDPOINT;
-    const max =
-      typeof io.settings.maxSatellites === 'number' ? io.settings.maxSatellites : 15_000;
+    const max = typeof io.settings.maxSatellites === 'number' ? io.settings.maxSatellites : 15_000;
 
     const url = `${endpoint}?GROUP=${encodeURIComponent(group)}&FORMAT=json`;
     const res = await io.fetch(url);

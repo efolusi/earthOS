@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import type { Texture} from 'three';
+import type { Texture } from 'three';
 import { SRGBColorSpace, TextureLoader } from 'three';
 
 export interface GlobeTextureUrls {

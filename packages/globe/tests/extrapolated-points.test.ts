@@ -12,8 +12,18 @@ describe('ExtrapolatedPointsLayer buffers', () => {
     const layer = makeLayer();
     const t0Ms = 1_000_000_000;
     const posVel = new Float32Array([
-      7000, 0, 0, 0, 7.5, 0, //
-      0, 7000, 0, -7.5, 0, 0,
+      7000,
+      0,
+      0,
+      0,
+      7.5,
+      0, //
+      0,
+      7000,
+      0,
+      -7.5,
+      0,
+      0,
     ]);
     layer.writeBatch({ posVel, count: 2, t0Ms, offset: 0 });
     layer.setCount(2);
@@ -79,8 +89,18 @@ describe('pickExtrapolated', () => {
     // Two objects on +X at 7000 km, one slightly north of the other.
     // Velocity moves object 0 along +Y at 1 km/s.
     const posVel = new Float32Array([
-      7000, 0, 0, 0, 1, 0, //
-      7000, 300, 0, 0, 0, 0,
+      7000,
+      0,
+      0,
+      0,
+      1,
+      0, //
+      7000,
+      300,
+      0,
+      0,
+      0,
+      0,
     ]);
     layer.writeBatch({ posVel, count: 2, t0Ms: 0, offset: 0 });
     layer.setCount(2);
@@ -106,8 +126,18 @@ describe('pickExtrapolated', () => {
   it('ignores hidden objects and objects behind the Earth', () => {
     const layer = makeLayer(4);
     const posVel = new Float32Array([
-      -7000, 0, 0, 0, 0, 0, // behind the globe as seen from +X
-      7000, 0, 0, 0, 0, 0,
+      -7000,
+      0,
+      0,
+      0,
+      0,
+      0, // behind the globe as seen from +X
+      7000,
+      0,
+      0,
+      0,
+      0,
+      0,
     ]);
     layer.writeBatch({ posVel, count: 2, t0Ms: 0, offset: 0 });
     layer.setCount(2);

@@ -109,6 +109,9 @@ export function setGlobeTextures(material: ShaderMaterial, textures: GlobeMateri
   }
 }
 
-export function setGlobeSunDir(material: ShaderMaterial, dir: readonly [number, number, number]): void {
+export function setGlobeSunDir(
+  material: ShaderMaterial,
+  dir: readonly [number, number, number],
+): void {
   (material.uniforms.uSunDir!.value as Vector3).set(dir[0], dir[1], dir[2]);
 }

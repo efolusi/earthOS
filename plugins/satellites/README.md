@@ -9,7 +9,7 @@ import { Earth, Layer } from 'earthos';
 
 <Earth>
   <Layer manifest={() => import('@earthos/plugin-satellites')} settings={{ group: 'starlink' }} />
-</Earth>
+</Earth>;
 ```
 
 ## How it works
@@ -22,14 +22,14 @@ import { Earth, Layer } from 'earthos';
 
 ## Settings
 
-| Key | Default | Notes |
-|---|---|---|
-| `group` | `starlink` | CelesTrak GP group |
-| `pointSize` | 3 px | sprite size |
-| `color` | `#7dd3fc` | point color |
-| `showOrbit` | `true` | orbit line for the selection |
-| `maxSatellites` | 15000 | catalog cap |
-| `endpoint` | (blank) | proxy override; blank fetches CelesTrak directly |
+| Key             | Default    | Notes                                            |
+| --------------- | ---------- | ------------------------------------------------ |
+| `group`         | `starlink` | CelesTrak GP group                               |
+| `pointSize`     | 3 px       | sprite size                                      |
+| `color`         | `#7dd3fc`  | point color                                      |
+| `showOrbit`     | `true`     | orbit line for the selection                     |
+| `maxSatellites` | 15000      | catalog cap                                      |
+| `endpoint`      | (blank)    | proxy override; blank fetches CelesTrak directly |
 
 ## Data source
 

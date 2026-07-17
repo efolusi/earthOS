@@ -81,8 +81,12 @@ export function pickExtrapolated(
 }
 
 /** Angular pick tolerance for a click, from pixel radius and viewport. */
-export function pickToleranceRad(pixelRadius: number, viewportHeightPx: number, fovYDeg: number): number {
-  return (pixelRadius / viewportHeightPx) * (fovYDeg * Math.PI) / 180;
+export function pickToleranceRad(
+  pixelRadius: number,
+  viewportHeightPx: number,
+  fovYDeg: number,
+): number {
+  return ((pixelRadius / viewportHeightPx) * (fovYDeg * Math.PI)) / 180;
 }
 
 interface Object3DLike {

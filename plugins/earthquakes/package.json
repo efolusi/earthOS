@@ -6,13 +6,30 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
-    "./plugin": { "types": "./dist/plugin.d.ts", "import": "./dist/plugin.js" },
-    "./provider": { "types": "./dist/provider.d.ts", "import": "./dist/provider.js" },
-    "./renderer": { "types": "./dist/renderer.d.ts", "import": "./dist/renderer.js" },
-    "./settings": { "types": "./dist/settings.d.ts", "import": "./dist/settings.js" }
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./plugin": {
+      "types": "./dist/plugin.d.ts",
+      "import": "./dist/plugin.js"
+    },
+    "./provider": {
+      "types": "./dist/provider.d.ts",
+      "import": "./dist/provider.js"
+    },
+    "./renderer": {
+      "types": "./dist/renderer.d.ts",
+      "import": "./dist/renderer.js"
+    },
+    "./settings": {
+      "types": "./dist/settings.d.ts",
+      "import": "./dist/settings.js"
+    }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -46,6 +63,12 @@
     "typescript": "^5.7.2",
     "vitest": "^3.0.0"
   },
-  "publishConfig": { "access": "public" },
-  "keywords": ["earthos-plugin", "earthquakes", "usgs"]
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "earthos-plugin",
+    "earthquakes",
+    "usgs"
+  ]
 }

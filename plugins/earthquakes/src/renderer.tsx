@@ -73,9 +73,7 @@ function EarthquakesLayer({ ctx }: { ctx: PluginContext }) {
 
   // Write buffers whenever data or filter changes.
   useEffect(() => {
-    const filtered = features
-      .filter((f) => (f.properties.mag ?? -10) >= minMag)
-      .slice(0, CAPACITY);
+    const filtered = features.filter((f) => (f.properties.mag ?? -10) >= minMag).slice(0, CAPACITY);
     visible.current = filtered;
 
     const posVel = new Float32Array(filtered.length * 6);

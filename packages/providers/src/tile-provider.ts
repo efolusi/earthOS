@@ -14,9 +14,9 @@ export interface TileDescriptor {
  * tile engine consumes; HTTP caching handles the tiles. `refresh()`
  * re-describes (settings changes such as a new endpoint or API proxy).
  */
-export abstract class TileProvider<TDesc extends TileDescriptor = TileDescriptor>
-  implements ProviderInstance<TDesc>
-{
+export abstract class TileProvider<
+  TDesc extends TileDescriptor = TileDescriptor,
+> implements ProviderInstance<TDesc> {
   abstract readonly id: string;
 
   private emitFn: ((snap: ProviderSnapshot<TDesc>) => void) | null = null;

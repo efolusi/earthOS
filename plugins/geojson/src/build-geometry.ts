@@ -32,10 +32,7 @@ function countCoords(feature: Feature): number {
     case 'Polygon':
       return g.coordinates.reduce((a, ring) => a + ring.length, 0);
     case 'MultiPolygon':
-      return g.coordinates.reduce(
-        (a, poly) => a + poly.reduce((b, ring) => b + ring.length, 0),
-        0,
-      );
+      return g.coordinates.reduce((a, poly) => a + poly.reduce((b, ring) => b + ring.length, 0), 0);
     default:
       return 0;
   }

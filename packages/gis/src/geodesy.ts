@@ -63,7 +63,7 @@ export function haversineKm(lat1: number, lon1: number, lat2: number, lon2: numb
 
 /** Normalize a longitude to (-180, 180]. */
 export function normalizeLonDeg(lonDeg: number): number {
-  let lon = ((lonDeg + 180) % 360 + 360) % 360 - 180;
+  let lon = ((((lonDeg + 180) % 360) + 360) % 360) - 180;
   if (lon === -180) lon = 180;
   return lon;
 }

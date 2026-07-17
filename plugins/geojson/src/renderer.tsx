@@ -2,13 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal, useFrame, useThree } from '@react-three/fiber';
-import {
-  BufferAttribute,
-  BufferGeometry,
-  Color,
-  LineBasicMaterial,
-  LineSegments,
-} from 'three';
+import { BufferAttribute, BufferGeometry, Color, LineBasicMaterial, LineSegments } from 'three';
 import type { FeatureCollection } from 'geojson';
 import type { LayerRenderer, PluginContext } from '@earthos/core';
 import { ExtrapolatedPointsLayer, useEarthFixed } from '@earthos/globe';

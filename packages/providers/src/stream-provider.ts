@@ -1,9 +1,4 @@
-import type {
-  Disposer,
-  ProviderInstance,
-  ProviderSnapshot,
-  ProviderStartIO,
-} from '@earthos/core';
+import type { Disposer, ProviderInstance, ProviderSnapshot, ProviderStartIO } from '@earthos/core';
 
 export interface StreamIO<T> {
   /** Deliver a data update (already parsed). */

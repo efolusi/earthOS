@@ -6,9 +6,9 @@ The terminator follows the simulation clock: scrub the timeline and watch the ni
 
 ## Settings
 
-| Key | Default |
-|---|---|
-| `showTerminator` | `true` |
-| `showSubsolar` | `true` |
-| `showSublunar` | `false` |
-| `lineColor` | `#fbbf24` |
+| Key              | Default   |
+| ---------------- | --------- |
+| `showTerminator` | `true`    |
+| `showSubsolar`   | `true`    |
+| `showSublunar`   | `false`   |
+| `lineColor`      | `#fbbf24` |

@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useRef } from 'react';
-import { useFrame } from '@react-three/fiber';
+import { createPortal, useFrame } from '@react-three/fiber';
 import {
   AdditiveBlending,
   CanvasTexture,
@@ -23,7 +23,7 @@ import { ATMOSPHERE_RADIUS, CLOUD_RADIUS, GLOBE_RADIUS } from '../constants';
 import { createGlobeMaterial, setGlobeSunDir, setGlobeTextures } from '../materials/globe-material';
 import { createAtmosphereMaterial, setAtmosphereSunDir } from '../materials/atmosphere-material';
 import { useOptionalTexture, type GlobeTextureUrls } from '../textures';
-import { EarthFixedGroup } from './EarthFixedGroup';
+import { useEarthFixed } from './EarthFixedGroup';
 import { Stars } from './Stars';
 
 function makeGlowTexture(): CanvasTexture | null {
@@ -64,6 +64,7 @@ export function GlobeScene({
   sunSprite = true,
 }: GlobeSceneProps) {
   const engine = useEarth();
+  const earthFixed = useEarthFixed();
 
   const dayTex = useOptionalTexture(textures?.day);
   const nightTex = useOptionalTexture(textures?.night);
@@ -132,21 +133,29 @@ export function GlobeScene({
     }
   });
 
+  if (!earthFixed) {
+    // GlobeScene must render inside <EarthFixedGroup> (EarthCanvas does this).
+    return null;
+  }
+
   return (
     <group ref={sceneRootRef}>
       <ambientLight intensity={0.03} />
       <directionalLight ref={sunLightRef} intensity={2.4} position={[100_000, 0, 0]} />
 
-      <EarthFixedGroup>
-        <mesh material={globeMaterial}>
-          <sphereGeometry args={[GLOBE_RADIUS, 128, 96]} />
-        </mesh>
-        {cloudTex ? (
-          <mesh ref={cloudsRef} material={cloudMaterial} renderOrder={1}>
-            <sphereGeometry args={[CLOUD_RADIUS, 96, 64]} />
+      {createPortal(
+        <>
+          <mesh material={globeMaterial}>
+            <sphereGeometry args={[GLOBE_RADIUS, 128, 96]} />
           </mesh>
-        ) : null}
-      </EarthFixedGroup>
+          {cloudTex ? (
+            <mesh ref={cloudsRef} material={cloudMaterial} renderOrder={1}>
+              <sphereGeometry args={[CLOUD_RADIUS, 96, 64]} />
+            </mesh>
+          ) : null}
+        </>,
+        earthFixed,
+      )}
 
       <mesh material={atmosphereMaterial} renderOrder={2}>
         <sphereGeometry args={[ATMOSPHERE_RADIUS, 96, 64]} />

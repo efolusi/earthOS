@@ -217,7 +217,13 @@ export class ExtrapolatedPointsLayer {
   }
 
   /** Per-object display metadata. */
-  setMeta(index: number, paletteIndex: number, sizePx: number, visible: boolean, highlight = 0): void {
+  setMeta(
+    index: number,
+    paletteIndex: number,
+    sizePx: number,
+    visible: boolean,
+    highlight = 0,
+  ): void {
     const base = index * 4;
     this.meta[base] = Math.min(7, Math.max(0, paletteIndex));
     this.meta[base + 1] = sizePx;

@@ -7,6 +7,7 @@ import { EarthEngineProvider } from '@earthos/core/react';
 import { CAMERA_FAR, DEFAULT_FOV_DEG } from '../constants';
 import type { GlobeTextureUrls } from '../textures';
 import { trackersOf } from '../trackers';
+import { EarthFixedGroup } from './EarthFixedGroup';
 import { GlobeScene } from './GlobeScene';
 import { GlobeCamera } from './GlobeCamera';
 import { PluginLayersHost } from './PluginLayersHost';
@@ -58,10 +59,12 @@ export function EarthCanvas({
         gl={{ antialias: true, powerPreference: 'high-performance', logarithmicDepthBuffer: false }}
       >
         <EngineBridges engine={engine} />
-        <GlobeScene textures={textures} stars={stars} moon={moon} />
-        <GlobeCamera />
-        <PluginLayersHost />
-        {children}
+        <EarthFixedGroup>
+          <GlobeScene textures={textures} stars={stars} moon={moon} />
+          <GlobeCamera />
+          <PluginLayersHost />
+          {children}
+        </EarthFixedGroup>
       </Canvas>
     </EarthEngineProvider>
   );

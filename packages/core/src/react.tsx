@@ -11,7 +11,13 @@ import {
 import { useStore } from 'zustand';
 // Self-referencing package import: keeps the react entry sharing ONE copy of
 // the runtime and ONE set of type declarations with the root entry.
-import type { EarthEngine, EarthState, LayerRenderer, PluginLoader, TimeSnapshot } from '@earthos/core';
+import type {
+  EarthEngine,
+  EarthState,
+  LayerRenderer,
+  PluginLoader,
+  TimeSnapshot,
+} from '@earthos/core';
 
 const EarthContext = createContext<EarthEngine | null>(null);
 

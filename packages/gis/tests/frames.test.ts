@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { eciToScene, sceneToEci, ecefToScene, gmstRad, eciToEcefAt, geodeticToScene } from '../src/frames';
+import {
+  eciToScene,
+  sceneToEci,
+  ecefToScene,
+  gmstRad,
+  eciToEcefAt,
+  geodeticToScene,
+} from '../src/frames';
 
 describe('scene swizzle', () => {
   it('maps (x, y, z) -> (x, z, -y) and inverts cleanly', () => {

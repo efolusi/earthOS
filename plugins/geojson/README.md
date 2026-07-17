@@ -17,9 +17,9 @@ Blank `url` shows a bundled sample (cities, an equator line, a polygon) so the l
 
 ## Settings
 
-| Key | Default | Notes |
-|---|---|---|
-| `url` | (blank = sample) | FeatureCollection URL |
-| `color` | `#34d399` | points + lines |
-| `pointSize` | 5 px | |
-| `altitudeKm` | 8 | draw height above the surface |
+| Key          | Default          | Notes                         |
+| ------------ | ---------------- | ----------------------------- |
+| `url`        | (blank = sample) | FeatureCollection URL         |
+| `color`      | `#34d399`        | points + lines                |
+| `pointSize`  | 5 px             |                               |
+| `altitudeKm` | 8                | draw height above the surface |

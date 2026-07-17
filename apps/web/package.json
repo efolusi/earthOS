@@ -1,0 +1,47 @@
+{
+  "name": "@earthos/web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "EarthOS flagship viewer",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint app components e2e",
+    "typecheck": "tsc --noEmit",
+    "test": "echo 'web: covered by e2e'",
+    "e2e": "playwright test"
+  },
+  "dependencies": {
+    "@earthos/core": "workspace:*",
+    "@earthos/gis": "workspace:*",
+    "@earthos/globe": "workspace:*",
+    "@earthos/plugin-daynight": "workspace:*",
+    "@earthos/plugin-earthquakes": "workspace:*",
+    "@earthos/plugin-geojson": "workspace:*",
+    "@earthos/plugin-satellites": "workspace:*",
+    "@earthos/providers": "workspace:*",
+    "@earthos/ui": "workspace:*",
+    "@react-three/drei": "^10.7.0",
+    "@react-three/fiber": "^9.6.0",
+    "framer-motion": "^12.0.0",
+    "next": "^15.5.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "three": "^0.185.0",
+    "zustand": "^5.0.2"
+  },
+  "devDependencies": {
+    "@earthos/config": "workspace:*",
+    "@playwright/test": "^1.61.0",
+    "@tailwindcss/postcss": "^4.0.0",
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/three": "^0.185.0",
+    "eslint": "^9.17.0",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.2"
+  }
+}

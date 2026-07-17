@@ -25,14 +25,7 @@ export interface OmmRecord {
 export type SatCatalog = OmmRecord[];
 
 export type CatalogGroup =
-  | 'starlink'
-  | 'active'
-  | 'stations'
-  | 'gps-ops'
-  | 'oneweb'
-  | 'geo'
-  | 'weather'
-  | 'science';
+  'starlink' | 'active' | 'stations' | 'gps-ops' | 'oneweb' | 'geo' | 'weather' | 'science';
 
 /** Worker protocol. */
 export interface InitPayload {

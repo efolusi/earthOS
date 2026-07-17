@@ -8,11 +8,7 @@ import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import { useEarth } from '@earthos/core/react';
 import type { CameraSnapshot, FlyToTarget } from '@earthos/core';
 import { ecefToGeodetic, eciToEcefAt, geodeticToScene, gmstRad, sceneToEci } from '@earthos/gis';
-import {
-  GLOBE_RADIUS,
-  MAX_CAMERA_DISTANCE,
-  MIN_CAMERA_ALTITUDE_KM,
-} from '../constants';
+import { GLOBE_RADIUS, MAX_CAMERA_DISTANCE, MIN_CAMERA_ALTITUDE_KM } from '../constants';
 import { trackersOf, type EntityTracker } from '../trackers';
 
 const STORE_SYNC_INTERVAL_S = 0.25;
@@ -30,11 +26,7 @@ function worldAbove(latDeg: number, lonDeg: number, altKm: number, nowMs: number
   const g = gmstRad(nowMs);
   const cos = Math.cos(g);
   const sin = Math.sin(g);
-  return new Vector3(
-    cos * local[0] + sin * local[2],
-    local[1],
-    -sin * local[0] + cos * local[2],
-  );
+  return new Vector3(cos * local[0] + sin * local[2], local[1], -sin * local[0] + cos * local[2]);
 }
 
 /**
@@ -58,10 +50,14 @@ export function GlobeCamera() {
   // Initial position from the (possibly persisted) store snapshot.
   useMemo(() => {
     const snap = engine.store.getState().camera;
-    const p = worldAbove(snap.lat, snap.lon, Math.max(snap.altKm, MIN_CAMERA_ALTITUDE_KM), engine.time.now());
+    const p = worldAbove(
+      snap.lat,
+      snap.lon,
+      Math.max(snap.altKm, MIN_CAMERA_ALTITUDE_KM),
+      engine.time.now(),
+    );
     camera.position.copy(p);
     camera.lookAt(0, 0, 0);
-     
   }, [camera, engine]);
 
   // Fly-to requests from anywhere (search, inspector, plugins).
@@ -112,10 +108,7 @@ export function GlobeCamera() {
           const dist = camera.position.distanceTo(controls.target);
           const minDist = 40;
           if (dist < minDist) {
-            camera.position
-              .sub(controls.target)
-              .setLength(minDist)
-              .add(controls.target);
+            camera.position.sub(controls.target).setLength(minDist).add(controls.target);
           }
         }
       }

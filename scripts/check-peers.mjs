@@ -34,14 +34,18 @@ for (const group of GROUPS) {
     const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'));
     for (const dep of Object.keys(pkg.dependencies ?? {})) {
       if (SINGLETONS.includes(dep)) {
-        violations.push(`${group}/${entry.name}: "${dep}" must be a peerDependency, not a dependency`);
+        violations.push(
+          `${group}/${entry.name}: "${dep}" must be a peerDependency, not a dependency`,
+        );
       }
     }
   }
 }
 
 if (violations.length > 0) {
-  console.error('Single-instance rule violations:\n' + violations.map((v) => `  - ${v}`).join('\n'));
+  console.error(
+    'Single-instance rule violations:\n' + violations.map((v) => `  - ${v}`).join('\n'),
+  );
   process.exit(1);
 }
 console.log('check-peers: OK');
