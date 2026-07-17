@@ -1,0 +1,14 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      # Server-side keys for proxied providers (never shipped to the client).
+      # - OPENWEATHER_API_KEY=
+      # - OPENSKY_CLIENT_ID=
+      # - OPENSKY_CLIENT_SECRET=
+    restart: unless-stopped

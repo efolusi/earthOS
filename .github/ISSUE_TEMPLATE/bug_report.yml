@@ -1,0 +1,39 @@
+name: Bug report
+description: Something is broken
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: Steps, a code snippet, or a link to a minimal repro. For rendering bugs, attach a screenshot or recording.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Package and version
+      placeholder: "earthos 0.1.0 / @earthos/plugin-satellites 0.1.0"
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      placeholder: "Chrome 130, macOS 15, M2 / bundler: Next 15"
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options: [globe rendering, plugin runtime, data providers, UI, SDK, performance, docs, other]
+    validations:
+      required: true

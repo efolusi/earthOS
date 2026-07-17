@@ -1,0 +1,21 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.0.0/schema.json",
+  "changelog": "@changesets/cli/changelog",
+  "commit": false,
+  "fixed": [],
+  "linked": [
+    [
+      "@earthos/core",
+      "@earthos/globe",
+      "@earthos/ui",
+      "@earthos/providers",
+      "@earthos/gis",
+      "@earthos/testing",
+      "earthos"
+    ]
+  ],
+  "access": "public",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": ["@earthos/web"]
+}

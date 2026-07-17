@@ -1,0 +1,30 @@
+# dependencies
+node_modules/
+
+# builds
+dist/
+.next/
+out/
+.turbo/
+*.tsbuildinfo
+
+# testing
+coverage/
+playwright-report/
+test-results/
+blob-report/
+
+# env
+.env
+.env.local
+.env.*.local
+
+# misc
+.DS_Store
+*.log
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# textures fetched by scripts (placeholders are committed, full-res is not)
+apps/web/public/textures/full/

@@ -1,0 +1,32 @@
+{
+  "name": "@earthos/config",
+  "version": "0.1.0",
+  "description": "Shared build, lint, and test presets for EarthOS packages and plugins",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    "./eslint": "./eslint/index.js",
+    "./prettier": "./prettier/index.json",
+    "./tsconfig/*": "./tsconfig/*",
+    "./tsup-package": "./tsup/package.js",
+    "./tsup-plugin": "./tsup/plugin.js",
+    "./vitest": "./vitest/preset.js"
+  },
+  "files": ["eslint", "prettier", "tsconfig", "tsup", "vitest"],
+  "scripts": {
+    "lint": "echo 'config package: nothing to lint'",
+    "typecheck": "echo 'config package: nothing to typecheck'"
+  },
+  "dependencies": {
+    "@eslint/js": "^9.17.0",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "globals": "^15.14.0",
+    "typescript-eslint": "^8.19.0"
+  },
+  "peerDependencies": {
+    "eslint": "^9.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

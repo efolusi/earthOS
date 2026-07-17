@@ -1,0 +1,38 @@
+name: Plugin proposal
+description: Propose a new data layer plugin
+labels: [plugin]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Plugin name
+      placeholder: "aurora"
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: Data source
+      description: URL, format, update cadence, licensing/terms, whether an API key is required.
+    validations:
+      required: true
+  - type: dropdown
+    id: provider
+    attributes:
+      label: Provider type
+      options: [polling, stream (websocket), tile, static]
+    validations:
+      required: true
+  - type: textarea
+    id: rendering
+    attributes:
+      label: Rendering
+      description: How should it look? Points, lines, polygons, tiles, particles? Rough entity count?
+    validations:
+      required: true
+  - type: checkboxes
+    id: ownership
+    attributes:
+      label: Ownership
+      options:
+        - label: I want to implement this myself
