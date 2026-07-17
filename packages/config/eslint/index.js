@@ -27,6 +27,7 @@ export default tseslint.config(
       ],
       '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
       '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-this-alias': ['error', { allowedNames: ['engine', 'parent', 'self'] }],
       'no-restricted-imports': [
         'error',
         {
