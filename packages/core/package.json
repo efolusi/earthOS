@@ -19,7 +19,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && tsup --config tsup.react.config.ts",
     "dev": "tsup --watch",
     "lint": "eslint src tests",
     "typecheck": "tsc --noEmit",

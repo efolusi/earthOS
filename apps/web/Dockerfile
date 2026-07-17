@@ -1,6 +1,7 @@
 # EarthOS flagship app: multi-stage build on the pnpm monorepo.
 FROM node:22-alpine AS base
 RUN corepack enable pnpm
+ENV CI=true
 WORKDIR /repo
 
 FROM base AS build
