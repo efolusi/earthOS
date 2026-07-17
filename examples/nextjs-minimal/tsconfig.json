@@ -2,22 +2,12 @@
   "extends": "@earthos/config/tsconfig/nextjs.json",
   "compilerOptions": {
     "noEmit": true,
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "verbatimModuleSyntax": false,
-    "paths": {
-      "@/*": [
-        "./*"
-      ]
-    }
+    "verbatimModuleSyntax": false
   },
   "include": [
     "app/**/*.ts",
     "app/**/*.tsx",
-    "components/**/*.tsx",
-    "e2e/**/*.ts",
     "next-env.d.ts",
-    "playwright.config.ts",
     ".next/types/**/*.ts"
   ],
   "exclude": [

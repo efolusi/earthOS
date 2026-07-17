@@ -3,12 +3,12 @@
 ## Now (foundation, M0-M6)
 
 - [x] Monorepo, presets, CI, release pipeline
-- [ ] `@earthos/core`: plugin runtime, TimeEngine, WorkerPool, stores
-- [ ] `@earthos/globe`: shader globe, floating origin, 100k points pipeline
-- [ ] `@earthos/providers`: caching/polling/rate-limit framework
-- [ ] Flagship plugins: satellites (CelesTrak), earthquakes (USGS), day/night, GeoJSON
-- [ ] `@earthos/ui` + flagship app: layer panel, inspector, timeline, command palette
-- [ ] `earthos` SDK + `create-earthos-plugin` + docs + examples
+- [x] `@earthos/core`: plugin runtime, TimeEngine, WorkerPool, stores
+- [x] `@earthos/globe`: shader globe, camera, 100k points pipeline
+- [x] `@earthos/providers`: caching/polling/rate-limit framework
+- [x] Flagship plugins: satellites (CelesTrak), earthquakes (USGS), day/night, GeoJSON
+- [x] `@earthos/ui` + flagship app: layer panel, inspector, timeline, command palette
+- [x] `earthos` SDK + `create-earthos-plugin` + docs + examples
 
 ## Next (plugin catalog)
 

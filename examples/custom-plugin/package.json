@@ -1,0 +1,54 @@
+{
+  "name": "@earthos-examples/custom-plugin",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A complete third-party EarthOS plugin: world capitals as a static layer",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./renderer": {
+      "types": "./dist/renderer.d.ts",
+      "import": "./dist/renderer.js"
+    },
+    "./provider": {
+      "types": "./dist/provider.d.ts",
+      "import": "./dist/provider.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "lint": "eslint src tests",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@earthos/core": "workspace:*",
+    "@earthos/gis": "workspace:*",
+    "@earthos/providers": "workspace:*"
+  },
+  "peerDependencies": {
+    "@earthos/globe": "workspace:^",
+    "@react-three/fiber": "^9.0.0",
+    "react": "^19.0.0",
+    "three": ">=0.170.0"
+  },
+  "devDependencies": {
+    "@earthos/config": "workspace:*",
+    "@earthos/globe": "workspace:*",
+    "@earthos/testing": "workspace:*",
+    "@react-three/fiber": "^9.6.0",
+    "@types/react": "^19.0.0",
+    "@types/three": "^0.185.0",
+    "eslint": "^9.17.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "three": "^0.185.0",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "vitest": "^3.0.0"
+  }
+}

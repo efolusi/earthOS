@@ -1,0 +1,32 @@
+{
+  "name": "create-earthos-plugin",
+  "version": "0.1.0",
+  "description": "Scaffold an EarthOS data layer plugin",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "create-earthos-plugin": "./bin.mjs"
+  },
+  "files": [
+    "bin.mjs",
+    "templates.mjs"
+  ],
+  "scripts": {
+    "lint": "eslint bin.mjs templates.mjs",
+    "typecheck": "echo 'plain js cli'",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@earthos/config": "workspace:*",
+    "eslint": "^9.17.0",
+    "vitest": "^3.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "earthos",
+    "earthos-plugin",
+    "scaffold"
+  ]
+}
