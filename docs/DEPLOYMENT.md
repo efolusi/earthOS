@@ -44,6 +44,8 @@ Environment variables consumed by the compose file (all optional, all server-sid
 
 `npm install earthos three @react-three/fiber @react-three/drei react react-dom framer-motion`. The SDK ships compiled ESM with `"use client"` boundaries: it works in Next.js App Router (client components), Vite, and any modern ESM bundler without transpilation config. Both are built in CI (`examples/nextjs-minimal`, `examples/vite-spa`) as the compatibility gate.
 
+If you use the optional `@earthos/ui` panels, their styles are Tailwind utility classes: add `@source "../node_modules/@earthos/ui/src";` to your Tailwind CSS entry (the package ships its `src` for exactly this) and provide the design tokens they reference (see the package README). The 3D layers need none of this.
+
 ## Health and headers
 
 The app is stateless (state lives in the browser). For orchestration, use the root page as liveness. If you enable `SharedArrayBuffer` optimizations later, remember COOP/COEP headers; the baseline needs none.

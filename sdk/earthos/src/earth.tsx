@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react';
-import { createEarthEngine, type EarthEngine } from '@earthos/core';
+import { createEarthEngine, DEFAULT_CAMERA, type EarthEngine } from '@earthos/core';
 import { EarthEngineProvider } from '@earthos/core/react';
 import { createDefaultCache } from '@earthos/providers';
 import { EarthCanvas, type GlobeTextureUrls } from '@earthos/globe';
@@ -50,10 +50,13 @@ export function Earth({
     const created = createEarthEngine({ cache: createDefaultCache(), persistKey });
     if (initialCamera) {
       const state = created.store.getState();
-      // Seed only when nothing was persisted (fresh visitors).
-      if (Object.keys(state.layerPrefs).length === 0) {
-        state.setCameraSnapshot({ ...initialCamera, heading: 0, pitch: 0 });
-      }
+      // Seed only when no camera was persisted (still exactly the default).
+      const cam = state.camera;
+      const fresh =
+        cam.lat === DEFAULT_CAMERA.lat &&
+        cam.lon === DEFAULT_CAMERA.lon &&
+        cam.altKm === DEFAULT_CAMERA.altKm;
+      if (fresh) state.setCameraSnapshot({ ...initialCamera, heading: 0, pitch: 0 });
     }
     if (timeRate !== undefined && timeRate !== 1) created.time.setRate(timeRate);
     return created;

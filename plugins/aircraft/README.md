@@ -8,6 +8,8 @@ Live global air traffic for EarthOS from the OpenSky Network: state vectors poll
 <Layer manifest={() => import('@earthos/plugin-aircraft')} settings={{ showOnGround: false }} />
 ```
 
+Extrapolation is clamped to ±5 minutes around the feed epoch: scrubbing the timeline far from now freezes the traffic picture instead of inventing straight-line ghost flights (a unified sim-time data contract is on the roadmap).
+
 Click an aircraft for callsign, country, altitude (ft), speed (kt), heading, and vertical rate; search by callsign or ICAO 24-bit address; the follow camera tracks the dead-reckoned position.
 
 ## Settings

@@ -91,6 +91,12 @@ export function CommandPalette() {
           >
             <input
               ref={inputRef}
+              role="combobox"
+              aria-expanded="true"
+              aria-controls="earthos-palette-results"
+              aria-activedescendant={
+                hits[highlight] ? `earthos-palette-hit-${highlight}` : undefined
+              }
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => {
@@ -108,9 +114,18 @@ export function CommandPalette() {
               className="w-full border-b border-[var(--border-default)] bg-transparent px-5 py-4 text-[14px] text-[var(--text-primary)] outline-none placeholder:text-[var(--text-muted)]"
               data-testid="command-palette-input"
             />
-            <ul className="max-h-80 overflow-y-auto py-1">
+            <ul
+              id="earthos-palette-results"
+              role="listbox"
+              className="max-h-80 overflow-y-auto py-1"
+            >
               {hits.map((hit, i) => (
-                <li key={`${hit.ref.layerId}:${hit.ref.entityId}:${i}`}>
+                <li
+                  key={`${hit.ref.layerId}:${hit.ref.entityId}:${i}`}
+                  id={`earthos-palette-hit-${i}`}
+                  role="option"
+                  aria-selected={i === highlight}
+                >
                   <button
                     type="button"
                     onClick={() => void choose(hit)}

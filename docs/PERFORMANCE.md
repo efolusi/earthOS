@@ -36,7 +36,7 @@ Committed textures are 2k (~1.4 MB total): fine everywhere. The upgrade path is 
 ## Measuring
 
 - The status bar FPS meter is rAF-based and cheap; keep it visible while developing.
-- `renderer.info` (calls, triangles, textures) via the dev console: `window.__earthos` exposes the engine in the flagship app.
+- `renderer.info` (calls, triangles, textures) via the dev console: `window.__earthos` exposes the engine in the flagship app (dev builds always; append `?dev` to the URL in production).
 - Playwright smoke tests run with software GL: treat their FPS as a floor, not a target.
 - For regressions, bisect with layers toggled individually; each plugin must stand alone within budget.
 

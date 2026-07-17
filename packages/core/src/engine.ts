@@ -409,6 +409,8 @@ export class EarthEngine {
             logger,
             getSettings: () => settingsApi.get(),
             getViewport: () => engine.store.getState().camera,
+            onViewportChange: (cb: (snap: CameraSnapshot) => void) =>
+              engine.events.on<CameraSnapshot>('core:camera:move', cb),
           };
           void instance.start(io, emit);
           const handle: ProviderHandle<T> = {
@@ -443,6 +445,7 @@ export class EarthEngine {
         getSnapshot: (): CameraSnapshot => engine.store.getState().camera,
         onMove: (cb) => engine.events.on<CameraSnapshot>('core:camera:move', cb),
         flyTo: (target: FlyToTarget) => engine.events.emit('core:camera:flyTo', target),
+        follow: (ref: EntityRef) => engine.events.emit('core:camera:follow', ref),
       },
       entities: {
         registerSource: (source: EntitySource) => {

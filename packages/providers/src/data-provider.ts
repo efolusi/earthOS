@@ -20,8 +20,6 @@ export interface FetchIO {
   viewport: CameraSnapshot;
 }
 
-const CACHE_KEY = 'latest';
-
 /**
  * Polling provider with the stale-while-revalidate runtime built in:
  *
@@ -46,9 +44,12 @@ export abstract class DataProvider<T> implements ProviderInstance<T> {
   private inflight: AbortController | null = null;
   private lastGood: T | null = null;
   private lastGoodAt: number | null = null;
+  private lastKey: string | null = null;
   private attempt = 0;
   private stopped = true;
   private removeVisibility: (() => void) | null = null;
+  private removeViewport: (() => void) | null = null;
+  private viewportDebounce: ReturnType<typeof setTimeout> | null = null;
 
   get policy(): ProviderPolicy {
     if (!this.policyCache) this.policyCache = mergePolicy(this.policyOverrides);
@@ -58,6 +59,15 @@ export abstract class DataProvider<T> implements ProviderInstance<T> {
   abstract fetch(io: FetchIO): Promise<T>;
   merge?(prev: T, next: T): T;
 
+  /**
+   * Cache key for the current settings. Override whenever the fetched
+   * payload depends on a setting (catalog group, region, resolution), or a
+   * settings change would serve the OLD payload from cache on next boot.
+   */
+  protected cacheKey(_settings: Record<string, unknown>): string {
+    return 'latest';
+  }
+
   async start(io: ProviderStartIO, emit: (snap: ProviderSnapshot<T>) => void): Promise<void> {
     this.io = io;
     this.emitFn = emit;
@@ -65,7 +75,9 @@ export abstract class DataProvider<T> implements ProviderInstance<T> {
     this.attempt = 0;
 
     const { cache } = this.policy;
-    const cached = await io.cache.get<T>(CACHE_KEY);
+    const key = this.cacheKey(io.getSettings());
+    this.lastKey = key;
+    const cached = await io.cache.get<T>(key);
     if (this.stopped) return;
     const age = cached ? Date.now() - cached.storedAt : Infinity;
 
@@ -75,6 +87,7 @@ export abstract class DataProvider<T> implements ProviderInstance<T> {
       const stale = age > cache.staleAfterMs;
       emit({ data: cached.value, state: stale ? 'stale' : 'ready', updatedAt: cached.storedAt });
       this.setupVisibilityPause();
+      this.setupViewportRefetch();
       if (stale) void this.cycle();
       else this.schedule(Math.max(0, this.intervalWithJitter() - age));
       return;
@@ -82,6 +95,7 @@ export abstract class DataProvider<T> implements ProviderInstance<T> {
 
     emit({ data: null, state: 'loading', updatedAt: null });
     this.setupVisibilityPause();
+    this.setupViewportRefetch();
     void this.cycle();
   }
 
@@ -89,10 +103,14 @@ export abstract class DataProvider<T> implements ProviderInstance<T> {
     this.stopped = true;
     if (this.timer) clearTimeout(this.timer);
     this.timer = null;
+    if (this.viewportDebounce) clearTimeout(this.viewportDebounce);
+    this.viewportDebounce = null;
     this.inflight?.abort();
     this.inflight = null;
     this.removeVisibility?.();
     this.removeVisibility = null;
+    this.removeViewport?.();
+    this.removeViewport = null;
   }
 
   refresh(): void {
@@ -139,6 +157,16 @@ export abstract class DataProvider<T> implements ProviderInstance<T> {
     this.inflight = controller;
     const signal = AbortSignal.any([this.io.signal, controller.signal]);
 
+    // Settings may have changed the cache identity since the last success:
+    // last-good data from another key must not merge into or label this one.
+    const key = this.cacheKey(this.io.getSettings());
+    if (key !== this.lastKey) {
+      this.lastKey = key;
+      this.lastGood = null;
+      this.lastGoodAt = null;
+      this.attempt = 0;
+    }
+
     try {
       const data = await this.fetch({
         fetch: instrumentedFetch(signal),
@@ -154,7 +182,7 @@ export abstract class DataProvider<T> implements ProviderInstance<T> {
       this.lastGood = merged;
       this.lastGoodAt = Date.now();
       this.attempt = 0;
-      void this.io.cache.set(CACHE_KEY, merged);
+      void this.io.cache.set(key, merged);
       this.emitFn({ data: merged, state: 'ready', updatedAt: this.lastGoodAt });
       this.schedule(this.intervalWithJitter());
     } catch (err) {
@@ -181,6 +209,18 @@ export abstract class DataProvider<T> implements ProviderInstance<T> {
     } finally {
       if (this.inflight === controller) this.inflight = null;
     }
+  }
+
+  private setupViewportRefetch(): void {
+    if (!this.policy.refresh.viewportScoped) return;
+    const subscribe = this.io?.onViewportChange;
+    if (!subscribe) return;
+    this.removeViewport = subscribe(() => {
+      if (this.stopped) return;
+      // Debounce to camera settle: one refetch per pan, not per notification.
+      if (this.viewportDebounce) clearTimeout(this.viewportDebounce);
+      this.viewportDebounce = setTimeout(() => void this.cycle(), 1_500);
+    });
   }
 
   private setupVisibilityPause(): void {

@@ -42,6 +42,7 @@ Each entry lists its data source and provider policy. All are open for contribut
 
 ## Later (platform)
 
+- Unified sim-time/data-time contract: feeds are wall-clock; scrubbed sim time currently clamps dead-reckoned layers (aircraft freeze beyond ±5 min) and leaves snapshot layers (earthquakes) un-filtered by sim epoch
 - Analytics suite: pass prediction, line of sight, coverage, constellation statistics, heatmaps (built on GeoGrid)
 - Bookmarks + shareable camera/time/layer permalinks
 - MapLibre 2D fallback mode

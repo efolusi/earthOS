@@ -40,9 +40,12 @@ export function EarthApp() {
   const engine = useMemo(() => createEarthEngine({ cache: createDefaultCache() }), []);
   const [ready, setReady] = useState(false);
 
-  // Developer mode hook: inspect the engine from the console.
+  // Developer mode hook: dev builds always, production only behind ?dev.
   useEffect(() => {
-    (window as unknown as { __earthos?: unknown }).__earthos = engine;
+    const wanted =
+      process.env.NODE_ENV !== 'production' ||
+      new URLSearchParams(window.location.search).has('dev');
+    if (wanted) (window as unknown as { __earthos?: unknown }).__earthos = engine;
   }, [engine]);
 
   useEffect(() => {

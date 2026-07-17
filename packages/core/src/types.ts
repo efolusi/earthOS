@@ -120,6 +120,8 @@ export interface ProviderStartIO {
   logger: Logger;
   getSettings(): Record<string, unknown>;
   getViewport(): CameraSnapshot;
+  /** Throttled camera movement (viewport-scoped providers refetch on settle). */
+  onViewportChange?(cb: (snap: CameraSnapshot) => void): Disposer;
 }
 
 /**
@@ -177,7 +179,7 @@ export interface FlyToTarget {
   lat: number;
   lon: number;
   altKm?: number;
-  /** Follow a moving entity instead of a fixed point. */
+  /** @deprecated use CameraReader.follow / the 'core:camera:follow' event. */
   follow?: EntityRef;
   durationMs?: number;
 }
@@ -188,6 +190,8 @@ export interface CameraReader {
   onMove(cb: (snap: CameraSnapshot) => void): Disposer;
   /** Ask the host camera controller to fly somewhere. */
   flyTo(target: FlyToTarget): void;
+  /** Track a moving entity (via the layer's tracker) until the user drags. */
+  follow(ref: EntityRef): void;
 }
 
 export interface EntityAPI {

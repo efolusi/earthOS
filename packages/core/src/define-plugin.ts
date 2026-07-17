@@ -38,7 +38,10 @@ export interface DefinePluginInput {
  * imports provider/renderer so disabled plugins cost zero bytes.
  */
 export function definePlugin(input: DefinePluginInput): EarthOSPlugin {
-  let providerHandle: ProviderHandle<unknown> | null = null;
+  // Per-context activation state: the same imported plugin module may be
+  // registered with several engines (multi-<Earth/> pages), so nothing may
+  // live in module/closure scope keyed to a single activation.
+  const handles = new WeakMap<PluginContext, ProviderHandle<unknown>>();
 
   return {
     id: input.id,
@@ -58,7 +61,7 @@ export function definePlugin(input: DefinePluginInput): EarthOSPlugin {
       ]);
       if (ctx.signal.aborted) return;
       if (providerMod) {
-        providerHandle = ctx.providers.attach(providerMod.default(ctx));
+        handles.set(ctx, ctx.providers.attach(providerMod.default(ctx)));
       }
       if (rendererMod) {
         await rendererMod.default.preload?.(ctx);
@@ -69,8 +72,8 @@ export function definePlugin(input: DefinePluginInput): EarthOSPlugin {
     },
 
     async deactivate(ctx) {
-      providerHandle?.detach();
-      providerHandle = null;
+      handles.get(ctx)?.detach();
+      handles.delete(ctx);
       ctx.layers.clearRenderer();
       await input.onDeactivate?.(ctx);
     },

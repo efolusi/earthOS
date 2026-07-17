@@ -89,9 +89,7 @@ export function Inspector() {
           <IconButton
             label="Follow"
             className="flex-1 border border-[var(--border-default)]"
-            onClick={() =>
-              engine.events.emit('core:camera:flyTo', { lat: 0, lon: 0, follow: picked })
-            }
+            onClick={() => engine.events.emit('core:camera:follow', picked)}
           >
             Follow
           </IconButton>

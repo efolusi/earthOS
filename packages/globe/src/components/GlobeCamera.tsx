@@ -6,7 +6,7 @@ import { OrbitControls } from '@react-three/drei';
 import { MathUtils, Vector3, type PerspectiveCamera } from 'three';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import { useEarth } from '@earthos/core/react';
-import type { CameraSnapshot, FlyToTarget } from '@earthos/core';
+import type { CameraSnapshot, EntityRef, FlyToTarget } from '@earthos/core';
 import { ecefToGeodetic, eciToEcefAt, geodeticToScene, gmstRad, sceneToEci } from '@earthos/gis';
 import { GLOBE_RADIUS, MAX_CAMERA_DISTANCE, MIN_CAMERA_ALTITUDE_KM } from '../constants';
 import { trackersOf, type EntityTracker } from '../trackers';
@@ -59,6 +59,14 @@ export function GlobeCamera() {
     camera.position.copy(p);
     camera.lookAt(0, 0, 0);
   }, [camera, engine]);
+
+  // Follow requests: track a moving entity until the user drags.
+  useEffect(() => {
+    return engine.events.on<EntityRef>('core:camera:follow', (ref) => {
+      follow.current = ref;
+      flight.current = null;
+    });
+  }, [engine]);
 
   // Fly-to requests from anywhere (search, inspector, plugins).
   useEffect(() => {

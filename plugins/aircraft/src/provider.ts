@@ -47,6 +47,11 @@ export class OpenSkyProvider extends DataProvider<AircraftFeed> {
     };
   }
 
+  protected override cacheKey(settings: Record<string, unknown>): string {
+    const max = typeof settings.maxAircraft === 'number' ? settings.maxAircraft : 20_000;
+    return `latest:${max}`;
+  }
+
   async fetch(io: FetchIO): Promise<AircraftFeed> {
     const endpoint =
       typeof io.settings.endpoint === 'string' && io.settings.endpoint.length > 0

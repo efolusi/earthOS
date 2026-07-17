@@ -42,6 +42,8 @@ export function LayerPanel({ plugins }: { plugins: EarthOSPlugin[] }) {
                 />
                 <button
                   type="button"
+                  aria-expanded={isOpen}
+                  aria-label={`${plugin.meta.name} settings`}
                   className="flex min-w-0 flex-1 flex-col rounded-[var(--radius-sm)] text-left focus-visible:outline-none focus-visible:[box-shadow:var(--focus-ring)]"
                   onClick={() => setExpanded(isOpen ? null : plugin.id)}
                 >

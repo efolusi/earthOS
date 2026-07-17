@@ -16,6 +16,13 @@ import { enuVelocityToScene, geodeticToScene } from '@earthos/gis';
 import type { AircraftFeed, AircraftState } from './types';
 
 const CAPACITY = 30_000;
+/**
+ * Dead reckoning is only honest near the feed's own epoch: beyond this
+ * window (time scrub, very stale data) positions freeze instead of flying
+ * off along straight lines. A sim-time-aware data contract is roadmap work.
+ */
+const MAX_EXTRAPOLATION_MS = 5 * 60_000;
+const HOVER_INTERVAL_MS = 50;
 
 interface AircraftSettings {
   pointSize?: number;
@@ -36,6 +43,9 @@ function AircraftLayer({ ctx }: { ctx: PluginContext }) {
 
   const [feed, setFeed] = useState<AircraftFeed | null>(null);
   const visible = useRef<AircraftState[]>([]);
+  const icaoToIndex = useRef(new Map<string, number>());
+  const feedEpochMs = useRef<number | null>(null);
+  const hoverIndex = useRef(-1);
   const [showOnGround, setShowOnGround] = useState(
     () => (ctx.settings.get() as AircraftSettings).showOnGround ?? false,
   );
@@ -74,6 +84,9 @@ function AircraftLayer({ ctx }: { ctx: PluginContext }) {
     const s = ctx.settings.get() as AircraftSettings;
     const filtered = feed.states.filter((a) => showOnGround || !a.onGround).slice(0, CAPACITY);
     visible.current = filtered;
+    feedEpochMs.current = feed.time * 1000;
+    icaoToIndex.current = new Map(filtered.map((a, i) => [a.icao24, i]));
+    hoverIndex.current = -1;
 
     const posVel = new Float32Array(filtered.length * 6);
     const pos: [number, number, number] = [0, 0, 0];
@@ -150,10 +163,14 @@ function AircraftLayer({ ctx }: { ctx: PluginContext }) {
 
     // Follow camera: dead-reckon on the CPU with the same math as the GPU.
     const disposeTracker = registerTracker(ctx, (entityId, epochMs, out) => {
-      const idx = filtered.findIndex((x) => x.icao24 === entityId);
+      const idx = icaoToIndex.current.get(entityId) ?? -1;
       if (idx < 0 || !earthFixed) return false;
       const v = layer.views();
-      const dt = (epochMs - feed.time * 1000) / 1000;
+      const clampedMs = Math.min(
+        Math.max(epochMs, feed.time * 1000 - MAX_EXTRAPOLATION_MS),
+        feed.time * 1000 + MAX_EXTRAPOLATION_MS,
+      );
+      const dt = (clampedMs - feed.time * 1000) / 1000;
       const b = idx * 3;
       // Local earth-fixed position; transform to world via the group matrix.
       const local = {
@@ -207,16 +224,57 @@ function AircraftLayer({ ctx }: { ctx: PluginContext }) {
       const aircraft = hit >= 0 ? visible.current[hit] : undefined;
       if (aircraft) ctx.selection.select({ layerId: ctx.pluginId, entityId: aircraft.icao24 });
     };
+    let lastHoverAt = 0;
+    const onMove = (e: PointerEvent) => {
+      const nowWall = performance.now();
+      if (nowWall - lastHoverAt < HOVER_INTERVAL_MS) return;
+      lastHoverAt = nowWall;
+      if (!earthFixed || visible.current.length === 0) return;
+      const rect = dom.getBoundingClientRect();
+      ndc.set(
+        ((e.clientX - rect.left) / rect.width) * 2 - 1,
+        -((e.clientY - rect.top) / rect.height) * 2 + 1,
+      );
+      raycaster.setFromCamera(ndc, camera);
+      const o = raycaster.ray.origin;
+      const d = raycaster.ray.direction;
+      const local = rayToLocal(earthFixed, [o.x, o.y, o.z], [d.x, d.y, d.z]);
+      const hit = pickExtrapolated(
+        layer.views(),
+        layer.nowSec,
+        local.origin,
+        local.dir,
+        pickToleranceRad(8, size.height, 50),
+      );
+      if (hit === hoverIndex.current) return;
+      if (hoverIndex.current >= 0) layer.setHighlight(hoverIndex.current, 0);
+      if (hit >= 0) layer.setHighlight(hit, 0.45);
+      hoverIndex.current = hit;
+      dom.style.cursor = hit >= 0 ? 'pointer' : '';
+      const aircraft = hit >= 0 ? visible.current[hit] : undefined;
+      ctx.selection.hover(aircraft ? { layerId: ctx.pluginId, entityId: aircraft.icao24 } : null);
+    };
     dom.addEventListener('pointerdown', onDown);
     dom.addEventListener('click', onClick);
+    dom.addEventListener('pointermove', onMove);
     return () => {
       dom.removeEventListener('pointerdown', onDown);
       dom.removeEventListener('click', onClick);
+      dom.removeEventListener('pointermove', onMove);
+      dom.style.cursor = '';
+      ctx.selection.hover(null);
     };
   }, [gl, camera, size.height, layer, ctx, earthFixed]);
 
   useFrame(() => {
-    layer.updateTime(ctx.time.now());
+    // Clamp extrapolation to the honest window around the feed epoch.
+    const now = ctx.time.now();
+    const t0 = feedEpochMs.current;
+    layer.updateTime(
+      t0 === null
+        ? now
+        : Math.min(Math.max(now, t0 - MAX_EXTRAPOLATION_MS), t0 + MAX_EXTRAPOLATION_MS),
+    );
     layer.setPixelRatio(gl.getPixelRatio());
   });
 

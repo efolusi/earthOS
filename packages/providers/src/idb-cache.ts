@@ -7,20 +7,27 @@ interface StoredEntry {
 }
 
 /**
- * IndexedDB-backed KeyValueCache (structured clone, survives reloads).
+ * IndexedDB-backed KeyValueCache (structured clone, survives reloads), with
+ * LRU-ish eviction by entry count: timestamps live in a small side store so
+ * eviction never has to read the (potentially large) payloads.
  * All failures degrade to cache misses: a broken IDB must never break data
  * loading, only persistence.
  */
 export class IdbCache implements KeyValueCache {
   private db: Promise<IDBPDatabase> | null = null;
+  private setsSinceSweep = 0;
 
-  constructor(private dbName = 'earthos-cache') {}
+  constructor(
+    private dbName = 'earthos-cache',
+    private maxEntries = 200,
+  ) {}
 
   private open(): Promise<IDBPDatabase> {
     if (!this.db) {
-      this.db = openDB(this.dbName, 1, {
+      this.db = openDB(this.dbName, 2, {
         upgrade(db) {
-          db.createObjectStore('kv');
+          if (!db.objectStoreNames.contains('kv')) db.createObjectStore('kv');
+          if (!db.objectStoreNames.contains('ts')) db.createObjectStore('ts');
         },
       });
     }
@@ -31,6 +38,7 @@ export class IdbCache implements KeyValueCache {
     try {
       const db = await this.open();
       const entry = (await db.get('kv', key)) as StoredEntry | undefined;
+      if (entry) void db.put('ts', Date.now(), key).catch(() => undefined); // LRU touch
       return entry ? { value: entry.value as T, storedAt: entry.storedAt } : undefined;
     } catch {
       return undefined;
@@ -40,9 +48,29 @@ export class IdbCache implements KeyValueCache {
   async set<T>(key: string, value: T): Promise<void> {
     try {
       const db = await this.open();
-      await db.put('kv', { value, storedAt: Date.now() } satisfies StoredEntry, key);
+      const storedAt = Date.now();
+      await db.put('kv', { value, storedAt } satisfies StoredEntry, key);
+      await db.put('ts', storedAt, key);
+      this.setsSinceSweep += 1;
+      if (this.setsSinceSweep >= 10) {
+        this.setsSinceSweep = 0;
+        await this.evict(db);
+      }
     } catch {
       // Persistence is best-effort.
+    }
+  }
+
+  private async evict(db: IDBPDatabase): Promise<void> {
+    const keys = (await db.getAllKeys('ts')) as string[];
+    if (keys.length <= this.maxEntries) return;
+    const stamps = (await db.getAll('ts')) as number[];
+    const pairs = keys.map((key, i) => ({ key, at: stamps[i] ?? 0 }));
+    pairs.sort((a, b) => a.at - b.at);
+    const doomed = pairs.slice(0, keys.length - this.maxEntries);
+    for (const { key } of doomed) {
+      await db.delete('kv', key);
+      await db.delete('ts', key);
     }
   }
 
@@ -50,6 +78,7 @@ export class IdbCache implements KeyValueCache {
     try {
       const db = await this.open();
       await db.delete('kv', key);
+      await db.delete('ts', key);
     } catch {
       // best-effort
     }
@@ -60,6 +89,7 @@ export class IdbCache implements KeyValueCache {
       const db = await this.open();
       const range = IDBKeyRange.bound(prefix, prefix + '￿');
       await db.delete('kv', range);
+      await db.delete('ts', range);
     } catch {
       // best-effort
     }

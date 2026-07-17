@@ -5,6 +5,8 @@ export interface RefreshPolicy {
   jitterMs?: number;
   /** Suspend polling while the tab is hidden; refetch on return if stale. */
   pauseWhenHidden?: boolean;
+  /** Refetch (debounced) when the camera settles on a new viewport. */
+  viewportScoped?: boolean;
 }
 
 export interface CachePolicy {

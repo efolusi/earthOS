@@ -1,4 +1,4 @@
 {
   "extends": "@earthos/config/tsconfig/react-library.json",
-  "include": ["src"]
+  "include": ["src", "tests"]
 }

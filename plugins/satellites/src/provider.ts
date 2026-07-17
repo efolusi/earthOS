@@ -18,6 +18,11 @@ export class CelestrakGpProvider extends DataProvider<SatCatalog> {
     };
   }
 
+  protected override cacheKey(settings: Record<string, unknown>): string {
+    const group = typeof settings.group === 'string' ? settings.group : 'starlink';
+    return `latest:${group}`;
+  }
+
   async fetch(io: FetchIO): Promise<SatCatalog> {
     const group = typeof io.settings.group === 'string' ? io.settings.group : 'starlink';
     const endpoint =

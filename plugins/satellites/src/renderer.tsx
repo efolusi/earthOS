@@ -34,6 +34,7 @@ const REFRESH_SIM_MS = 15_000;
 /** Wall-clock floor per shard so extreme time rates cannot flood workers. */
 const MIN_WALL_REFRESH_MS = 400;
 const ORBIT_SAMPLES = 193;
+const HOVER_INTERVAL_MS = 50;
 
 interface Shard {
   handle: WorkerHandle;
@@ -55,6 +56,7 @@ function SatellitesLayer({ ctx }: { ctx: PluginContext }) {
   const satrecCache = useRef(new Map<string, SatRec | null>());
   const idToIndex = useRef(new Map<string, number>());
   const selectedIndex = useRef(-1);
+  const hoverIndex = useRef(-1);
   const orbitState = useRef<{ satrec: SatRec | null; generatedAtMs: number; periodMs: number }>({
     satrec: null,
     generatedAtMs: 0,
@@ -354,11 +356,49 @@ function SatellitesLayer({ ctx }: { ctx: PluginContext }) {
         }
       }
     };
+    let lastHoverAt = 0;
+    const onMove = (e: PointerEvent) => {
+      const nowWall = performance.now();
+      if (nowWall - lastHoverAt < HOVER_INTERVAL_MS) return;
+      lastHoverAt = nowWall;
+      if (records.length === 0) return;
+      const rect = dom.getBoundingClientRect();
+      ndc.set(
+        ((e.clientX - rect.left) / rect.width) * 2 - 1,
+        -((e.clientY - rect.top) / rect.height) * 2 + 1,
+      );
+      raycaster.setFromCamera(ndc, camera);
+      const o = raycaster.ray.origin;
+      const d = raycaster.ray.direction;
+      const hit = pickExtrapolated(
+        layer.views(),
+        layer.nowSec,
+        [o.x, o.y, o.z],
+        [d.x, d.y, d.z],
+        pickToleranceRad(8, size.height, 50),
+      );
+      if (hit === hoverIndex.current) return;
+      // Never stomp the selection highlight.
+      if (hoverIndex.current >= 0 && hoverIndex.current !== selectedIndex.current) {
+        layer.setHighlight(hoverIndex.current, 0);
+      }
+      if (hit >= 0 && hit !== selectedIndex.current) layer.setHighlight(hit, 0.45);
+      hoverIndex.current = hit;
+      dom.style.cursor = hit >= 0 ? 'pointer' : '';
+      const record = hit >= 0 ? records[hit] : undefined;
+      ctx.selection.hover(
+        record ? { layerId: ctx.pluginId, entityId: String(record.NORAD_CAT_ID) } : null,
+      );
+    };
     dom.addEventListener('pointerdown', onDown);
     dom.addEventListener('click', onClick);
+    dom.addEventListener('pointermove', onMove);
     return () => {
       dom.removeEventListener('pointerdown', onDown);
       dom.removeEventListener('click', onClick);
+      dom.removeEventListener('pointermove', onMove);
+      dom.style.cursor = '';
+      ctx.selection.hover(null);
     };
   }, [gl, camera, size.height, layer, records, ctx]);
 
