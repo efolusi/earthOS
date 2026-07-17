@@ -6,9 +6,7 @@
     "moduleResolution": "Bundler",
     "verbatimModuleSyntax": false,
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@/*": ["./*"]
     }
   },
   "include": [
@@ -20,8 +18,5 @@
     "playwright.config.ts",
     ".next/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules",
-    ".next"
-  ]
+  "exclude": ["node_modules", ".next"]
 }
