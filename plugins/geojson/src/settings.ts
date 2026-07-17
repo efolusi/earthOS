@@ -9,7 +9,7 @@ export const settings = defineSettings({
       placeholder: 'https://example.com/data.geojson',
       default: '',
     }),
-    color: f.color({ label: 'Color', default: '#34d399' }),
+    color: f.color({ label: 'Color', default: '#5FB86E' }),
     pointSize: f.number({ label: 'Point size', min: 1, max: 12, default: 5, unit: 'px' }),
     altitudeKm: f.number({
       label: 'Altitude offset',

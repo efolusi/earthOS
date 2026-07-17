@@ -8,10 +8,10 @@ import { GlassPanel, Toggle } from './panel';
 import { SettingsForm } from './settings-form';
 
 const STATUS_COLOR: Record<string, string> = {
-  active: 'bg-emerald-400',
-  loading: 'bg-amber-400 animate-pulse',
-  error: 'bg-rose-500',
-  registered: 'bg-slate-600',
+  active: 'bg-[var(--success-600)]',
+  loading: 'bg-[var(--warning-600)] animate-pulse',
+  error: 'bg-[var(--danger-600)]',
+  registered: 'bg-[var(--border-strong)]',
 };
 
 /**
@@ -32,7 +32,7 @@ export function LayerPanel({ plugins }: { plugins: EarthOSPlugin[] }) {
           const isOpen = expanded === plugin.id;
           const ctx = engine.getContext(plugin.id);
           return (
-            <li key={plugin.id} className="border-b border-white/5 last:border-b-0">
+            <li key={plugin.id} className="border-b border-[var(--border-default)] last:border-b-0">
               <div className="flex items-center gap-3 px-4 py-2.5">
                 <span
                   className={`h-2 w-2 shrink-0 rounded-full ${STATUS_COLOR[layer?.status ?? 'registered']}`}
@@ -42,13 +42,13 @@ export function LayerPanel({ plugins }: { plugins: EarthOSPlugin[] }) {
                 />
                 <button
                   type="button"
-                  className="flex min-w-0 flex-1 flex-col text-left"
+                  className="flex min-w-0 flex-1 flex-col rounded-[var(--radius-sm)] text-left focus-visible:outline-none focus-visible:[box-shadow:var(--focus-ring)]"
                   onClick={() => setExpanded(isOpen ? null : plugin.id)}
                 >
-                  <span className="truncate text-sm font-medium text-slate-100">
+                  <span className="truncate text-[14px] font-medium text-[var(--text-primary)]">
                     {plugin.meta.name}
                   </span>
-                  <span className="truncate text-[11px] text-slate-500">
+                  <span className="truncate text-[12px] text-[var(--text-muted)]">
                     {plugin.meta.attribution ?? plugin.meta.description ?? plugin.meta.category}
                   </span>
                 </button>
@@ -66,15 +66,15 @@ export function LayerPanel({ plugins }: { plugins: EarthOSPlugin[] }) {
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.18 }}
-                    className="overflow-hidden bg-black/20"
+                    transition={{ duration: 0.16, ease: [0.3, 1.04, 0.35, 1] }}
+                    className="overflow-hidden bg-[var(--surface-sunken)]"
                   >
                     <SettingsForm schema={plugin.settingsSchema} api={ctx.settings} />
                   </motion.div>
                 ) : null}
               </AnimatePresence>
               {layer?.status === 'error' && layer.error ? (
-                <p className="px-4 pb-2 text-[11px] text-rose-400">{layer.error}</p>
+                <p className="px-4 pb-2 text-[12px] text-[var(--danger-600)]">{layer.error}</p>
               ) : null}
             </li>
           );

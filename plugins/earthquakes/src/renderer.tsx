@@ -17,7 +17,7 @@ import type { QuakeFeed, UsgsFeature } from './types';
 const CAPACITY = 20_000;
 
 /** Palette: shallow / intermediate / deep focus. */
-const DEPTH_PALETTE = ['#f87171', '#fb923c', '#a78bfa'];
+const DEPTH_PALETTE = ['#E85D4A', '#D9822B', '#9C9280'];
 
 function depthPaletteIndex(depthKm: number): number {
   if (depthKm < 70) return 0;

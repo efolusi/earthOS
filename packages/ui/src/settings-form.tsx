@@ -3,6 +3,9 @@
 import { useSyncExternalStore } from 'react';
 import type { SettingsAPI, SettingsField, SettingsSchema } from '@earthos/core';
 
+const inputBase =
+  'rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-card)] text-[13px] text-[var(--text-primary)] outline-none placeholder:text-[var(--text-muted)] focus:[box-shadow:var(--focus-ring)] transition-shadow duration-100';
+
 /**
  * Schema-driven settings UI: every plugin gets a settings panel for free
  * from its defineSettings schema. Values read/write through the plugin's
@@ -39,10 +42,10 @@ function Field({
   onChange: (value: unknown) => void;
 }) {
   const label = (
-    <span className="text-xs text-slate-300" title={field.description}>
+    <span className="text-[13px] text-[var(--text-secondary)]" title={field.description}>
       {field.label}
       {'unit' in field && field.unit ? (
-        <span className="ml-1 text-slate-500">({field.unit})</span>
+        <span className="ml-1 text-[var(--text-muted)]">({field.unit})</span>
       ) : null}
     </span>
   );
@@ -56,7 +59,7 @@ function Field({
             type="checkbox"
             checked={Boolean(value)}
             onChange={(e) => onChange(e.target.checked)}
-            className="h-4 w-4 accent-sky-500"
+            className="h-4 w-4 accent-[var(--brand-500)]"
           />
         </label>
       );
@@ -71,7 +74,7 @@ function Field({
             max={field.max}
             step={field.step ?? 1}
             onChange={(e) => onChange(Number(e.target.value))}
-            className="w-24 rounded-md border border-white/10 bg-white/5 px-2 py-1 text-right text-xs text-slate-100 outline-none focus:border-sky-500/60"
+            className={`${inputBase} w-24 px-2 py-1 text-right font-[family-name:var(--font-mono)]`}
           />
         </label>
       );
@@ -82,7 +85,7 @@ function Field({
           <select
             value={String(value ?? field.default)}
             onChange={(e) => onChange(e.target.value)}
-            className="w-40 rounded-md border border-white/10 bg-slate-900 px-2 py-1 text-xs text-slate-100 outline-none focus:border-sky-500/60"
+            className={`${inputBase} w-40 px-2 py-1`}
           >
             {field.options.map((o) => (
               <option key={o.value} value={o.value}>
@@ -100,7 +103,7 @@ function Field({
             type="color"
             value={String(value ?? field.default)}
             onChange={(e) => onChange(e.target.value)}
-            className="h-6 w-10 cursor-pointer rounded border border-white/10 bg-transparent"
+            className="h-6 w-10 cursor-pointer rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-transparent"
           />
         </label>
       );
@@ -110,7 +113,7 @@ function Field({
         <div className="flex flex-col gap-1">
           <div className="flex items-center justify-between">
             {label}
-            <span className="text-[10px] tabular-nums text-slate-400">
+            <span className="font-[family-name:var(--font-mono)] text-[11px] text-[var(--text-muted)]">
               {lo} to {hi}
             </span>
           </div>
@@ -122,7 +125,7 @@ function Field({
               step={field.step ?? 1}
               value={lo}
               onChange={(e) => onChange([Math.min(Number(e.target.value), hi), hi])}
-              className="w-full accent-sky-500"
+              className="w-full accent-[var(--brand-500)]"
             />
             <input
               type="range"
@@ -131,7 +134,7 @@ function Field({
               step={field.step ?? 1}
               value={hi}
               onChange={(e) => onChange([lo, Math.max(Number(e.target.value), lo)])}
-              className="w-full accent-sky-500"
+              className="w-full accent-[var(--brand-500)]"
             />
           </div>
         </div>
@@ -147,7 +150,7 @@ function Field({
             value={String(value ?? '')}
             placeholder={'placeholder' in field ? field.placeholder : undefined}
             onChange={(e) => onChange(e.target.value)}
-            className="rounded-md border border-white/10 bg-white/5 px-2 py-1.5 text-xs text-slate-100 outline-none placeholder:text-slate-600 focus:border-sky-500/60"
+            className={`${inputBase} px-2 py-1.5`}
           />
         </label>
       );

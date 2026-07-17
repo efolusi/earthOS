@@ -13,7 +13,7 @@ function CapitalsLayer({ ctx }: { ctx: PluginContext }) {
   const [capitals, setCapitals] = useState<Capital[]>([]);
 
   const layer = useMemo(
-    () => new ExtrapolatedPointsLayer({ capacity: 500, mu: 0, palette: ['#f472b6'] }),
+    () => new ExtrapolatedPointsLayer({ capacity: 500, mu: 0, palette: ['#DFB585'] }),
     [],
   );
   useEffect(() => () => layer.dispose(), [layer]);

@@ -54,8 +54,10 @@ export function Inspector() {
       }
     >
       <div className="px-4 py-3" data-testid="inspector-body">
-        <p className="text-sm font-semibold text-slate-100">{info?.label ?? picked.entityId}</p>
-        <p className="text-[11px] text-slate-500">layer: {picked.layerId}</p>
+        <p className="font-[family-name:var(--font-display)] text-[16px] font-semibold tracking-[var(--tracking-display)] text-[var(--text-primary)]">
+          {info?.label ?? picked.entityId}
+        </p>
+        <p className="text-[12px] text-[var(--text-muted)]">layer: {picked.layerId}</p>
 
         {info?.properties ? (
           <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5">
@@ -64,14 +66,14 @@ export function Inspector() {
             ))}
           </dl>
         ) : (
-          <p className="mt-3 text-xs text-slate-500">No details available.</p>
+          <p className="mt-3 text-[13px] text-[var(--text-muted)]">No details yet.</p>
         )}
 
         <div className="mt-4 flex gap-2">
           {info?.position ? (
             <IconButton
               label="Fly to"
-              className="flex-1 border border-white/10"
+              className="flex-1 border border-[var(--border-default)]"
               onClick={() => {
                 const p = info.position!;
                 engine.events.emit('core:camera:flyTo', {
@@ -86,7 +88,7 @@ export function Inspector() {
           ) : null}
           <IconButton
             label="Follow"
-            className="flex-1 border border-white/10"
+            className="flex-1 border border-[var(--border-default)]"
             onClick={() =>
               engine.events.emit('core:camera:flyTo', { lat: 0, lon: 0, follow: picked })
             }
@@ -104,10 +106,15 @@ function FragmentRow({ name, value }: { name: string; value: unknown }) {
   const isLink = text.startsWith('http');
   return (
     <>
-      <dt className="text-[11px] text-slate-500">{name}</dt>
-      <dd className="truncate text-right text-xs tabular-nums text-slate-200">
+      <dt className="text-[12px] text-[var(--text-muted)]">{name}</dt>
+      <dd className="truncate text-right font-[family-name:var(--font-mono)] text-[12px] text-[var(--text-primary)]">
         {isLink ? (
-          <a href={text} target="_blank" rel="noreferrer" className="text-sky-400 hover:underline">
+          <a
+            href={text}
+            target="_blank"
+            rel="noreferrer"
+            className="font-[family-name:var(--font-sans)] text-[var(--text-link)] hover:underline"
+          >
             open
           </a>
         ) : (

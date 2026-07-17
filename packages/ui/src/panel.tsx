@@ -3,7 +3,17 @@
 import type { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 
-/** Shared glass surface. Every floating EarthOS panel sits on this. */
+/** Meridian springy entrance shared by the floating panels. */
+export const panelMotion = {
+  initial: { opacity: 0, y: 8, scale: 0.99 },
+  animate: { opacity: 1, y: 0, scale: 1 },
+  transition: { duration: 0.24, ease: [0.3, 1.04, 0.35, 1] as const },
+};
+
+/**
+ * Meridian card surface for the HUD: warm espresso card at slight
+ * translucency so space glows through, hairline border, pop shadow.
+ */
 export function GlassPanel({
   children,
   className = '',
@@ -17,14 +27,12 @@ export function GlassPanel({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.25, ease: 'easeOut' }}
-      className={`pointer-events-auto rounded-2xl border border-white/10 bg-slate-950/60 shadow-2xl shadow-black/40 backdrop-blur-xl ${className}`}
+      {...panelMotion}
+      className={`pointer-events-auto overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[color-mix(in_srgb,var(--surface-card)_94%,transparent)] shadow-[var(--shadow-pop)] backdrop-blur-xl ${className}`}
     >
       {title !== undefined ? (
-        <div className="flex items-center justify-between border-b border-white/10 px-4 py-2.5">
-          <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">
+        <div className="flex items-center justify-between border-b border-[var(--border-default)] px-4 py-2.5">
+          <h2 className="text-[12px] font-semibold uppercase tracking-[var(--tracking-wide)] text-[var(--text-muted)]">
             {title}
           </h2>
           {actions}
@@ -54,8 +62,10 @@ export function IconButton({
       aria-label={label}
       title={label}
       onClick={onClick}
-      className={`inline-flex h-8 min-w-8 items-center justify-center rounded-lg px-2 text-xs font-medium transition-colors ${
-        active ? 'bg-sky-500/25 text-sky-200' : 'text-slate-300 hover:bg-white/10 hover:text-white'
+      className={`inline-flex h-[var(--control-h-sm)] min-w-[var(--control-h-sm)] items-center justify-center rounded-[var(--radius-sm)] px-2 text-[13px] font-medium transition-colors duration-100 focus-visible:outline-none focus-visible:[box-shadow:var(--focus-ring)] ${
+        active
+          ? 'border border-[var(--accent-subtle-border)] bg-[var(--accent-subtle)] text-[var(--text-link)]'
+          : 'text-[var(--text-secondary)] hover:bg-[var(--surface-sunken)] hover:text-[var(--text-primary)]'
       } ${className}`}
     >
       {children}
@@ -79,15 +89,16 @@ export function Toggle({
       aria-checked={checked}
       aria-label={label}
       onClick={() => onChange(!checked)}
-      className={`relative h-5 w-9 shrink-0 rounded-full transition-colors ${
-        checked ? 'bg-sky-500' : 'bg-white/15'
+      className={`relative h-5 w-9 shrink-0 rounded-[var(--radius-full)] transition-colors duration-[160ms] focus-visible:outline-none focus-visible:[box-shadow:var(--focus-ring)] ${
+        checked ? 'bg-[var(--brand-500)]' : 'bg-[var(--surface-sunken)]'
       }`}
     >
       <span
-        className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${
-          checked ? 'translate-x-4.5 left-0' : 'left-0.5'
-        }`}
-        style={{ transform: checked ? 'translateX(18px)' : 'translateX(0)' }}
+        className="absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-[var(--sand-50)] shadow-sm transition-transform duration-[160ms]"
+        style={{
+          transform: checked ? 'translateX(16px)' : 'translateX(0)',
+          transitionTimingFunction: 'cubic-bezier(.3,1.04,.35,1)',
+        }}
       />
     </button>
   );

@@ -24,12 +24,12 @@ function GeoJsonLayer({ ctx }: { ctx: PluginContext }) {
   const [built, setBuilt] = useState<BuiltGeometry | null>(null);
 
   const layer = useMemo(
-    () => new ExtrapolatedPointsLayer({ capacity: CAPACITY, mu: 0, palette: ['#34d399'] }),
+    () => new ExtrapolatedPointsLayer({ capacity: CAPACITY, mu: 0, palette: ['#5FB86E'] }),
     [],
   );
   const lines = useMemo(() => {
     const geometry = new BufferGeometry();
-    const material = new LineBasicMaterial({ color: '#34d399', transparent: true, opacity: 0.85 });
+    const material = new LineBasicMaterial({ color: '#5FB86E', transparent: true, opacity: 0.85 });
     const segments = new LineSegments(geometry, material);
     segments.frustumCulled = false;
     return segments;

@@ -92,7 +92,7 @@ export default earthos;
 export const settings = defineSettings({
   version: 1,
   fields: {
-    color: f.color({ label: 'Color', default: '#34d399' }),
+    color: f.color({ label: 'Color', default: '#5FB86E' }),
     refreshSeconds: f.number({ label: 'Refresh', min: 10, max: 3600, default: 60, unit: 's' }),
   },
 });
@@ -151,7 +151,7 @@ function __PASCAL__Layer({ ctx }: { ctx: PluginContext }) {
   const [items, setItems] = useState<__PASCAL__Item[]>([]);
 
   const layer = useMemo(
-    () => new ExtrapolatedPointsLayer({ capacity: 10_000, mu: 0, palette: ['#34d399'] }),
+    () => new ExtrapolatedPointsLayer({ capacity: 10_000, mu: 0, palette: ['#5FB86E'] }),
     [],
   );
   useEffect(() => () => layer.dispose(), [layer]);

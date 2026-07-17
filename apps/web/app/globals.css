@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import './meridian.css';
 
 @source '../../../packages/ui/src';
 @source '../components';
@@ -14,27 +15,34 @@ body {
 }
 
 body {
-  background: #020617;
-  color: #e2e8f0;
-  font-family:
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    'Segoe UI',
-    Roboto,
-    'Helvetica Neue',
-    sans-serif;
+  /* Space sits behind the canvas: deepest warm espresso, not pure black. */
+  background: #0e0b07;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-/* Subtle scrollbars for the glass panels. */
+/* Subtle scrollbars for the floating panels. */
 *::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 *::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.25);
+  background: var(--border-strong);
   border-radius: 3px;
 }
 *::-webkit-scrollbar-track {
   background: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

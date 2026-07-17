@@ -6,8 +6,10 @@ import dynamic from 'next/dynamic';
 const EarthApp = dynamic(() => import('./EarthApp').then((m) => m.EarthApp), {
   ssr: false,
   loading: () => (
-    <div className="flex h-screen w-screen items-center justify-center bg-slate-950">
-      <p className="animate-pulse text-sm tracking-widest text-slate-500">LOADING EARTHOS</p>
+    <div className="flex h-screen w-screen items-center justify-center">
+      <p className="animate-pulse font-[family-name:var(--font-display)] text-[16px] tracking-[var(--tracking-display)] text-[var(--text-muted)]">
+        Loading EarthOS
+      </p>
     </div>
   ),
 });

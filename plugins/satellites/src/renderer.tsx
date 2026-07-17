@@ -65,7 +65,7 @@ function SatellitesLayer({ ctx }: { ctx: PluginContext }) {
     () =>
       new ExtrapolatedPointsLayer({
         capacity: CAPACITY,
-        palette: ['#7dd3fc', '#fbbf24'],
+        palette: ['#CE9C66', '#EFCFAC'],
       }),
     [],
   );
@@ -76,7 +76,7 @@ function SatellitesLayer({ ctx }: { ctx: PluginContext }) {
     geometry.setDrawRange(0, 0);
     const line = new Line(
       geometry,
-      new LineBasicMaterial({ color: '#fbbf24', transparent: true, opacity: 0.7 }),
+      new LineBasicMaterial({ color: '#EFCFAC', transparent: true, opacity: 0.75 }),
     );
     line.frustumCulled = false;
     return line;

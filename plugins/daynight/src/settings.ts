@@ -6,7 +6,7 @@ export const settings = defineSettings({
     showTerminator: f.boolean({ label: 'Terminator line', default: true }),
     showSubsolar: f.boolean({ label: 'Subsolar marker', default: true }),
     showSublunar: f.boolean({ label: 'Sublunar marker', default: false }),
-    lineColor: f.color({ label: 'Line color', default: '#fbbf24' }),
+    lineColor: f.color({ label: 'Line color', default: '#C08A5A' }),
   },
 });
 

@@ -91,19 +91,29 @@ export function EarthApp() {
 
   return (
     <EarthEngineProvider engine={engine}>
-      <div className="relative h-screen w-screen overflow-hidden bg-slate-950">
+      <div className="relative h-screen w-screen overflow-hidden">
         <EarthCanvas engine={engine} textures={TEXTURES} className="absolute inset-0" />
 
         {/* HUD overlay: pointer events pass through except on panels. */}
         <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-4">
           <div className="flex items-start justify-between gap-4">
             <header className="pointer-events-auto select-none">
-              <h1 className="text-lg font-semibold tracking-[0.35em] text-slate-100">
-                EARTH<span className="text-sky-400">OS</span>
+              <h1
+                className="font-[family-name:var(--font-display)] text-[21px] tracking-[var(--tracking-display)] text-[var(--text-primary)]"
+                style={{ fontWeight: 680 }}
+              >
+                Earth<span className="text-[var(--brand-400)]">OS</span>
               </h1>
-              <p className="text-[11px] text-slate-500">
-                press <kbd className="rounded bg-white/10 px-1">⌘K</kbd> to search,{' '}
-                <kbd className="rounded bg-white/10 px-1">space</kbd> to pause time
+              <p className="text-[12px] text-[var(--text-muted)]">
+                Press{' '}
+                <kbd className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-sunken)] px-1 font-[family-name:var(--font-mono)] text-[11px]">
+                  ⌘K
+                </kbd>{' '}
+                to search,{' '}
+                <kbd className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-sunken)] px-1 font-[family-name:var(--font-mono)] text-[11px]">
+                  space
+                </kbd>{' '}
+                to pause time
               </p>
             </header>
             <div className="flex flex-col items-end gap-3">

@@ -40,7 +40,7 @@ function DayNightLayer({ ctx }: { ctx: PluginContext }) {
       new BufferAttribute(new Float32Array((RING_STEPS + 1) * 3), 3),
     );
     geometry.setDrawRange(0, 0);
-    const material = new LineBasicMaterial({ color: '#fbbf24', transparent: true, opacity: 0.8 });
+    const material = new LineBasicMaterial({ color: '#C08A5A', transparent: true, opacity: 0.8 });
     const loop = new LineLoop(geometry, material);
     loop.frustumCulled = false;
     return loop;
@@ -50,7 +50,7 @@ function DayNightLayer({ ctx }: { ctx: PluginContext }) {
     () =>
       new Mesh(
         new SphereGeometry(60, 16, 12),
-        new MeshBasicMaterial({ color: '#ffd66b', blending: AdditiveBlending, transparent: true }),
+        new MeshBasicMaterial({ color: '#EFCFAC', blending: AdditiveBlending, transparent: true }),
       ),
     [],
   );
@@ -58,7 +58,7 @@ function DayNightLayer({ ctx }: { ctx: PluginContext }) {
     () =>
       new Mesh(
         new SphereGeometry(45, 16, 12),
-        new MeshBasicMaterial({ color: '#cbd5e1', transparent: true, opacity: 0.9 }),
+        new MeshBasicMaterial({ color: '#D5CFC0', transparent: true, opacity: 0.9 }),
       ),
     [],
   );
@@ -84,7 +84,7 @@ function DayNightLayer({ ctx }: { ctx: PluginContext }) {
     lastGenMs.current = now;
 
     const s = ctx.settings.get() as DayNightSettings;
-    (line.material as LineBasicMaterial).color = new Color(s.lineColor ?? '#fbbf24');
+    (line.material as LineBasicMaterial).color = new Color(s.lineColor ?? '#C08A5A');
 
     if (s.showTerminator !== false) {
       const ring = terminatorRing(now, RING_STEPS);

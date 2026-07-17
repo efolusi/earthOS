@@ -7,8 +7,8 @@ import { useEarth } from '@earthos/core/react';
 
 /**
  * Cmd/Ctrl+K search across every active layer's entity source (satellites by
- * name or NORAD id, quake locations, GeoJSON features) plus layer toggles.
- * Selecting an entity picks it and flies the camera there.
+ * name or NORAD id, quake locations, GeoJSON features). Selecting an entity
+ * picks it and flies the camera there.
  */
 export function CommandPalette() {
   const engine = useEarth();
@@ -77,6 +77,7 @@ export function CommandPalette() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          transition={{ duration: 0.16 }}
           className="pointer-events-auto fixed inset-0 z-50 flex items-start justify-center bg-black/50 pt-[18vh] backdrop-blur-sm"
           onClick={() => setOpen(false)}
         >
@@ -84,8 +85,8 @@ export function CommandPalette() {
             initial={{ scale: 0.97, y: -8 }}
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.97, opacity: 0 }}
-            transition={{ duration: 0.15 }}
-            className="w-[36rem] max-w-[92vw] overflow-hidden rounded-2xl border border-white/10 bg-slate-950/90 shadow-2xl backdrop-blur-xl"
+            transition={{ duration: 0.16, ease: [0.3, 1.04, 0.35, 1] }}
+            className="w-[36rem] max-w-[92vw] overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--surface-card)] shadow-[var(--shadow-pop)]"
             onClick={(e) => e.stopPropagation()}
           >
             <input
@@ -103,8 +104,8 @@ export function CommandPalette() {
                   void choose(hits[highlight]!);
                 }
               }}
-              placeholder="Search satellites, earthquakes, places... (ISS, Starlink-1234, Tokyo)"
-              className="w-full border-b border-white/10 bg-transparent px-5 py-4 text-sm text-slate-100 outline-none placeholder:text-slate-600"
+              placeholder="Search satellites, earthquakes, places (ISS, Starlink-1234, Tokyo)"
+              className="w-full border-b border-[var(--border-default)] bg-transparent px-5 py-4 text-[14px] text-[var(--text-primary)] outline-none placeholder:text-[var(--text-muted)]"
               data-testid="command-palette-input"
             />
             <ul className="max-h-80 overflow-y-auto py-1">
@@ -115,19 +116,21 @@ export function CommandPalette() {
                     onClick={() => void choose(hit)}
                     onMouseEnter={() => setHighlight(i)}
                     className={`flex w-full items-baseline justify-between gap-4 px-5 py-2 text-left ${
-                      i === highlight ? 'bg-sky-500/15' : ''
+                      i === highlight ? 'bg-[var(--accent-subtle)]' : ''
                     }`}
                   >
-                    <span className="truncate text-sm text-slate-100">{hit.label}</span>
-                    <span className="shrink-0 text-[11px] text-slate-500">
+                    <span className="truncate text-[14px] text-[var(--text-primary)]">
+                      {hit.label}
+                    </span>
+                    <span className="shrink-0 font-[family-name:var(--font-mono)] text-[11px] text-[var(--text-muted)]">
                       {hit.detail ?? hit.ref.layerId}
                     </span>
                   </button>
                 </li>
               ))}
               {query && hits.length === 0 ? (
-                <li className="px-5 py-6 text-center text-xs text-slate-600">
-                  No matches. Enable more layers to broaden search.
+                <li className="px-5 py-6 text-center text-[13px] text-[var(--text-muted)]">
+                  No matches yet. Enable more layers to broaden search.
                 </li>
               ) : null}
             </ul>

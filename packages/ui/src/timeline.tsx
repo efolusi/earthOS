@@ -40,7 +40,7 @@ export function Timeline() {
     <GlassPanel className="px-4 py-2.5">
       <div className="flex items-center gap-2">
         <IconButton label="Back 1 hour" onClick={() => engine.time.offsetBy(-3_600_000)}>
-          -1h
+          <span className="font-[family-name:var(--font-mono)]">-1h</span>
         </IconButton>
         <IconButton
           label={paused ? 'Play' : 'Pause'}
@@ -57,15 +57,15 @@ export function Timeline() {
           )}
         </IconButton>
         <IconButton label="Forward 1 hour" onClick={() => engine.time.offsetBy(3_600_000)}>
-          +1h
+          <span className="font-[family-name:var(--font-mono)]">+1h</span>
         </IconButton>
 
-        <div className="mx-1 h-5 w-px bg-white/10" />
+        <div className="mx-1 h-5 w-px bg-[var(--border-default)]" />
 
         <IconButton label="Slower" onClick={() => cycleRate(-1)}>
           −
         </IconButton>
-        <span className="w-16 text-center text-xs tabular-nums text-slate-200">
+        <span className="w-16 text-center font-[family-name:var(--font-mono)] text-[12px] text-[var(--text-primary)]">
           {timeCtl.live ? '1x live' : `${timeCtl.rate}x`}
         </span>
         <IconButton label="Faster" onClick={() => cycleRate(1)}>
@@ -79,9 +79,12 @@ export function Timeline() {
           rev
         </IconButton>
 
-        <div className="mx-1 h-5 w-px bg-white/10" />
+        <div className="mx-1 h-5 w-px bg-[var(--border-default)]" />
 
-        <span className="min-w-44 text-xs tabular-nums text-slate-300" data-testid="sim-clock">
+        <span
+          className="min-w-44 font-[family-name:var(--font-mono)] text-[12px] text-[var(--text-secondary)]"
+          data-testid="sim-clock"
+        >
           {formatUtc(nowMs)}
         </span>
         <IconButton
@@ -89,7 +92,7 @@ export function Timeline() {
           active={timeCtl.live}
           onClick={() => engine.time.resumeLive()}
         >
-          LIVE
+          Live
         </IconButton>
       </div>
     </GlassPanel>

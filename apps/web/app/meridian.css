@@ -1,0 +1,146 @@
+/*
+ * Meridian design tokens (Efolusi design system, MIT).
+ * Source of truth: the meridian repo /tokens. EarthOS runs the dark remap
+ * (html[data-theme="dark"]) because the HUD floats over space; the code
+ * surface stays fixed espresso per Meridian's rule.
+ */
+
+@font-face {
+  font-family: 'Bricolage Grotesque';
+  src: url('/fonts/BricolageGrotesque-Variable.ttf') format('truetype-variations');
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Figtree';
+  src: url('/fonts/Figtree-Variable.ttf') format('truetype-variations');
+  font-weight: 300 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Figtree';
+  src: url('/fonts/Figtree-Italic-Variable.ttf') format('truetype-variations');
+  font-weight: 300 900;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/JetBrainsMono-Variable.ttf') format('truetype-variations');
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Sand — warm neutrals */
+  --sand-25: #fcfbf9;
+  --sand-50: #faf9f6;
+  --sand-100: #f3f1eb;
+  --sand-200: #e7e3d9;
+  --sand-300: #d5cfc0;
+  --sand-400: #b4ab97;
+  --sand-500: #948a74;
+  --sand-600: #786e59;
+  --sand-700: #5e5545;
+  --sand-800: #443d32;
+  --sand-900: #2e2922;
+  --sand-950: #1e1a14;
+
+  /* Brand — cream to peach to caramel to cocoa, sampled from the owl mark */
+  --brand-50: #f8f4e6;
+  --brand-100: #f4e9d2;
+  --brand-200: #efcfac;
+  --brand-300: #dfb585;
+  --brand-400: #ce9c66;
+  --brand-500: #c08a5a;
+  --brand-600: #a0693c;
+  --brand-700: #7a4e2b;
+  --brand-800: #5c3a1f;
+  --brand-900: #482818;
+  --brand-950: #2c1709;
+
+  /* Status */
+  --success-600: #2f7a40;
+  --success-100: #ebf5ec;
+  --warning-600: #b45309;
+  --warning-100: #fdf3e0;
+  --danger-600: #c81e1e;
+  --danger-100: #fdeeec;
+
+  /* Semantic (light) */
+  --surface-page: var(--sand-50);
+  --surface-card: #ffffff;
+  --surface-sunken: var(--sand-100);
+  --surface-code: #14110b;
+  --text-code: #e8e3d9;
+  --text-primary: var(--sand-950);
+  --text-secondary: var(--sand-700);
+  --text-muted: #746a55;
+  --text-link: var(--brand-700);
+  --border-default: var(--sand-200);
+  --border-strong: var(--sand-300);
+  --accent: var(--brand-950);
+  --accent-subtle: var(--brand-50);
+  --accent-subtle-border: var(--brand-200);
+  --accent-contrast: #ffffff;
+  --focus-ring: 0 0 0 2px rgba(122, 78, 43, 0.45);
+
+  /* Effects */
+  --shadow-md: 0 4px 12px rgba(46, 41, 34, 0.08);
+  --shadow-pop: 0 16px 40px rgba(31, 26, 20, 0.18), 0 2px 8px rgba(31, 26, 20, 0.08);
+  --ease-spring: cubic-bezier(0.3, 1.04, 0.35, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 100ms;
+  --dur-med: 160ms;
+  --dur-slow: 240ms;
+
+  /* Type */
+  --font-display: 'Bricolage Grotesque', 'Figtree', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Figtree', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --tracking-display: -0.02em;
+  --tracking-wide: 0.06em;
+  --weight-display: 680;
+
+  /* Shape + density */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 999px;
+  --control-h-sm: 28px;
+  --control-h-md: 36px;
+}
+
+/* Dark theme — semantic remap only; ramps stay fixed */
+[data-theme='dark'] {
+  --surface-page: #191512;
+  --surface-card: #211c17;
+  --surface-sunken: #2a251e;
+  --text-primary: #f3efe7;
+  --text-secondary: #c9c0b2;
+  --text-muted: #9c9280;
+  --text-link: var(--brand-400);
+  --border-default: #332c24;
+  --border-strong: #453c31;
+  --accent: #f3efe7;
+  --accent-subtle: #2a2119;
+  --accent-subtle-border: #453728;
+  --accent-contrast: #1e1a14;
+  --success-600: #5fb86e;
+  --success-100: #1c2b1f;
+  --warning-600: #d9822b;
+  --warning-100: #2e2413;
+  --danger-600: #e85d4a;
+  --danger-100: #321b18;
+  --focus-ring: 0 0 0 2px rgba(206, 156, 102, 0.5);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
+  --shadow-pop: 0 16px 40px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme='dark'] ::selection {
+  background: #453728;
+}

@@ -30,24 +30,34 @@ function formatCoord(value: number, positive: string, negative: string): string 
   return `${Math.abs(value).toFixed(2)}°${hemi}`;
 }
 
-/** Camera readout + FPS. Camera state arrives at ~4 Hz from the controller. */
+/** Camera readout + FPS: mono numerals on a Meridian pill. */
 export function StatusBar({ attribution }: { attribution?: string }) {
   const camera = useEarthState((s) => s.camera);
   const fps = useFps();
 
   return (
-    <div className="pointer-events-auto flex items-center gap-4 rounded-full border border-white/10 bg-slate-950/60 px-4 py-1.5 text-[11px] tabular-nums text-slate-400 backdrop-blur-xl">
+    <div className="pointer-events-auto flex items-center gap-4 rounded-[var(--radius-full)] border border-[var(--border-default)] bg-[color-mix(in_srgb,var(--surface-card)_94%,transparent)] px-4 py-1.5 font-[family-name:var(--font-mono)] text-[12px] text-[var(--text-secondary)] shadow-[var(--shadow-md)] backdrop-blur-xl">
       <span data-testid="camera-readout">
         {formatCoord(camera.lat, 'N', 'S')} {formatCoord(camera.lon, 'E', 'W')}
       </span>
       <span>alt {Math.round(camera.altKm).toLocaleString()} km</span>
       <span
-        className={fps >= 50 ? 'text-emerald-400' : fps >= 25 ? 'text-amber-400' : 'text-rose-400'}
+        className={
+          fps >= 50
+            ? 'text-[var(--success-600)]'
+            : fps >= 25
+              ? 'text-[var(--warning-600)]'
+              : 'text-[var(--danger-600)]'
+        }
         data-testid="fps"
       >
         {fps} fps
       </span>
-      {attribution ? <span className="text-slate-600">{attribution}</span> : null}
+      {attribution ? (
+        <span className="font-[family-name:var(--font-sans)] text-[var(--text-muted)]">
+          {attribution}
+        </span>
+      ) : null}
     </div>
   );
 }
