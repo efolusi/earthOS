@@ -1,0 +1,17 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Root-level config so `npx wrangler deploy` works when the Cloudflare deploy
+  // command runs at the repo root (not `cd apps/web`). Points at the OpenNext
+  // bundle the build step produces in apps/web. Mirror apps/web/wrangler.jsonc.
+  "name": "earthos",
+  "main": "apps/web/.open-next/worker.js",
+  "compatibility_date": "2026-06-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": "apps/web/.open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true
+  }
+}
