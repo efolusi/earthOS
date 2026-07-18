@@ -81,7 +81,7 @@ function SatellitesLayer({ ctx }: { ctx: PluginContext }) {
     () =>
       new ExtrapolatedPointsLayer({
         capacity: CAPACITY,
-        palette: ['#CE9C66', '#EFCFAC'],
+        palette: ['#E3B34D', '#F0D28C'],
         maxExtrapolationSec: MAX_EXTRAPOLATION_SEC,
       }),
     [],

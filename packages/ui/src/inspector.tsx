@@ -53,7 +53,7 @@ export function Inspector() {
         </IconButton>
       }
     >
-      <div className="px-4 py-3" data-testid="inspector-body">
+      <div className="max-h-[40vh] overflow-y-auto px-4 py-3" data-testid="inspector-body">
         <p className="font-[family-name:var(--font-display)] text-[16px] font-semibold tracking-[var(--tracking-display)] text-[var(--text-primary)]">
           {info?.label ?? picked.entityId}
         </p>

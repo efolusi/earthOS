@@ -14,6 +14,7 @@ export default definePlugin({
     description: 'Umbra and penumbra of solar eclipses on the simulation clock',
     attribution: 'astronomy-engine ephemerides',
     icon: 'moon',
+    color: '#8A8FC7',
   },
   settings: defineSettings({
     version: 1,

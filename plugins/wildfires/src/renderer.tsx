@@ -18,7 +18,7 @@ import type { Wildfire, WildfireFeed } from './types';
 
 const CAPACITY = 5_000;
 /** fresh (<2d) / recent (<7d) / older — a fire-heat ramp, distinct from quakes. */
-const HEAT_PALETTE = ['#FF5A1F', '#FF8C1A', '#C1662E'];
+const HEAT_PALETTE = ['#FF8A1E', '#FFB454', '#C1662E'];
 const DAY_MS = 86_400_000;
 
 function heatIndex(ageMs: number): number {

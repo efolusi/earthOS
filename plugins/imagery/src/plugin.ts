@@ -16,6 +16,7 @@ export default definePlugin({
     description: 'Streamed high-resolution imagery tiles (zoom for detail)',
     attribution: 'Esri / EOX Sentinel-2',
     icon: 'globe',
+    color: '#5EAF9E',
   },
   settings,
   layer: { kind: 'tile', zOrder: 1 },

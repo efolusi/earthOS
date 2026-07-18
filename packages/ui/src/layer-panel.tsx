@@ -7,16 +7,10 @@ import { useEarth, useEarthState } from '@earthos/core/react';
 import { GlassPanel, IconButton, Toggle } from './panel';
 import { SettingsForm } from './settings-form';
 
-const STATUS_COLOR: Record<string, string> = {
-  active: 'bg-[var(--success-600)]',
-  loading: 'bg-[var(--warning-600)] animate-pulse',
-  error: 'bg-[var(--danger-600)]',
-  registered: 'bg-[var(--border-strong)]',
-};
-
 /**
  * The layer switchboard: one row per registered plugin with enable toggle,
- * status dot, attribution, and an expandable schema-driven settings form.
+ * a per-layer color swatch (matching what it draws on the globe), attribution,
+ * and an expandable schema-driven settings form.
  */
 export function LayerPanel({ plugins }: { plugins: EarthOSPlugin[] }) {
   const engine = useEarth();
@@ -58,32 +52,39 @@ export function LayerPanel({ plugins }: { plugins: EarthOSPlugin[] }) {
       }
     >
       {collapsed ? null : (
-      <ul className="max-h-[38vh] overflow-y-auto py-1 sm:max-h-[46vh]">
+      <ul className="max-h-[34vh] overflow-y-auto py-0.5 sm:max-h-[42vh]">
         {plugins.map((plugin) => {
           const layer = layers[plugin.id];
-          const enabled = layer?.status === 'active' || layer?.status === 'loading';
+          const status = layer?.status ?? 'registered';
+          const enabled = status === 'active' || status === 'loading';
           const isOpen = expanded === plugin.id;
           const ctx = engine.getContext(plugin.id);
+          const swatch = plugin.meta.color ?? 'var(--border-strong)';
           return (
             <li key={plugin.id} className="border-b border-[var(--border-default)] last:border-b-0">
-              <div className="flex items-center gap-3 px-4 py-2.5">
+              <div className="flex items-center gap-2.5 px-3.5 py-1.5">
                 <span
-                  className={`h-2 w-2 shrink-0 rounded-full ${STATUS_COLOR[layer?.status ?? 'registered']}`}
-                  title={layer?.error ?? layer?.status ?? 'registered'}
+                  className={`h-2.5 w-2.5 shrink-0 rounded-full ${status === 'loading' ? 'animate-pulse' : ''}`}
+                  style={{
+                    backgroundColor: status === 'error' ? 'var(--danger-600)' : swatch,
+                    opacity: enabled ? 1 : 0.3,
+                    boxShadow: status === 'active' ? `0 0 6px ${swatch}` : 'none',
+                  }}
+                  title={layer?.error ?? status}
                   data-testid={`layer-status-${plugin.id}`}
-                  data-status={layer?.status ?? 'registered'}
+                  data-status={status}
                 />
                 <button
                   type="button"
                   aria-expanded={isOpen}
                   aria-label={`${plugin.meta.name} settings`}
-                  className="flex min-w-0 flex-1 flex-col rounded-[var(--radius-sm)] text-left focus-visible:outline-none focus-visible:[box-shadow:var(--focus-ring)]"
+                  className="flex min-w-0 flex-1 flex-col rounded-[var(--radius-sm)] text-left leading-tight focus-visible:outline-none focus-visible:[box-shadow:var(--focus-ring)]"
                   onClick={() => setExpanded(isOpen ? null : plugin.id)}
                 >
-                  <span className="truncate text-[14px] font-medium text-[var(--text-primary)]">
+                  <span className="truncate text-[13px] font-medium text-[var(--text-primary)]">
                     {plugin.meta.name}
                   </span>
-                  <span className="truncate text-[12px] text-[var(--text-muted)]">
+                  <span className="truncate text-[11px] text-[var(--text-muted)]">
                     {plugin.meta.attribution ?? plugin.meta.description ?? plugin.meta.category}
                   </span>
                 </button>

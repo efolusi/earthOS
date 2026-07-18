@@ -10,6 +10,7 @@ export default definePlugin({
     description: 'Active tropical cyclones, intensity-scaled',
     attribution: 'NOAA NHC',
     icon: 'wind',
+    color: '#D57BF0',
   },
   settings,
   layer: { kind: 'scene', zOrder: 22 },

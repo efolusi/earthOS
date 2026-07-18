@@ -17,7 +17,7 @@ import type { Storm, StormFeed } from './types';
  * depressions. Deliberately NOT the red-orange seismic palette, so a storm is
  * never mistaken for an earthquake at a glance.
  */
-const PALETTE = ['#E15BD0', '#B57BE6', '#9A8AD8'];
+const PALETTE = ['#D57BF0', '#B57BE6', '#9A8AD8'];
 
 function paletteFor(storm: Storm): number {
   if (storm.classification.startsWith('HU') || storm.intensityKt >= 64) return 0;

@@ -10,6 +10,7 @@ export default definePlugin({
     description: 'Live seismic events, magnitude-scaled and depth-colored',
     attribution: 'USGS',
     icon: 'activity',
+    color: '#F0472E',
   },
   settings,
   layer: { kind: 'scene', zOrder: 20 },

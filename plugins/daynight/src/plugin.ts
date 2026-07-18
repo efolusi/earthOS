@@ -13,6 +13,7 @@ export default definePlugin({
     category: 'astronomy',
     description: 'Terminator line with subsolar and sublunar markers',
     icon: 'sun',
+    color: '#6C8BE0',
   },
   settings,
   layer: { kind: 'scene', zOrder: 5 },

@@ -10,6 +10,7 @@ export default definePlugin({
     description: 'Active fire events from NASA EONET',
     attribution: 'NASA EONET',
     icon: 'flame',
+    color: '#FF8A1E',
   },
   settings,
   layer: { kind: 'scene', zOrder: 22 },

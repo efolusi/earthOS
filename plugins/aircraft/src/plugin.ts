@@ -10,6 +10,7 @@ export default definePlugin({
     description: 'Live ADS-B traffic, dead-reckoned along track between polls',
     attribution: 'airplanes.live / OpenSky Network',
     icon: 'plane',
+    color: '#4FC3E8',
   },
   settings,
   layer: { kind: 'scene', zOrder: 15 },

@@ -19,6 +19,7 @@ export default definePlugin({
     description: 'Live satellite constellations propagated with SGP4',
     attribution: 'CelesTrak',
     icon: 'satellite',
+    color: '#E3B34D',
   },
   settings,
   layer: { kind: 'scene', zOrder: 10 },

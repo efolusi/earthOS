@@ -28,7 +28,7 @@ export const settings = defineSettings({
       default: 'starlink',
     }),
     pointSize: f.number({ label: 'Point size', min: 1, max: 10, default: 3, unit: 'px' }),
-    color: f.color({ label: 'Color', default: '#CE9C66' }),
+    color: f.color({ label: 'Color', default: '#E3B34D' }),
     showOrbit: f.boolean({
       label: 'Orbit line',
       description: 'Draw the orbit path of the selected satellite',

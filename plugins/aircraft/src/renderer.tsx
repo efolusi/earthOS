@@ -60,7 +60,7 @@ function AircraftLayer({ ctx }: { ctx: PluginContext }) {
         mu: 0,
         // Sky cyan, distinct from the gold satellite dots: aircraft own the
         // "in the atmosphere" hue, read clearly against land and ocean.
-        palette: ['#5EC8E6', '#B8ECF7'],
+        palette: ['#4FC3E8', '#B8ECF7'],
         shape: 'arrow',
       }),
     [],

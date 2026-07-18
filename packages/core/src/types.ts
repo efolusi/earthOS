@@ -219,6 +219,9 @@ export interface PluginMeta {
   /** Data source attribution shown in the UI, e.g. "CelesTrak". */
   attribution?: string;
   icon?: string;
+  /** Identity color (hex) shown as the layer's swatch in the panel and, for
+   *  point layers, matching what it draws on the globe. */
+  color?: string;
 }
 
 export const PLUGIN_API_VERSION = 1 as const;

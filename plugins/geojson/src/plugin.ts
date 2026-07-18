@@ -9,6 +9,7 @@ export default definePlugin({
     category: 'custom',
     description: 'Render any GeoJSON FeatureCollection on the globe',
     icon: 'map',
+    color: '#5FB86E',
   },
   settings,
   layer: { kind: 'scene', zOrder: 30 },

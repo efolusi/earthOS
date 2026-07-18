@@ -20,7 +20,7 @@ export const settings = defineSettings({
       default: 10,
     }),
     pointSize: f.number({ label: 'Point size', min: 2, max: 16, default: 7, unit: 'px' }),
-    color: f.color({ label: 'Color', default: '#FF7518' }),
+    color: f.color({ label: 'Color', default: '#FF8A1E' }),
     endpoint: f.text({
       label: 'Endpoint override',
       description: 'Custom EONET base URL (blank = direct)',
