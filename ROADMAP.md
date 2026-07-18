@@ -1,5 +1,11 @@
 # EarthOS Roadmap
 
+> Prioritized against the field in [docs/COMPETITIVE_ANALYSIS.md](docs/COMPETITIVE_ANALYSIS.md).
+> Highest-leverage next bets (impact ÷ effort): measurement tools (distance/area),
+> wildfire layer (NASA FIRMS), guided tour + featured views, KML/Shapefile import,
+> persistent watchlist + basemap picker, live GOES/Himawari cloud imagery, observer
+> pass prediction, richer aircraft panels, DEM terrain relief, and the mobile pass.
+
 ## Now (foundation, M0-M6)
 
 - [x] Monorepo, presets, CI, release pipeline
