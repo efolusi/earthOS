@@ -1,12 +1,14 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { createEarthEngine, type EarthOSPlugin } from '@earthos/core';
 import { EarthEngineProvider } from '@earthos/core/react';
 import { createDefaultCache } from '@earthos/providers';
 import { EarthCanvas } from '@earthos/globe';
 import { CommandPalette, HoverCard, Inspector, LayerPanel, StatusBar, Timeline } from '@earthos/ui';
 import { CaptureControls } from './CaptureControls';
+import { MeasureLayer, type MeasurePoint } from './MeasureLayer';
+import { MeasureControl } from './MeasureControl';
 import {
   applyPermalinkDynamics,
   isEmbed,
@@ -80,6 +82,14 @@ export function EarthApp() {
   }, []);
   const [ready, setReady] = useState(false);
   const [textures, setTextures] = useState(TEXTURES_2K);
+
+  // Measurement tool: great-circle path + spherical area, click-to-add.
+  const [measureActive, setMeasureActive] = useState(false);
+  const [measurePoints, setMeasurePoints] = useState<MeasurePoint[]>([]);
+  const addMeasurePoint = useCallback(
+    (lat: number, lon: number) => setMeasurePoints((p) => [...p, { lat, lon }]),
+    [],
+  );
 
   // Upgrade to the 8k set when the deployment fetched it.
   useEffect(() => {
@@ -183,7 +193,15 @@ export function EarthApp() {
           textures={textures}
           idleCinematicAfterS={embed ? 10 : 30}
           className="absolute inset-0"
-        />
+        >
+          {!embed ? (
+            <MeasureLayer
+              active={measureActive}
+              points={measurePoints}
+              onAddPoint={addMeasurePoint}
+            />
+          ) : null}
+        </EarthCanvas>
 
         {/* HUD overlay: pointer events pass through except on panels. */}
         <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-2 sm:p-4">
@@ -235,6 +253,13 @@ export function EarthApp() {
                   <StatusBar attribution="CelesTrak / airplanes.live / USGS / NASA imagery" />
                 </div>
                 <CaptureControls />
+                <MeasureControl
+                  active={measureActive}
+                  points={measurePoints}
+                  onToggle={() => setMeasureActive((a) => !a)}
+                  onUndo={() => setMeasurePoints((p) => p.slice(0, -1))}
+                  onClear={() => setMeasurePoints([])}
+                />
               </div>
               <div className="order-1 max-w-full overflow-x-auto sm:order-2">
                 <Timeline />
