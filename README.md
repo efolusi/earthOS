@@ -101,6 +101,7 @@ Disabled plugins cost zero bytes: `provider` and `renderer` are dynamic-import s
 | Hurricanes        | NOAA NHC                | active cyclones, violet, intensity-scaled                            |
 | Solar eclipse     | astronomy-engine        | umbra/penumbra on the simulation clock (try 2026-08-12 17:45 UTC)    |
 | Earthquakes       | USGS                    | red, magnitude-scaled, depth-colored                                 |
+| Wildfires         | NASA EONET              | orange fire-heat points, colored by recency                          |
 | Day / night       | computed                | terminator, subsolar and sublunar markers                            |
 | Custom GeoJSON    | your data               | points, lines, polygon outlines                                      |
 
