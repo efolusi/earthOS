@@ -38,7 +38,9 @@ Environment variables consumed by the compose file (all optional, all server-sid
 
 ## Textures
 
-2k textures are committed and served from `/public/textures` (NASA imagery, public domain). For higher fidelity, drop 4k/8k equirect replacements into the same paths or point the `textures` prop of `<Earth/>`/`EarthCanvas` at a CDN. Long-cache them (`Cache-Control: immutable`): filenames are stable.
+2k textures are committed and served from `/public/textures` (NASA imagery, public domain). Run `node scripts/fetch-hd-textures.mjs` to add the optional 8k set (Solar System Scope, CC BY 4.0, NASA-derived) under `/public/textures/full/`: the app detects it at boot and switches automatically, 16x sharper when zoomed. Long-cache all of them (`Cache-Control: immutable`): filenames are stable.
+
+Single equirect textures bottom out around a ~5 km texel even at 8k: street-level sharpness requires the tiled-imagery roadmap item (quadtree tiles with per-tile origins), not bigger single textures.
 
 ## SDK consumers
 

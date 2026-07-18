@@ -26,11 +26,19 @@ const PLUGINS: EarthOSPlugin[] = [
   geojsonPlugin,
 ];
 
-const TEXTURES = {
+const TEXTURES_2K = {
   day: '/textures/earth_atmos_2048.jpg',
   night: '/textures/earth_lights_2048.png',
   specular: '/textures/earth_specular_2048.jpg',
   clouds: '/textures/earth_clouds_1024.png',
+};
+
+/** Optional 8k set (scripts/fetch-hd-textures.mjs): 16x sharper when zoomed. */
+const TEXTURES_8K = {
+  day: '/textures/full/8k_earth_daymap.jpg',
+  night: '/textures/full/8k_earth_nightmap.jpg',
+  specular: '/textures/earth_specular_2048.jpg',
+  clouds: '/textures/full/8k_earth_clouds.jpg',
 };
 
 /** Layers switched on for first-time visitors. */
@@ -39,6 +47,20 @@ const DEFAULT_ENABLED = ['satellites', 'daynight'];
 export function EarthApp() {
   const engine = useMemo(() => createEarthEngine({ cache: createDefaultCache() }), []);
   const [ready, setReady] = useState(false);
+  const [textures, setTextures] = useState(TEXTURES_2K);
+
+  // Upgrade to the 8k set when the deployment fetched it.
+  useEffect(() => {
+    let cancelled = false;
+    void fetch(TEXTURES_8K.day, { method: 'HEAD' })
+      .then((res) => {
+        if (!cancelled && res.ok) setTextures(TEXTURES_8K);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Developer mode hook: dev builds always, production only behind ?dev.
   useEffect(() => {
@@ -102,7 +124,7 @@ export function EarthApp() {
   return (
     <EarthEngineProvider engine={engine}>
       <div className="relative h-screen w-screen overflow-hidden">
-        <EarthCanvas engine={engine} textures={TEXTURES} className="absolute inset-0" />
+        <EarthCanvas engine={engine} textures={textures} className="absolute inset-0" />
 
         {/* HUD overlay: pointer events pass through except on panels. */}
         <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-4">

@@ -20,7 +20,7 @@ export function loadTexture(url: string, srgb = true): Promise<Texture> {
   if (!promise) {
     promise = loader.loadAsync(url).then((tex) => {
       if (srgb) tex.colorSpace = SRGBColorSpace;
-      tex.anisotropy = 8;
+      tex.anisotropy = 16;
       return tex;
     });
     cache.set(url, promise);
