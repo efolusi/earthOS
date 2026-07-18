@@ -1,10 +1,15 @@
 /*
- * Meridian design tokens (Efolusi design system, MIT).
- * Source of truth: the meridian repo /tokens. EarthOS runs the dark remap
- * (html[data-theme="dark"]) because the HUD floats over space; the code
- * surface stays fixed espresso per Meridian's rule.
+ * Meridian design system — Efolusi (MIT).
+ * Design system: https://meridian.efolusi.com  ·  source: efolusi/meridian /tokens
+ *
+ * Vendored as the COMPLETE canonical token set (colors, effects, typography,
+ * spacing) so EarthOS stays visually identical to meridian.efolusi.com. Only
+ * two EarthOS-local adaptations: fonts are self-hosted from /fonts, and the
+ * dark theme adds black-based shadows (the HUD floats over space). Keep in
+ * sync with the meridian repo; do not hand-edit token values here.
  */
 
+/* Fonts — self-hosted (Meridian ships the same families). */
 @font-face {
   font-family: 'Bricolage Grotesque';
   src: url('/fonts/BricolageGrotesque-Variable.ttf') format('truetype-variations');
@@ -34,6 +39,7 @@
   font-display: swap;
 }
 
+/* ── colors ─────────────────────────────────────────────────────────── */
 :root {
   /* Sand — warm neutrals */
   --sand-25: #fcfbf9;
@@ -48,8 +54,7 @@
   --sand-800: #443d32;
   --sand-900: #2e2922;
   --sand-950: #1e1a14;
-
-  /* Brand — cream to peach to caramel to cocoa, sampled from the owl mark */
+  /* Brand — cream→peach→caramel→cocoa ramp sampled from the owl mark */
   --brand-50: #f8f4e6;
   --brand-100: #f4e9d2;
   --brand-200: #efcfac;
@@ -61,86 +66,188 @@
   --brand-800: #5c3a1f;
   --brand-900: #482818;
   --brand-950: #2c1709;
-
-  /* Status */
+  /* Named logo tones (aliases into the ramp) */
+  --cocoa-950: var(--brand-950);
+  --cocoa-900: #3a2012;
+  --cocoa-700: var(--brand-900);
+  --caramel-500: var(--brand-500);
+  --peach-200: var(--brand-200);
+  --cream-50: var(--brand-50);
+  /* Status — each 600 fg holds ≥4.5:1 on its 100 tint and on white */
   --success-600: #2f7a40;
   --success-100: #ebf5ec;
+  --success-300: #bfe0c6;
   --warning-600: #b45309;
   --warning-100: #fdf3e0;
+  --warning-300: #f3d9a8;
   --danger-600: #c81e1e;
+  --danger-700: #b91c1c;
   --danger-100: #fdeeec;
-
-  /* Semantic (light) */
+  --danger-300: #f5c6c0;
+  /* Semantic surfaces */
   --surface-page: var(--sand-50);
   --surface-card: #ffffff;
   --surface-sunken: var(--sand-100);
-  --surface-code: #14110b;
+  --surface-subtle: var(--sand-25);
+  --surface-inverse: var(--sand-950);
+  --surface-brand: var(--brand-900);
+  --surface-code: #14110b; /* fixed dark espresso in BOTH themes */
   --text-code: #e8e3d9;
+  --border-code: rgba(240, 235, 225, 0.09);
+  --overlay-scrim: rgba(31, 26, 20, 0.45);
+  --text-on-brand-muted: rgba(248, 244, 230, 0.75);
+  /* Semantic text */
   --text-primary: var(--sand-950);
   --text-secondary: var(--sand-700);
   --text-muted: #746a55;
+  --text-inverse: var(--sand-50);
   --text-link: var(--brand-700);
+  /* Borders */
   --border-default: var(--sand-200);
   --border-strong: var(--sand-300);
+  --border-inverse: rgba(250, 249, 246, 0.18);
+  /* Accent */
   --accent: var(--brand-950);
+  --accent-hover: #1d0e04;
+  --accent-active: #120801;
   --accent-subtle: var(--brand-50);
   --accent-subtle-border: var(--brand-200);
   --accent-contrast: #ffffff;
   --focus-ring: 0 0 0 2px rgba(122, 78, 43, 0.45);
-
-  /* Effects */
-  --shadow-md: 0 4px 12px rgba(46, 41, 34, 0.08);
-  --shadow-pop: 0 16px 40px rgba(31, 26, 20, 0.18), 0 2px 8px rgba(31, 26, 20, 0.08);
-  --ease-spring: cubic-bezier(0.3, 1.04, 0.35, 1);
-  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --dur-fast: 100ms;
-  --dur-med: 160ms;
-  --dur-slow: 240ms;
-
-  /* Type */
-  --font-display: 'Bricolage Grotesque', 'Figtree', ui-sans-serif, system-ui, sans-serif;
-  --font-sans: 'Figtree', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-  --tracking-display: -0.02em;
-  --tracking-wide: 0.06em;
-  --weight-display: 680;
-
-  /* Shape + density */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-  --radius-full: 999px;
-  --control-h-sm: 28px;
-  --control-h-md: 36px;
 }
 
-/* Dark theme — semantic remap only; ramps stay fixed */
+/* Dark theme — semantic remap only; ramps stay fixed. */
 [data-theme='dark'] {
   --surface-page: #191512;
   --surface-card: #211c17;
   --surface-sunken: #2a251e;
+  --surface-subtle: #1d1814;
+  --surface-inverse: var(--sand-50);
+  --surface-brand: var(--brand-950);
   --text-primary: #f3efe7;
   --text-secondary: #c9c0b2;
   --text-muted: #9c9280;
+  --text-inverse: var(--sand-950);
   --text-link: var(--brand-400);
   --border-default: #332c24;
   --border-strong: #453c31;
+  --border-inverse: rgba(30, 26, 20, 0.2);
   --accent: #f3efe7;
+  --accent-hover: #ffffff;
+  --accent-active: #d5cfc0;
   --accent-subtle: #2a2119;
   --accent-subtle-border: #453728;
   --accent-contrast: #1e1a14;
   --success-600: #5fb86e;
   --success-100: #1c2b1f;
-  --warning-600: #d9822b;
+  --success-300: #2e4a34;
   --warning-100: #2e2413;
-  --danger-600: #e85d4a;
+  --warning-300: #4a3a1d;
+  --warning-600: #d9822b;
   --danger-100: #321b18;
+  --danger-300: #54291f;
+  --danger-600: #e85d4a;
   --focus-ring: 0 0 0 2px rgba(206, 156, 102, 0.5);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
-  --shadow-pop: 0 16px 40px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
 }
-
 [data-theme='dark'] ::selection {
   background: #453728;
+}
+
+/* ── effects (shadows, elevation, motion) ───────────────────────────── */
+:root {
+  --shadow-xs: 0 1px 2px rgba(46, 41, 34, 0.05);
+  --shadow-sm: 0 1px 3px rgba(46, 41, 34, 0.07);
+  --shadow-md: 0 4px 12px rgba(46, 41, 34, 0.08);
+  --shadow-lg: 0 12px 28px rgba(46, 41, 34, 0.12);
+  --shadow-xl: 0 16px 40px rgba(31, 26, 20, 0.18), 0 2px 8px rgba(31, 26, 20, 0.08);
+  --shadow-pop: var(--shadow-xl);
+  --z-dropdown: 1000;
+  --z-sticky: 1100;
+  --z-overlay: 1200;
+  --z-modal: 1300;
+  --z-popover: 1400;
+  --z-toast: 1500;
+  --z-tooltip: 1600;
+  --ease-spring: cubic-bezier(0.3, 1.04, 0.35, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 100ms;
+  --dur-med: 160ms;
+  --dur-slow: 240ms;
+}
+/* EarthOS: black-based shadows read better over the space backdrop. */
+[data-theme='dark'] {
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.45);
+  --shadow-xl: 0 16px 40px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-pop: var(--shadow-xl);
+}
+
+/* ── typography ─────────────────────────────────────────────────────── */
+:root {
+  --font-display: 'Bricolage Grotesque', 'Figtree', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Figtree', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --text-2xs: 11px;
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-md: 14px;
+  --text-lg: 16px;
+  --text-xl: 18px;
+  --text-2xl: 21px;
+  --text-3xl: 26px;
+  --text-4xl: 34px;
+  --text-5xl: 44px;
+  --text-6xl: 60px;
+  --text-7xl: 76px;
+  --leading-tight: 1.05;
+  --leading-snug: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.65;
+  --tracking-display: -0.02em;
+  --tracking-tight: -0.01em;
+  --tracking-wide: 0.06em;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-display: 680;
+}
+
+/* ── spacing, shape, density ────────────────────────────────────────── */
+:root {
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+  --space-32: 128px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 999px;
+  --container-max: 1200px;
+  --container-text: 720px;
+  --control-h-sm: 28px;
+  --control-h-md: 36px;
+  --control-h-lg: 44px;
+  --table-pad-y: 12px;
+  --table-pad-x: 16px;
+}
+/* Compact density — data-heavy views */
+[data-density='compact'] {
+  --control-h-sm: 24px;
+  --control-h-md: 30px;
+  --control-h-lg: 38px;
+  --table-pad-y: 7px;
+  --table-pad-x: 12px;
 }
