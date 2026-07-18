@@ -1,6 +1,6 @@
 import { exposeWorker, transferResult } from '@earthos/core';
-import { minutesSinceEpoch, parseOmm, propagateFast, type SatRec } from '@earthos/gis';
-import type { InitPayload, InitResult, PropagatePayload } from './types';
+import { minutesSinceEpoch, parseOmm, parseTle, propagateFast, type SatRec } from '@earthos/gis';
+import { isTleRecord, type InitPayload, type InitResult, type PropagatePayload } from './types';
 
 /**
  * One shard of the catalog lives in this worker forever (static sharding: no
@@ -15,8 +15,10 @@ exposeWorker({
   init(payload: InitPayload): InitResult {
     satrecs = payload.records.map((record) => {
       try {
-        // parseOmm accepts the CelesTrak GP JSON shape (CCSDS OMM).
-        return parseOmm(record as never);
+        // CelesTrak GP JSON (CCSDS OMM) or raw TLE lines: both become satrecs.
+        return isTleRecord(record)
+          ? parseTle(record.TLE_LINE1, record.TLE_LINE2)
+          : parseOmm(record as never);
       } catch {
         return null;
       }

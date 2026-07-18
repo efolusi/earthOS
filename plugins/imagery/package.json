@@ -1,7 +1,7 @@
 {
-  "name": "earthos",
+  "name": "@earthos/plugin-imagery",
   "version": "0.1.0",
-  "description": "A real-time interactive 3D digital twin of Earth: composable globe, satellites, earthquakes, and your own data as plugins",
+  "description": "EarthOS streamed imagery tiles: web-mercator quadtree draped on the globe",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
@@ -9,6 +9,22 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./plugin": {
+      "types": "./dist/plugin.d.ts",
+      "import": "./dist/plugin.js"
+    },
+    "./provider": {
+      "types": "./dist/provider.d.ts",
+      "import": "./dist/provider.js"
+    },
+    "./renderer": {
+      "types": "./dist/renderer.d.ts",
+      "import": "./dist/renderer.js"
+    },
+    "./settings": {
+      "types": "./dist/settings.d.ts",
+      "import": "./dist/settings.js"
     }
   },
   "files": [
@@ -17,39 +33,29 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "lint": "eslint src",
+    "lint": "eslint src tests",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
   "dependencies": {
     "@earthos/core": "workspace:*",
     "@earthos/gis": "workspace:*",
-    "@earthos/globe": "workspace:*",
-    "@earthos/plugin-aircraft": "workspace:*",
-    "@earthos/plugin-daynight": "workspace:*",
-    "@earthos/plugin-earthquakes": "workspace:*",
-    "@earthos/plugin-geojson": "workspace:*",
-    "@earthos/plugin-imagery": "workspace:*",
-    "@earthos/plugin-satellites": "workspace:*",
-    "@earthos/providers": "workspace:*",
-    "@earthos/ui": "workspace:*"
+    "@earthos/providers": "workspace:*"
   },
   "peerDependencies": {
-    "@react-three/drei": "^9.0.0 || ^10.0.0",
+    "@earthos/globe": "workspace:^",
     "@react-three/fiber": "^9.0.0",
-    "framer-motion": "^11.0.0 || ^12.0.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
     "three": ">=0.170.0"
   },
   "devDependencies": {
     "@earthos/config": "workspace:*",
+    "@earthos/globe": "workspace:*",
     "@earthos/testing": "workspace:*",
-    "@react-three/drei": "^10.7.0",
     "@react-three/fiber": "^9.6.0",
     "@types/react": "^19.0.0",
+    "@types/three": "^0.185.0",
     "eslint": "^9.17.0",
-    "framer-motion": "^12.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "three": "^0.185.0",
@@ -61,12 +67,9 @@
     "access": "public"
   },
   "keywords": [
-    "earth",
-    "globe",
-    "3d",
-    "satellites",
-    "three",
-    "react-three-fiber",
-    "digital-twin"
+    "earthos-plugin",
+    "imagery",
+    "tiles",
+    "quadtree"
   ]
 }

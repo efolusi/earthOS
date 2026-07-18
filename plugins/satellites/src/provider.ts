@@ -1,8 +1,16 @@
 import type { PluginContext, ProviderInstance } from '@earthos/core';
 import { DataProvider, type FetchIO } from '@earthos/providers';
-import type { OmmRecord, SatCatalog } from './types';
+import type { CatalogRecord, OmmRecord, SatCatalog } from './types';
 
 const DEFAULT_ENDPOINT = 'https://celestrak.org/NORAD/elements/gp.php';
+const TLE_API_ENDPOINT = 'https://tle.ivanstanojevic.me/api/tle';
+
+interface TleApiMember {
+  satelliteId: number;
+  name: string;
+  line1: string;
+  line2: string;
+}
 
 export class CelestrakGpProvider extends DataProvider<SatCatalog> {
   readonly id = 'celestrak-gp';
@@ -19,11 +27,15 @@ export class CelestrakGpProvider extends DataProvider<SatCatalog> {
   }
 
   protected override cacheKey(settings: Record<string, unknown>): string {
+    const source = typeof settings.dataSource === 'string' ? settings.dataSource : 'celestrak';
     const group = typeof settings.group === 'string' ? settings.group : 'starlink';
-    return `latest:${group}`;
+    return source === 'tleapi' ? 'latest:tleapi' : `latest:${group}`;
   }
 
   async fetch(io: FetchIO): Promise<SatCatalog> {
+    const source =
+      typeof io.settings.dataSource === 'string' ? io.settings.dataSource : 'celestrak';
+    if (source === 'tleapi') return this.fetchTleApi(io);
     const group = typeof io.settings.group === 'string' ? io.settings.group : 'starlink';
     const endpoint =
       typeof io.settings.endpoint === 'string' && io.settings.endpoint.length > 0
@@ -41,6 +53,41 @@ export class CelestrakGpProvider extends DataProvider<SatCatalog> {
       (r) => typeof r?.NORAD_CAT_ID === 'number' && typeof r?.EPOCH === 'string',
     );
     return records.slice(0, max);
+  }
+
+  /**
+   * Fallback catalog: the public TLE API (paginated, popularity-sorted so
+   * ISS/Starlink/GPS arrive first). Keyless, CORS-open, independent of
+   * CelesTrak's rate limiting.
+   */
+  private async fetchTleApi(io: FetchIO): Promise<SatCatalog> {
+    const endpoint =
+      typeof io.settings.endpoint === 'string' && io.settings.endpoint.startsWith('http')
+        ? io.settings.endpoint
+        : TLE_API_ENDPOINT;
+    const max = typeof io.settings.maxSatellites === 'number' ? io.settings.maxSatellites : 15_000;
+    const pageSize = 100;
+    const pages = Math.min(Math.ceil(Math.min(max, 1000) / pageSize), 10);
+    const records: CatalogRecord[] = [];
+    for (let page = 1; page <= pages; page++) {
+      const res = await io.fetch(
+        `${endpoint}?page=${page}&page-size=${pageSize}&sort=popularity&sort-dir=desc`,
+      );
+      const json = (await res.json()) as { member?: TleApiMember[] };
+      const members = json.member ?? [];
+      for (const m of members) {
+        if (typeof m.satelliteId !== 'number' || !m.line1 || !m.line2) continue;
+        records.push({
+          OBJECT_NAME: m.name ?? String(m.satelliteId),
+          NORAD_CAT_ID: m.satelliteId,
+          TLE_LINE1: m.line1,
+          TLE_LINE2: m.line2,
+        });
+      }
+      if (members.length < pageSize) break;
+    }
+    if (records.length === 0) throw new Error('TLE API returned no members');
+    return records;
   }
 }
 

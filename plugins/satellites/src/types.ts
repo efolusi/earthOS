@@ -22,14 +22,28 @@ export interface OmmRecord {
   MEAN_MOTION_DDOT: number;
 }
 
-export type SatCatalog = OmmRecord[];
+/** Minimal record from TLE-line sources (tle.ivanstanojevic.me and kin). */
+export interface TleRecord {
+  OBJECT_NAME: string;
+  NORAD_CAT_ID: number;
+  TLE_LINE1: string;
+  TLE_LINE2: string;
+}
+
+export type CatalogRecord = OmmRecord | TleRecord;
+
+export function isTleRecord(record: CatalogRecord): record is TleRecord {
+  return 'TLE_LINE1' in record;
+}
+
+export type SatCatalog = CatalogRecord[];
 
 export type CatalogGroup =
   'starlink' | 'active' | 'stations' | 'gps-ops' | 'oneweb' | 'geo' | 'weather' | 'science';
 
 /** Worker protocol. */
 export interface InitPayload {
-  records: OmmRecord[];
+  records: CatalogRecord[];
 }
 
 export interface InitResult {

@@ -41,6 +41,9 @@ importers:
       '@earthos/plugin-geojson':
         specifier: workspace:*
         version: link:../../plugins/geojson
+      '@earthos/plugin-imagery':
+        specifier: workspace:*
+        version: link:../../plugins/imagery
       '@earthos/plugin-satellites':
         specifier: workspace:*
         version: link:../../plugins/satellites
@@ -671,6 +674,58 @@ importers:
         specifier: ^3.0.0
         version: 3.2.7(@types/node@22.20.1)(jiti@2.7.0)(jsdom@25.0.1)(lightningcss@1.32.0)
 
+  plugins/imagery:
+    dependencies:
+      '@earthos/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@earthos/gis':
+        specifier: workspace:*
+        version: link:../../packages/gis
+      '@earthos/providers':
+        specifier: workspace:*
+        version: link:../../packages/providers
+    devDependencies:
+      '@earthos/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      '@earthos/globe':
+        specifier: workspace:*
+        version: link:../../packages/globe
+      '@earthos/testing':
+        specifier: workspace:*
+        version: link:../../packages/testing
+      '@react-three/fiber':
+        specifier: ^9.6.0
+        version: 9.6.1(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(three@0.185.1)
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.17
+      '@types/three':
+        specifier: ^0.185.0
+        version: 0.185.1
+      eslint:
+        specifier: ^9.17.0
+        version: 9.39.5(jiti@2.7.0)
+      react:
+        specifier: ^19.0.0
+        version: 19.2.7
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.7(react@19.2.7)
+      three:
+        specifier: ^0.185.0
+        version: 0.185.1
+      tsup:
+        specifier: ^8.3.5
+        version: 8.5.1(jiti@2.7.0)(postcss@8.5.19)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+      vitest:
+        specifier: ^3.0.0
+        version: 3.2.7(@types/node@22.20.1)(jiti@2.7.0)(jsdom@25.0.1)(lightningcss@1.32.0)
+
   plugins/satellites:
     dependencies:
       '@earthos/core':
@@ -758,6 +813,9 @@ importers:
       '@earthos/plugin-geojson':
         specifier: workspace:*
         version: link:../../plugins/geojson
+      '@earthos/plugin-imagery':
+        specifier: workspace:*
+        version: link:../../plugins/imagery
       '@earthos/plugin-satellites':
         specifier: workspace:*
         version: link:../../plugins/satellites

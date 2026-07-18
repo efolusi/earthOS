@@ -3,6 +3,15 @@ import { defineSettings, f } from '@earthos/core';
 export const settings = defineSettings({
   version: 1,
   fields: {
+    dataSource: f.select({
+      label: 'Data source',
+      description: 'CelesTrak groups, or the public TLE API when CelesTrak is unreachable',
+      options: [
+        { value: 'celestrak', label: 'CelesTrak (grouped catalog)' },
+        { value: 'tleapi', label: 'TLE API (popular satellites)' },
+      ],
+      default: 'celestrak',
+    }),
     group: f.select({
       label: 'Catalog group',
       description: 'Which CelesTrak GP group to load',

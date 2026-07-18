@@ -8,6 +8,7 @@ import { EarthCanvas } from '@earthos/globe';
 import { CommandPalette, HoverCard, Inspector, LayerPanel, StatusBar, Timeline } from '@earthos/ui';
 
 import satellitesPlugin from '@earthos/plugin-satellites';
+import imageryPlugin from '@earthos/plugin-imagery';
 import aircraftPlugin from '@earthos/plugin-aircraft';
 import earthquakesPlugin from '@earthos/plugin-earthquakes';
 import daynightPlugin from '@earthos/plugin-daynight';
@@ -19,6 +20,7 @@ import geojsonPlugin from '@earthos/plugin-geojson';
  * the app is exactly one line here.
  */
 const PLUGINS: EarthOSPlugin[] = [
+  imageryPlugin,
   satellitesPlugin,
   aircraftPlugin,
   daynightPlugin,
@@ -42,7 +44,7 @@ const TEXTURES_8K = {
 };
 
 /** Layers switched on for first-time visitors. */
-const DEFAULT_ENABLED = ['satellites', 'daynight'];
+const DEFAULT_ENABLED = ['imagery', 'satellites', 'daynight'];
 
 export function EarthApp() {
   const engine = useMemo(() => createEarthEngine({ cache: createDefaultCache() }), []);
@@ -90,9 +92,11 @@ export function EarthApp() {
       if (cancelled) return;
       setReady(true);
       const prefs = engine.store.getState().layerPrefs;
-      const hasPrefs = Object.keys(prefs).length > 0;
       for (const plugin of PLUGINS) {
-        const wanted = hasPrefs ? prefs[plugin.id]?.visible : DEFAULT_ENABLED.includes(plugin.id);
+        // Per-layer: an explicit preference wins; layers the visitor has
+        // never seen (e.g. newly shipped defaults) fall back to the default.
+        const pref = prefs[plugin.id];
+        const wanted = pref ? pref.visible : DEFAULT_ENABLED.includes(plugin.id);
         if (wanted) void engine.activate(plugin.id).catch(() => undefined);
       }
     })();

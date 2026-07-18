@@ -21,6 +21,7 @@
     "@earthos/plugin-daynight": "workspace:*",
     "@earthos/plugin-earthquakes": "workspace:*",
     "@earthos/plugin-geojson": "workspace:*",
+    "@earthos/plugin-imagery": "workspace:*",
     "@earthos/plugin-satellites": "workspace:*",
     "@earthos/providers": "workspace:*",
     "@earthos/ui": "workspace:*",

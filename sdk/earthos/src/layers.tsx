@@ -97,3 +97,19 @@ export function LayerAircraft({ enabled, ...settings }: LayerAircraftProps) {
     />
   );
 }
+
+export interface LayerImageryProps extends CommonLayerProps {
+  source?: 'esri' | 'eox' | 'custom';
+  template?: string;
+  maxZoom?: number;
+}
+
+export function LayerImagery({ enabled, ...settings }: LayerImageryProps) {
+  return (
+    <Layer
+      manifest={() => import('@earthos/plugin-imagery')}
+      enabled={enabled}
+      settings={settings}
+    />
+  );
+}

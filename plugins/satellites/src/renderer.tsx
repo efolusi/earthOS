@@ -21,11 +21,18 @@ import {
   eciToScene,
   orbitalPeriodMin,
   parseOmm,
+  parseTle,
   propagateTeme,
   satGeodetic,
   type SatRec,
 } from '@earthos/gis';
-import type { InitResult, OmmRecord, PropagateResult, SatCatalog } from './types';
+import {
+  isTleRecord,
+  type CatalogRecord,
+  type InitResult,
+  type PropagateResult,
+  type SatCatalog,
+} from './types';
 
 const SHARD_SIZE = 5_000;
 const CAPACITY = 30_000;
@@ -212,7 +219,7 @@ function SatellitesLayer({ ctx }: { ctx: PluginContext }) {
           ...(geo ? { position: { lat: geo.latDeg, lon: geo.lonDeg, altKm: geo.altKm } } : {}),
           properties: {
             'NORAD ID': record.NORAD_CAT_ID,
-            'Intl designator': record.OBJECT_ID,
+            'Intl designator': isTleRecord(record) ? null : record.OBJECT_ID,
             ...(geo
               ? {
                   'Altitude (km)': Math.round(geo.altKm),
@@ -222,7 +229,7 @@ function SatellitesLayer({ ctx }: { ctx: PluginContext }) {
                 }
               : {}),
             'Period (min)': satrec ? Number(orbitalPeriodMin(satrec).toFixed(1)) : null,
-            'TLE epoch': record.EPOCH,
+            'TLE epoch': isTleRecord(record) ? null : record.EPOCH,
           },
         };
       },
@@ -240,11 +247,13 @@ function SatellitesLayer({ ctx }: { ctx: PluginContext }) {
       return true;
     });
 
-    function getSatrec(id: string, record: OmmRecord): SatRec | null {
+    function getSatrec(id: string, record: CatalogRecord): SatRec | null {
       let satrec = satrecCache.current.get(id);
       if (satrec === undefined) {
         try {
-          satrec = parseOmm(record as never);
+          satrec = isTleRecord(record)
+            ? parseTle(record.TLE_LINE1, record.TLE_LINE2)
+            : parseOmm(record as never);
         } catch {
           satrec = null;
         }
@@ -290,7 +299,9 @@ function SatellitesLayer({ ctx }: { ctx: PluginContext }) {
             let satrec = satrecCache.current.get(picked.entityId);
             if (satrec === undefined) {
               try {
-                satrec = parseOmm(record as never);
+                satrec = isTleRecord(record)
+                  ? parseTle(record.TLE_LINE1, record.TLE_LINE2)
+                  : parseOmm(record as never);
               } catch {
                 satrec = null;
               }
