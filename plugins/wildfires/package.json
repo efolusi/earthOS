@@ -1,0 +1,84 @@
+{
+  "name": "@earthos/plugin-wildfires",
+  "version": "0.1.0",
+  "description": "EarthOS wildfires layer: NASA EONET active fire events",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./plugin": {
+      "types": "./dist/plugin.d.ts",
+      "import": "./dist/plugin.js"
+    },
+    "./provider": {
+      "types": "./dist/provider.d.ts",
+      "import": "./dist/provider.js"
+    },
+    "./renderer": {
+      "types": "./dist/renderer.d.ts",
+      "import": "./dist/renderer.js"
+    },
+    "./settings": {
+      "types": "./dist/settings.d.ts",
+      "import": "./dist/settings.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint src tests",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@earthos/core": "workspace:*",
+    "@earthos/gis": "workspace:*",
+    "@earthos/providers": "workspace:*"
+  },
+  "peerDependencies": {
+    "@earthos/globe": "workspace:^",
+    "@react-three/fiber": "^9.0.0",
+    "react": "^19.0.0",
+    "three": ">=0.170.0"
+  },
+  "devDependencies": {
+    "@earthos/config": "workspace:*",
+    "@earthos/globe": "workspace:*",
+    "@earthos/testing": "workspace:*",
+    "@react-three/fiber": "^9.6.0",
+    "@types/react": "^19.0.0",
+    "@types/three": "^0.185.0",
+    "eslint": "^9.17.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "three": "^0.185.0",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "vitest": "^3.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "earthos-plugin",
+    "wildfires",
+    "nasa",
+    "eonet"
+  ],
+  "homepage": "https://earthos.efolusi.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/efolusi/earthOS.git",
+    "directory": "plugins/wildfires"
+  },
+  "bugs": {
+    "url": "https://github.com/efolusi/earthOS/issues"
+  }
+}

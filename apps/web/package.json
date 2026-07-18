@@ -28,6 +28,7 @@
     "@earthos/plugin-hurricanes": "workspace:*",
     "@earthos/plugin-imagery": "workspace:*",
     "@earthos/plugin-satellites": "workspace:*",
+    "@earthos/plugin-wildfires": "workspace:*",
     "@earthos/providers": "workspace:*",
     "@earthos/ui": "workspace:*",
     "@react-three/drei": "^10.7.0",

@@ -21,6 +21,7 @@ import eclipsePlugin from '@earthos/plugin-eclipse';
 import hurricanesPlugin from '@earthos/plugin-hurricanes';
 import aircraftPlugin from '@earthos/plugin-aircraft';
 import earthquakesPlugin from '@earthos/plugin-earthquakes';
+import wildfiresPlugin from '@earthos/plugin-wildfires';
 import daynightPlugin from '@earthos/plugin-daynight';
 import geojsonPlugin from '@earthos/plugin-geojson';
 
@@ -37,6 +38,7 @@ const PLUGINS: EarthOSPlugin[] = [
   eclipsePlugin,
   hurricanesPlugin,
   earthquakesPlugin,
+  wildfiresPlugin,
   geojsonPlugin,
 ];
 
