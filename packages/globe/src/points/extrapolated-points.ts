@@ -86,7 +86,6 @@ void main() {
 `;
 
 const FRAG = /* glsl */ `
-precision mediump float;
 uniform float uShape;
 varying vec3 vColor;
 varying float vHighlight;
