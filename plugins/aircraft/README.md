@@ -10,7 +10,7 @@ Live air traffic for EarthOS: ADS-B state vectors polled every ~60 s and rendere
 
 Extrapolation is clamped to ±5 minutes around the feed epoch: scrubbing the timeline far from now freezes the traffic picture instead of inventing straight-line ghost flights (a unified sim-time data contract is on the roadmap).
 
-Click an aircraft for callsign, country, altitude (ft), speed (kt), heading, and vertical rate; search by callsign or ICAO 24-bit address; the follow camera tracks the dead-reckoned position.
+Click an aircraft for callsign, country of registry (from the ICAO 24-bit address when the source omits it), airframe, altitude (ft), speed (kt), heading, and vertical rate; search by callsign or ICAO 24-bit address; the follow camera tracks the dead-reckoned position.
 
 ## Settings
 

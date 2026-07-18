@@ -2,8 +2,14 @@
 export interface AircraftState {
   icao24: string;
   callsign: string;
-  /** origin country (OpenSky) or airframe description (ADS-B v2) */
+  /**
+   * Source-provided country of registry (OpenSky's origin_country). '' for
+   * sources that carry none (ADS-B v2); callers derive it from `icao24` at
+   * display time so the derivable value is not stored on every record.
+   */
   country: string;
+  /** airframe description, e.g. "BOEING 737 MAX 8" (ADS-B v2 only; '' otherwise) */
+  airframe: string;
   lon: number;
   lat: number;
   /** barometric (fallback geometric) altitude, meters */

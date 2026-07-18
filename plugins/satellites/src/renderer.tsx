@@ -219,6 +219,7 @@ function SatellitesLayer({ ctx }: { ctx: PluginContext }) {
           ...(geo ? { position: { lat: geo.latDeg, lon: geo.lonDeg, altKm: geo.altKm } } : {}),
           properties: {
             'NORAD ID': record.NORAD_CAT_ID,
+            Country: record.country ?? null,
             'Intl designator': isTleRecord(record) ? null : record.OBJECT_ID,
             ...(geo
               ? {

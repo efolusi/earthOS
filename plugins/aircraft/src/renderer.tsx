@@ -14,6 +14,7 @@ import {
   useEarthFixed,
 } from '@earthos/globe';
 import { enuVelocityToScene, geodeticToScene } from '@earthos/gis';
+import { icaoHexToCountry } from './icao-country';
 import type { AircraftFeed, AircraftState } from './types';
 
 const CAPACITY = 30_000;
@@ -139,7 +140,7 @@ function AircraftLayer({ ctx }: { ctx: PluginContext }) {
             hits.push({
               ref: { layerId: ctx.pluginId, entityId: a.icao24 },
               label: a.callsign || a.icao24.toUpperCase(),
-              detail: a.country,
+              detail: a.country || icaoHexToCountry(a.icao24) || a.airframe,
               score: a.callsign.toLowerCase().startsWith(q) ? 0.85 : 0.55,
             });
             if (hits.length >= limit) break;
@@ -157,8 +158,8 @@ function AircraftLayer({ ctx }: { ctx: PluginContext }) {
           properties: {
             Callsign: a.callsign || null,
             'ICAO 24': a.icao24.toUpperCase(),
-            // country of registry (OpenSky) or airframe type (ADS-B v2)
-            Details: a.country || null,
+            Country: a.country || icaoHexToCountry(a.icao24) || null,
+            Airframe: a.airframe || null,
             'Altitude (ft)': Math.round(a.altM * 3.28084),
             'Speed (kt)': Math.round(a.velocityMs * 1.94384),
             'Heading (deg)': Math.round(a.trackDeg),

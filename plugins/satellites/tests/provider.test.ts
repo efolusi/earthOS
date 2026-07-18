@@ -71,6 +71,30 @@ describe('CelestrakGpProvider', () => {
     provider.stop();
   });
 
+  it('joins SATCAT OWNER onto the catalog as a readable country', async () => {
+    const fetchSpy = vi.fn(async (url: string | URL | Request) => {
+      const u = String(url);
+      if (u.includes('satcat/records.php')) {
+        expect(u).toContain('GROUP=stations');
+        return new Response(
+          JSON.stringify([{ NORAD_CAT_ID: 25544, OWNER: 'ISS' }, { NORAD_CAT_ID: 48274, OWNER: 'PRC' }]),
+          { status: 200 },
+        );
+      }
+      return new Response(JSON.stringify([ISS_OMM]), { status: 200 });
+    });
+    vi.stubGlobal('fetch', fetchSpy);
+
+    const provider = new CelestrakGpProvider();
+    const snaps: Array<{ state: string; data: OmmRecord[] | null }> = [];
+    await provider.start(makeIO({ group: 'stations' }), (s) => snaps.push(s as never));
+    await vi.waitFor(() => {
+      expect(snaps.at(-1)!.state).toBe('ready');
+      expect(snaps.at(-1)!.data![0]!.country).toBe('International Space Station');
+    });
+    provider.stop();
+  });
+
   it('honors the endpoint override and the maxSatellites cap', async () => {
     const many = Array.from({ length: 50 }, (_, i) => ({
       ...ISS_OMM,

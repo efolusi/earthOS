@@ -20,6 +20,8 @@ export interface OmmRecord {
   BSTAR: number;
   MEAN_MOTION_DOT: number;
   MEAN_MOTION_DDOT: number;
+  /** Owner/country of registry, joined from SATCAT (not in the GP feed itself). */
+  country?: string;
 }
 
 /** Minimal record from TLE-line sources (tle.ivanstanojevic.me and kin). */
@@ -28,6 +30,8 @@ export interface TleRecord {
   NORAD_CAT_ID: number;
   TLE_LINE1: string;
   TLE_LINE2: string;
+  /** Owner/country of registry, joined from SATCAT when available. */
+  country?: string;
 }
 
 export type CatalogRecord = OmmRecord | TleRecord;

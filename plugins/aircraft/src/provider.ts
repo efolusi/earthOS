@@ -24,7 +24,9 @@ export function parseState(raw: Array<string | number | boolean | null>): Aircra
   return {
     icao24,
     callsign: typeof raw[1] === 'string' ? raw[1].trim() : '',
-    country: typeof raw[2] === 'string' ? raw[2] : '',
+    // OpenSky ships origin_country directly; keep it as the source value.
+    country: typeof raw[2] === 'string' ? raw[2].trim() : '',
+    airframe: '',
     lon,
     lat,
     altM: baroAlt ?? geoAlt ?? 0,
@@ -46,7 +48,9 @@ export function parseAdsbV2(ac: AdsbV2Aircraft, snapshotSec: number): AircraftSt
   return {
     icao24: ac.hex,
     callsign: typeof ac.flight === 'string' ? ac.flight.trim() : '',
-    country: ac.desc ?? ac.t ?? '',
+    // ADS-B v2 carries no country; it is derived from icao24 at display time.
+    country: '',
+    airframe: ac.desc ?? ac.t ?? '',
     lon: ac.lon,
     lat: ac.lat,
     altM: onGround ? 0 : altFt * FT_TO_M,

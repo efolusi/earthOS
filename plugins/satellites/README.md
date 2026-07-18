@@ -19,6 +19,7 @@ import { Earth, Layer } from 'earthos';
 - `renderer.tsx` feeds batches into `ExtrapolatedPointsLayer` (from `@earthos/globe`): the vertex shader extrapolates `p + v·dt - ½μp/|p|³·dt²` per frame, so the main thread pays one uniform write per frame. Shards refresh when their batch is ~15 sim-seconds old.
 - Click picking runs the same extrapolation math on the CPU, so hits match pixels.
 - Selecting a satellite draws its full orbit (193 SGP4 samples over ±½ period) and exposes live altitude/speed/position to the inspector; the follow camera tracks it via the globe tracker registry.
+- The GP element sets carry no ownership, so country of registry is joined best-effort from CelesTrak SATCAT (`OWNER`) by NORAD id: one extra request per group, cached with the catalog, silently skipped when a custom endpoint/proxy is set or SATCAT is unreachable.
 
 ## Settings
 

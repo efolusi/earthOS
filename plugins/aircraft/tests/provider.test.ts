@@ -95,7 +95,9 @@ describe('parseAdsbV2', () => {
     )!;
     expect(s.icao24).toBe('4cac24');
     expect(s.callsign).toBe('RYR94EE');
-    expect(s.country).toBe('BOEING 737 MAX 8');
+    // ADS-B v2 has no country; it is left blank and derived from icao24 on display.
+    expect(s.country).toBe('');
+    expect(s.airframe).toBe('BOEING 737 MAX 8');
     expect(s.altM).toBeCloseTo(38000 * 0.3048, 3);
     expect(s.velocityMs).toBeCloseTo(462.2 * 0.514444, 3);
     expect(s.verticalRateMs).toBeCloseTo(-640 * 0.00508, 3);
