@@ -12,8 +12,12 @@ import {
 import { geodeticToScene } from '@earthos/gis';
 import type { Storm, StormFeed } from './types';
 
-/** danger for hurricanes, warning for storms, sand for depressions */
-const PALETTE = ['#E85D4A', '#D9822B', '#9C9280'];
+/**
+ * Storm-intensity ramp in a distinct violet family: hurricanes / storms /
+ * depressions. Deliberately NOT the red-orange seismic palette, so a storm is
+ * never mistaken for an earthquake at a glance.
+ */
+const PALETTE = ['#E15BD0', '#B57BE6', '#9A8AD8'];
 
 function paletteFor(storm: Storm): number {
   if (storm.classification.startsWith('HU') || storm.intensityKt >= 64) return 0;
@@ -52,7 +56,9 @@ function HurricanesLayer({ ctx }: { ctx: PluginContext }) {
     layer.writeBatch({ posVel, count: storms.length, t0Ms: ctx.time.now(), offset: 0 });
     layer.setCount(storms.length);
     storms.forEach((storm, i) => {
-      layer.setMeta(i, paletteFor(storm), Math.min(16, 8 + storm.intensityKt / 12), true);
+      // Storms are few and matter: draw them large so a single active system
+      // reads as a storm, not an anonymous dot. Scales with intensity.
+      layer.setMeta(i, paletteFor(storm), Math.min(30, 15 + storm.intensityKt / 8), true);
     });
 
     const disposeTracker = registerTracker(ctx, (entityId, _epoch, out) => {

@@ -13,7 +13,7 @@ export const settings = defineSettings({
       default: 'airplaneslive',
     }),
     pointSize: f.number({ label: 'Point size', min: 1, max: 12, default: 6, unit: 'px' }),
-    color: f.color({ label: 'Color', default: '#DFB585' }),
+    color: f.color({ label: 'Color', default: '#5EC8E6' }),
     showOnGround: f.boolean({
       label: 'Include grounded aircraft',
       default: false,

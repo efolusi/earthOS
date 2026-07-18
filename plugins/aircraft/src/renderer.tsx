@@ -58,7 +58,9 @@ function AircraftLayer({ ctx }: { ctx: PluginContext }) {
       new ExtrapolatedPointsLayer({
         capacity: CAPACITY,
         mu: 0,
-        palette: ['#DFB585', '#EFCFAC'],
+        // Sky cyan, distinct from the gold satellite dots: aircraft own the
+        // "in the atmosphere" hue, read clearly against land and ocean.
+        palette: ['#5EC8E6', '#B8ECF7'],
         shape: 'arrow',
       }),
     [],
