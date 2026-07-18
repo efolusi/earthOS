@@ -117,22 +117,23 @@ describe('CelestrakGpProvider', () => {
     provider.stop();
   });
 
-  it('falls back to the TLE API when CelesTrak is unreachable', async () => {
+  it('falls back to a dense TLE-API constellation search when CelesTrak is unreachable', async () => {
+    // A member on each of the first two pages; totalItems drives how many pages
+    // the dense loader requests (250 -> 3 pages).
+    const member = (id: number) => ({
+      satelliteId: id,
+      name: `STARLINK-${id}`,
+      line1: `1 ${id}U 20001A   24001.00000000  .00001000  00000-0  10000-3 0  9990`,
+      line2: `2 ${id}  53.0000 100.0000 0001000  90.0000 270.0000 15.06000000100000`,
+    });
     const fetchSpy = vi.fn(async (url: string | URL | Request) => {
       const u = String(url);
       if (u.includes('celestrak.org')) throw new TypeError('fetch failed');
       expect(u).toContain('https://tle.ivanstanojevic.me/api/tle');
+      expect(u).toContain('search=starlink'); // fallback searches the constellation
+      const page = Number(new URL(u).searchParams.get('page'));
       return new Response(
-        JSON.stringify({
-          member: [
-            {
-              satelliteId: 25544,
-              name: 'ISS (ZARYA)',
-              line1: '1 25544U 98067A   24001.00000000  .00016717  00000-0  30777-3 0  9990',
-              line2: '2 25544  51.6416 339.5000 0004257  98.0000 262.0000 15.49564479430000',
-            },
-          ],
-        }),
+        JSON.stringify({ totalItems: 250, member: page <= 2 ? [member(page)] : [] }),
         { status: 200 },
       );
     });
@@ -143,7 +144,8 @@ describe('CelestrakGpProvider', () => {
     await provider.start(makeIO({ group: 'starlink' }), (s) => snaps.push(s as never));
     await vi.waitFor(() => {
       expect(snaps.at(-1)!.state).toBe('ready');
-      expect(snaps.at(-1)!.data).toHaveLength(1);
+      // Two populated pages (3rd is empty), proving multi-page dense loading.
+      expect(snaps.at(-1)!.data).toHaveLength(2);
     });
     provider.stop();
   });

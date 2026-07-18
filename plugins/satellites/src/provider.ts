@@ -21,6 +21,28 @@ interface TleApiMember {
   line2: string;
 }
 
+interface TleApiPage {
+  totalItems?: number;
+  member?: TleApiMember[];
+}
+
+/**
+ * Map a CelesTrak group to a TLE-API name search, so the fallback loads the
+ * SAME constellation densely (a full Starlink shell, ~12k objects) instead of
+ * a 1,000-satellite popularity sample mixing LEO/MEO/GEO into a sparse scatter.
+ */
+const GROUP_SEARCH: Record<string, string> = {
+  starlink: 'starlink',
+  oneweb: 'oneweb',
+  'gps-ops': 'gps',
+  stations: 'iss',
+};
+const TLE_PAGE_SIZE = 100;
+/** Cap the dense fallback so a cold load stays a few seconds, not minutes. */
+const TLE_DENSE_CAP = 8000;
+/** Concurrent page requests: dense but polite to a free API. */
+const TLE_BATCH = 6;
+
 export class CelestrakGpProvider extends DataProvider<SatCatalog> {
   readonly id = 'celestrak-gp';
 
@@ -103,9 +125,12 @@ export class CelestrakGpProvider extends DataProvider<SatCatalog> {
   }
 
   /**
-   * Fallback catalog: the public TLE API (paginated, popularity-sorted so
-   * ISS/Starlink/GPS arrive first). Keyless, CORS-open, independent of
-   * CelesTrak's rate limiting.
+   * Fallback catalog: the public TLE API (keyless, CORS-open, independent of
+   * CelesTrak's per-IP rate limiting). For a named group it searches that
+   * constellation and pages through the full set in parallel, so Starlink is a
+   * dense ~thousands-strong shell — not a 1,000-satellite popularity sample
+   * that mixes in GEO/GPS and reads as a sparse scatter. Unnamed groups keep
+   * the popularity ordering.
    */
   private async fetchTleApi(io: FetchIO): Promise<SatCatalog> {
     const endpoint =
@@ -113,28 +138,52 @@ export class CelestrakGpProvider extends DataProvider<SatCatalog> {
         ? io.settings.endpoint
         : TLE_API_ENDPOINT;
     const max = typeof io.settings.maxSatellites === 'number' ? io.settings.maxSatellites : 15_000;
-    const pageSize = 100;
-    const pages = Math.min(Math.ceil(Math.min(max, 1000) / pageSize), 10);
+    const group = typeof io.settings.group === 'string' ? io.settings.group : 'starlink';
+    const search = GROUP_SEARCH[group];
+
+    const query = (page: number) =>
+      search
+        ? `${endpoint}?search=${encodeURIComponent(search)}&page=${page}&page-size=${TLE_PAGE_SIZE}`
+        : `${endpoint}?page=${page}&page-size=${TLE_PAGE_SIZE}&sort=popularity&sort-dir=desc`;
+
+    // First page also tells us how many there are (totalItems).
+    const first = (await (await io.fetch(query(1))).json()) as TleApiPage;
     const records: CatalogRecord[] = [];
-    for (let page = 1; page <= pages; page++) {
-      const res = await io.fetch(
-        `${endpoint}?page=${page}&page-size=${pageSize}&sort=popularity&sort-dir=desc`,
-      );
-      const json = (await res.json()) as { member?: TleApiMember[] };
-      const members = json.member ?? [];
-      for (const m of members) {
-        if (typeof m.satelliteId !== 'number' || !m.line1 || !m.line2) continue;
-        records.push({
-          OBJECT_NAME: m.name ?? String(m.satelliteId),
-          NORAD_CAT_ID: m.satelliteId,
-          TLE_LINE1: m.line1,
-          TLE_LINE2: m.line2,
-        });
+    pushMembers(records, first.member);
+
+    const wanted = Math.min(max, search ? TLE_DENSE_CAP : 1_000, first.totalItems ?? 1_000);
+    const pages = Math.ceil(wanted / TLE_PAGE_SIZE);
+
+    // Remaining pages in parallel batches; tolerate a failed page (rate limit)
+    // rather than discarding the whole dense catalog.
+    for (let start = 2; start <= pages && !io.signal.aborted; start += TLE_BATCH) {
+      const batch: Promise<TleApiMember[] | null>[] = [];
+      for (let p = start; p < start + TLE_BATCH && p <= pages; p++) {
+        batch.push(
+          io
+            .fetch(query(p))
+            .then((res) => res.json() as Promise<TleApiPage>)
+            .then((json) => json.member ?? [])
+            .catch(() => null),
+        );
       }
-      if (members.length < pageSize) break;
+      for (const members of await Promise.all(batch)) pushMembers(records, members);
     }
+
     if (records.length === 0) throw new Error('TLE API returned no members');
-    return records;
+    return records.slice(0, max);
+  }
+}
+
+function pushMembers(out: CatalogRecord[], members: TleApiMember[] | null | undefined): void {
+  for (const m of members ?? []) {
+    if (typeof m.satelliteId !== 'number' || !m.line1 || !m.line2) continue;
+    out.push({
+      OBJECT_NAME: m.name ?? String(m.satelliteId),
+      NORAD_CAT_ID: m.satelliteId,
+      TLE_LINE1: m.line1,
+      TLE_LINE2: m.line2,
+    });
   }
 }
 
