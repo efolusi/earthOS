@@ -20,10 +20,16 @@ import {
   type TileId,
 } from './quadtree';
 
-/** Grid resolution per tile mesh (curved quad). */
-const GRID = 8;
+/**
+ * Grid resolution per tile mesh (curved quad). Must be fine enough that a
+ * coarse tile's chord sag stays under its drape altitude, or the flat facets
+ * dip below the base globe and it pokes through as a hexagonal pattern. A
+ * z=3 tile spans 45°; at 16 segments each chord sags ~1.9 km, well under the
+ * ~4.75 km drape (was 8 segments → ~7.6 km sag, deeper than the drape).
+ */
+const GRID = 16;
 /** Tile drape altitude; deeper zooms sit higher so children cover parents. */
-const BASE_ALT_KM = 4;
+const BASE_ALT_KM = 5;
 const ALT_PER_ZOOM_KM = 0.25;
 const MAX_CACHED_TILES = 220;
 const MAX_CONCURRENT_FETCHES = 8;
