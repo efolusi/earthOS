@@ -7,6 +7,8 @@ export interface PickSource {
   meta: Float32Array; // stride 4; meta[i*4+2] < 0.5 means hidden
   count: number;
   mu: number;
+  /** clamp |nowSec - t0| to match the shader's uMaxDt; unbounded if omitted */
+  maxDtSec?: number;
 }
 
 /**
@@ -27,6 +29,7 @@ export function pickExtrapolated(
   occlusionRadiusKm = EARTH_OCCLUSION_RADIUS_KM,
 ): number {
   const { position, vel, t0, meta, count, mu } = src;
+  const maxDt = src.maxDtSec ?? 1e9;
   const tan2 = Math.tan(tolRad) ** 2;
   const occ2 = occlusionRadiusKm * occlusionRadiusKm;
   const [ox, oy, oz] = origin;
@@ -38,7 +41,8 @@ export function pickExtrapolated(
   for (let i = 0; i < count; i++) {
     if (meta[i * 4 + 2]! < 0.5) continue;
     const b = i * 3;
-    const dt = nowSec - t0[i]!;
+    // Mirror the shader's clamp so clicks match the drawn (frozen) position.
+    const dt = Math.min(Math.max(nowSec - t0[i]!, -maxDt), maxDt);
     let px = position[b]!;
     let py = position[b + 1]!;
     let pz = position[b + 2]!;

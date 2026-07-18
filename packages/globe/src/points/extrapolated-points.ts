@@ -33,13 +33,19 @@ uniform float uOcclusionRadius;
 uniform float uPixelRatio;
 uniform float uShape; // 0 = dot, 1 = heading arrow
 uniform float uAspect;
+uniform float uMaxDt; // clamp |uNow - aT0|: Taylor extrapolation diverges past it
 uniform vec3 uPalette[8];
 varying vec3 vColor;
 varying float vHighlight;
 varying float vAngle;
 
 void main() {
-  float dt = uNow - aT0;
+  // Bound the extrapolation window. At extreme time rates the sim clock races
+  // ahead of the worker's next snapshot; without this clamp the 2nd-order
+  // Taylor term flings orbital points off on tangents (an expanding halo).
+  // Clamped, each point freezes on-orbit at its last-good position until the
+  // next batch arrives, then snaps forward. Symmetric so reverse time matches.
+  float dt = clamp(uNow - aT0, -uMaxDt, uMaxDt);
   vec3 p = position + aVel * dt;
   if (uMu > 0.0) {
     float r2 = dot(position, position);
@@ -131,6 +137,12 @@ export interface ExtrapolatedPointsOptions {
   pixelRatio?: number;
   /** 'arrow' rotates a dart glyph along the motion direction (aircraft). */
   shape?: 'dot' | 'arrow';
+  /**
+   * Max |sim - epoch| seconds the Taylor extrapolation is trusted. Beyond it
+   * points freeze on their last-good arc instead of diverging at high time
+   * rates. Default effectively unbounded; orbital layers should set ~120 s.
+   */
+  maxExtrapolationSec?: number;
 }
 
 export interface BatchView {
@@ -160,10 +172,13 @@ export class ExtrapolatedPointsLayer {
   private epochBaseMs: number | null = null;
   private count = 0;
   private readonly mu: number;
+  private readonly maxDtSec: number;
 
   constructor(opts: ExtrapolatedPointsOptions) {
     this.capacity = opts.capacity;
     this.mu = opts.mu ?? MU_EARTH;
+    // 1e9 s (~32 years) is an effective no-op, preserving unbounded layers.
+    this.maxDtSec = opts.maxExtrapolationSec ?? 1e9;
     this.position = new Float32Array(opts.capacity * 3);
     this.vel = new Float32Array(opts.capacity * 3);
     this.t0 = new Float32Array(opts.capacity);
@@ -198,6 +213,7 @@ export class ExtrapolatedPointsLayer {
         uPixelRatio: { value: opts.pixelRatio ?? 1 },
         uShape: { value: opts.shape === 'arrow' ? 1 : 0 },
         uAspect: { value: 1 },
+        uMaxDt: { value: this.maxDtSec },
         uPalette: { value: palette },
       },
       transparent: true,
@@ -333,6 +349,7 @@ export class ExtrapolatedPointsLayer {
     meta: Float32Array;
     count: number;
     mu: number;
+    maxDtSec: number;
   } {
     return {
       position: this.position,
@@ -341,6 +358,7 @@ export class ExtrapolatedPointsLayer {
       meta: this.meta,
       count: this.count,
       mu: this.mu,
+      maxDtSec: this.maxDtSec,
     };
   }
 

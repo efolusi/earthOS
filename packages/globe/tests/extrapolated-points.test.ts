@@ -158,6 +158,53 @@ describe('pickExtrapolated', () => {
   });
 });
 
+describe('extrapolation clamp (uMaxDt / maxDtSec)', () => {
+  it('exposes the configured clamp through views(), unbounded by default', () => {
+    expect(makeLayer().views().maxDtSec).toBe(1e9);
+    const clamped = new ExtrapolatedPointsLayer({
+      capacity: 4,
+      mu: 0,
+      maxExtrapolationSec: 120,
+    });
+    expect(clamped.views().maxDtSec).toBe(120);
+  });
+
+  it('freezes picking at the clamp so a far-future sim time still hits on-arc', () => {
+    // mu = 0: pure straight-line so the frozen position is exact to reason about.
+    const layer = new ExtrapolatedPointsLayer({ capacity: 4, mu: 0, maxExtrapolationSec: 120 });
+    // Object at (7000,0,0) drifting +Y at 1 km/s. At t0+120 s it sits at y=120;
+    // clamped, it stays there no matter how far the sim clock runs.
+    const posVel = new Float32Array([7000, 0, 0, 0, 1, 0]);
+    layer.writeBatch({ posVel, count: 1, t0Ms: 0, offset: 0 });
+    layer.setCount(1);
+    layer.fillMeta(0, 1, 0, 3);
+    layer.updateTime(3_600_000); // 3600 s ahead: unclamped would be at y=3600
+
+    const v = layer.views();
+    const origin: [number, number, number] = [20_000, 0, 0];
+    const tol = pickToleranceRad(8, 1080, 50);
+    // Aiming at the clamped position (y=120) hits.
+    expect(pickExtrapolated(v, layer.nowSec, origin, norm([7000 - 20_000, 120, 0]), tol)).toBe(0);
+    // Aiming where the UNCLAMPED extrapolation would have flung it misses.
+    expect(pickExtrapolated(v, layer.nowSec, origin, norm([7000 - 20_000, 3600, 0]), tol)).toBe(-1);
+  });
+
+  it('clamp is symmetric for reverse time', () => {
+    const layer = new ExtrapolatedPointsLayer({ capacity: 4, mu: 0, maxExtrapolationSec: 120 });
+    const posVel = new Float32Array([7000, 0, 0, 0, 1, 0]);
+    layer.writeBatch({ posVel, count: 1, t0Ms: 1_000_000, offset: 0 });
+    layer.setCount(1);
+    layer.fillMeta(0, 1, 0, 3);
+    layer.updateTime(1_000_000 - 3_600_000); // 3600 s in the past
+
+    const v = layer.views();
+    const origin: [number, number, number] = [20_000, 0, 0];
+    const tol = pickToleranceRad(8, 1080, 50);
+    // Frozen at y = -120 (not -3600).
+    expect(pickExtrapolated(v, layer.nowSec, origin, norm([7000 - 20_000, -120, 0]), tol)).toBe(0);
+  });
+});
+
 function norm(v: [number, number, number]): [number, number, number] {
   const l = Math.hypot(...v);
   return [v[0] / l, v[1] / l, v[2] / l];

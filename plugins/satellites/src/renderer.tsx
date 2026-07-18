@@ -39,7 +39,14 @@ const CAPACITY = 30_000;
 /** Refresh a shard when its batch is older than this much SIM time. */
 const REFRESH_SIM_MS = 15_000;
 /** Wall-clock floor per shard so extreme time rates cannot flood workers. */
-const MIN_WALL_REFRESH_MS = 400;
+const MIN_WALL_REFRESH_MS = 200;
+/**
+ * Trust the GPU's Taylor extrapolation for at most this much sim time. A LEO
+ * orbit (ω≈1.1e-3 rad/s) drifts <3 km over 120 s; past ~a quarter period the
+ * quadratic term diverges outward. Beyond the clamp, points hold on-orbit
+ * until the next worker snapshot lands (fine motion at ≤~300×, stepped above).
+ */
+const MAX_EXTRAPOLATION_SEC = 120;
 const ORBIT_SAMPLES = 193;
 const HOVER_INTERVAL_MS = 50;
 
@@ -75,6 +82,7 @@ function SatellitesLayer({ ctx }: { ctx: PluginContext }) {
       new ExtrapolatedPointsLayer({
         capacity: CAPACITY,
         palette: ['#CE9C66', '#EFCFAC'],
+        maxExtrapolationSec: MAX_EXTRAPOLATION_SEC,
       }),
     [],
   );
@@ -236,13 +244,21 @@ function SatellitesLayer({ ctx }: { ctx: PluginContext }) {
       },
     });
 
-    // Follow-camera tracker.
+    // Follow-camera + selection-reticle tracker. Match the GPU dot: it draws
+    // the Taylor extrapolation from its shard's batch epoch, clamped to
+    // ±MAX_EXTRAPOLATION_SEC. Evaluate SGP4 at that same clamped instant so
+    // the reticle and follow camera stay glued to the drawn dot at high time
+    // rates instead of floating ahead on the true (unclamped) orbit.
     const disposeTracker = registerTracker(ctx, (entityId, epochMs, out) => {
       const idx = idToIndex.current.get(entityId);
       if (idx === undefined) return false;
       const satrec = getSatrec(entityId, records[idx]!);
       if (!satrec) return false;
-      const state = propagateTeme(satrec, epochMs);
+      const shard = shardsRef.current[Math.floor(idx / SHARD_SIZE)];
+      const ref = shard && Number.isFinite(shard.t0SimMs) ? shard.t0SimMs : epochMs;
+      const clampMs = MAX_EXTRAPOLATION_SEC * 1000;
+      const evalMs = Math.min(Math.max(epochMs, ref - clampMs), ref + clampMs);
+      const state = propagateTeme(satrec, evalMs);
       if (!state) return false;
       eciToScene(state.position[0], state.position[1], state.position[2], out);
       return true;
