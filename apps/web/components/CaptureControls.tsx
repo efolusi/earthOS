@@ -5,7 +5,8 @@ import { useEarth } from '@earthos/core/react';
 import { GlassPanel, IconButton } from '@earthos/ui';
 import { buildPermalink } from './permalink';
 
-const ATTRIBUTION = 'EarthOS · open-source digital twin · imagery: Esri/NASA · data: CelesTrak/OpenSky/USGS';
+const ATTRIBUTION =
+  'EarthOS · open-source digital twin · imagery: Esri/NASA · data: CelesTrak/OpenSky/USGS';
 
 /** Screenshot, clip recording, and copy-link: every viewer is a publisher. */
 export function CaptureControls() {
@@ -82,13 +83,25 @@ export function CaptureControls() {
           {copied ? 'Copied' : 'Share'}
         </IconButton>
         <IconButton label="Save screenshot" onClick={screenshot}>
-          <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden>
+          <svg
+            width="13"
+            height="13"
+            viewBox="0 0 14 14"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.4"
+            aria-hidden
+          >
             <rect x="1" y="3.5" width="12" height="9" rx="1.5" />
             <circle cx="7" cy="8" r="2.6" />
             <path d="M4.5 3.5L5.6 1.5h2.8l1.1 2" />
           </svg>
         </IconButton>
-        <IconButton label={recording ? 'Stop recording' : 'Record clip'} onClick={toggleRecord} active={recording}>
+        <IconButton
+          label={recording ? 'Stop recording' : 'Record clip'}
+          onClick={toggleRecord}
+          active={recording}
+        >
           <span
             className={`inline-block h-2.5 w-2.5 rounded-full ${recording ? 'animate-pulse bg-[var(--danger-600)]' : 'bg-[var(--text-secondary)]'}`}
           />

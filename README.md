@@ -93,16 +93,16 @@ Disabled plugins cost zero bytes: `provider` and `renderer` are dynamic-import s
 
 ## Layers shipped today
 
-| Layer | Source | Notes |
-|---|---|---|
-| Satellite imagery | Esri / EOX Sentinel-2 | streamed web-mercator quadtree, zoom for detail |
-| Satellites | CelesTrak / TLE API | 10k+ objects, SGP4 in workers, orbit lines, follow camera |
-| Aircraft | OpenSky Network | live ADS-B, heading arrows, dead-reckoned between polls |
-| Hurricanes | NOAA NHC | active cyclones, intensity-scaled |
-| Solar eclipse | astronomy-engine | umbra/penumbra on the simulation clock (try 2026-08-12 17:45 UTC) |
-| Earthquakes | USGS | magnitude-scaled, depth-colored |
-| Day / night | computed | terminator, subsolar and sublunar markers |
-| Custom GeoJSON | your data | points, lines, polygon outlines |
+| Layer             | Source                | Notes                                                             |
+| ----------------- | --------------------- | ----------------------------------------------------------------- |
+| Satellite imagery | Esri / EOX Sentinel-2 | streamed web-mercator quadtree, zoom for detail                   |
+| Satellites        | CelesTrak / TLE API   | 10k+ objects, SGP4 in workers, orbit lines, follow camera         |
+| Aircraft          | OpenSky Network       | live ADS-B, heading arrows, dead-reckoned between polls           |
+| Hurricanes        | NOAA NHC              | active cyclones, intensity-scaled                                 |
+| Solar eclipse     | astronomy-engine      | umbra/penumbra on the simulation clock (try 2026-08-12 17:45 UTC) |
+| Earthquakes       | USGS                  | magnitude-scaled, depth-colored                                   |
+| Day / night       | computed              | terminator, subsolar and sublunar markers                         |
+| Custom GeoJSON    | your data             | points, lines, polygon outlines                                   |
 
 Shareable permalinks encode camera, time, layers, and selection; `?embed` serves a chrome-free iframe with a postMessage API. See [ROADMAP.md](ROADMAP.md) for what's next (ships, wind, aurora, terrain, analytics).
 

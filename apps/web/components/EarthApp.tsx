@@ -186,7 +186,10 @@ export function EarthApp() {
         <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-4">
           {embed ? (
             <div className="flex items-start justify-between">
-              <span className="font-[family-name:var(--font-display)] text-[14px] text-[var(--text-secondary)]" style={{ fontWeight: 680 }}>
+              <span
+                className="font-[family-name:var(--font-display)] text-[14px] text-[var(--text-secondary)]"
+                style={{ fontWeight: 680 }}
+              >
                 Earth<span className="text-[var(--brand-400)]">OS</span>
               </span>
               <span className="text-[10px] text-[var(--text-muted)]">
@@ -195,41 +198,41 @@ export function EarthApp() {
             </div>
           ) : null}
           {!embed ? (
-          <div className="flex items-start justify-between gap-4">
-            <header className="pointer-events-auto select-none">
-              <h1
-                className="font-[family-name:var(--font-display)] text-[21px] tracking-[var(--tracking-display)] text-[var(--text-primary)]"
-                style={{ fontWeight: 680 }}
-              >
-                Earth<span className="text-[var(--brand-400)]">OS</span>
-              </h1>
-              <p className="text-[12px] text-[var(--text-muted)]">
-                Press{' '}
-                <kbd className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-sunken)] px-1 font-[family-name:var(--font-mono)] text-[11px]">
-                  ⌘K
-                </kbd>{' '}
-                to search,{' '}
-                <kbd className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-sunken)] px-1 font-[family-name:var(--font-mono)] text-[11px]">
-                  space
-                </kbd>{' '}
-                to pause time
-              </p>
-            </header>
-            <div className="flex flex-col items-end gap-3">
-              {ready ? <LayerPanel plugins={PLUGINS} /> : null}
-              <Inspector />
+            <div className="flex items-start justify-between gap-4">
+              <header className="pointer-events-auto select-none">
+                <h1
+                  className="font-[family-name:var(--font-display)] text-[21px] tracking-[var(--tracking-display)] text-[var(--text-primary)]"
+                  style={{ fontWeight: 680 }}
+                >
+                  Earth<span className="text-[var(--brand-400)]">OS</span>
+                </h1>
+                <p className="text-[12px] text-[var(--text-muted)]">
+                  Press{' '}
+                  <kbd className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-sunken)] px-1 font-[family-name:var(--font-mono)] text-[11px]">
+                    ⌘K
+                  </kbd>{' '}
+                  to search,{' '}
+                  <kbd className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-sunken)] px-1 font-[family-name:var(--font-mono)] text-[11px]">
+                    space
+                  </kbd>{' '}
+                  to pause time
+                </p>
+              </header>
+              <div className="flex flex-col items-end gap-3">
+                {ready ? <LayerPanel plugins={PLUGINS} /> : null}
+                <Inspector />
+              </div>
             </div>
-          </div>
           ) : null}
 
           {!embed ? (
-          <div className="flex items-end justify-between gap-4">
-            <div className="flex items-end gap-3">
-              <StatusBar attribution="CelesTrak / OpenSky / USGS / NASA imagery" />
-              <CaptureControls />
+            <div className="flex items-end justify-between gap-4">
+              <div className="flex items-end gap-3">
+                <StatusBar attribution="CelesTrak / OpenSky / USGS / NASA imagery" />
+                <CaptureControls />
+              </div>
+              <Timeline />
             </div>
-            <Timeline />
-          </div>
           ) : null}
         </div>
 

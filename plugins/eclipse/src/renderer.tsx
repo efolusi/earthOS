@@ -120,7 +120,14 @@ function EclipseLayer({ ctx }: { ctx: PluginContext }) {
 
     const penumbraTheta = shadow.penumbraKm / EARTH_RADIUS_KM;
     const attr = penumbraRing.geometry.getAttribute('position') as BufferAttribute;
-    sphereCircle(shadow.latDeg, shadow.lonDeg, penumbraTheta, attr.array as Float32Array, RING_STEPS, ALT_KM);
+    sphereCircle(
+      shadow.latDeg,
+      shadow.lonDeg,
+      penumbraTheta,
+      attr.array as Float32Array,
+      RING_STEPS,
+      ALT_KM,
+    );
     attr.needsUpdate = true;
     penumbraRing.geometry.setDrawRange(0, RING_STEPS);
 
@@ -133,7 +140,14 @@ function EclipseLayer({ ctx }: { ctx: PluginContext }) {
       arr[0] = center[0];
       arr[1] = center[1];
       arr[2] = center[2];
-      sphereCircle(shadow.latDeg, shadow.lonDeg, umbraTheta, arr.subarray(3) as Float32Array, RING_STEPS, ALT_KM);
+      sphereCircle(
+        shadow.latDeg,
+        shadow.lonDeg,
+        umbraTheta,
+        arr.subarray(3) as Float32Array,
+        RING_STEPS,
+        ALT_KM,
+      );
       uAttr.needsUpdate = true;
       umbraDisc.geometry.computeBoundingSphere();
       umbraDisc.visible = true;

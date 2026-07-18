@@ -11,7 +11,10 @@
     "lint": "eslint app components e2e",
     "typecheck": "tsc --noEmit",
     "test": "echo 'web: covered by e2e'",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "build:worker": "opennextjs-cloudflare build",
+    "deploy:cf": "opennextjs-cloudflare build && wrangler deploy",
+    "preview:cf": "opennextjs-cloudflare build && wrangler dev"
   },
   "dependencies": {
     "@earthos/core": "workspace:*",
@@ -38,6 +41,7 @@
   },
   "devDependencies": {
     "@earthos/config": "workspace:*",
+    "@opennextjs/cloudflare": "^1.20.1",
     "@playwright/test": "^1.61.0",
     "@tailwindcss/postcss": "^4.0.0",
     "@types/node": "^22.10.0",
@@ -46,6 +50,7 @@
     "@types/three": "^0.185.0",
     "eslint": "^9.17.0",
     "tailwindcss": "^4.0.0",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "wrangler": "^4.112.0"
   }
 }

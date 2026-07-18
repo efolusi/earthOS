@@ -110,7 +110,11 @@ export function startEmbedApi(engine: EarthEngine): () => void {
   const onMessage = (event: MessageEvent) => {
     const data = event.data as { type?: string; [key: string]: unknown } | null;
     if (!data || typeof data.type !== 'string' || !data.type.startsWith('earthos:')) return;
-    if (data.type === 'earthos:flyTo' && typeof data.lat === 'number' && typeof data.lon === 'number') {
+    if (
+      data.type === 'earthos:flyTo' &&
+      typeof data.lat === 'number' &&
+      typeof data.lon === 'number'
+    ) {
       engine.events.emit('core:camera:flyTo', {
         lat: data.lat,
         lon: data.lon,

@@ -28,3 +28,7 @@ blob-report/
 
 # textures fetched by scripts (placeholders are committed, full-res is not)
 apps/web/public/textures/full/
+
+# cloudflare worker build
+.open-next/
+.wrangler/

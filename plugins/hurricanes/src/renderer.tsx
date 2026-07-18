@@ -3,7 +3,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal, useFrame, useThree } from '@react-three/fiber';
 import type { LayerRenderer, PluginContext } from '@earthos/core';
-import { ExtrapolatedPointsLayer, localPointToWorld, registerTracker, useEarthFixed } from '@earthos/globe';
+import {
+  ExtrapolatedPointsLayer,
+  localPointToWorld,
+  registerTracker,
+  useEarthFixed,
+} from '@earthos/globe';
 import { geodeticToScene } from '@earthos/gis';
 import type { Storm, StormFeed } from './types';
 
