@@ -1,10 +1,10 @@
 # FAQ
 
 **Why don't I see any satellites?**
-The catalog comes from CelesTrak. Check the layer's status dot: red means the fetch failed (network blocks, or upstream rate limiting; the flagship app proxies through `/api/proxy/celestrak` to avoid most of this). Old data keeps rendering for up to 72 h once fetched. Also check the group setting: `stations` is ~25 objects while `starlink` is ~10,000.
+The catalog comes from CelesTrak, fetched browser-direct (it serves permissive CORS). CelesTrak throttles repeat downloads per IP, and cloud/serverless hosts can't reach it at all, so the provider automatically falls back to the public TLE API and pages through the full constellation (a dense Starlink shell, not a sparse sample). Check the layer's status dot: red means both sources failed. Old data keeps rendering for up to 72 h once fetched. The group setting selects the constellation: `stations` is ~25 objects while `starlink` is ~10,000.
 
 **Why is the night side dark where I expected city lights?**
-The night texture must load (`/textures/earth_lights_2048.png`). Without textures the globe falls back to a stylized procedural look with no lights.
+The night side is deliberately kept dim-but-legible (a twilight floor) with Black Marble city lights on top, so continents stay visible in darkness. City lights and the sharpest terrain need the textures to load (`/textures/earth_lights_2048.png` and the day map); without them the globe falls back to a stylized procedural look.
 
 **Can I run it offline?**
 Yes. The globe, stars, day/night terminator, and the GeoJSON sample render with zero network. Data layers show their last cached catalog (IndexedDB) or an error state.

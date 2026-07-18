@@ -18,11 +18,11 @@ Float32 ULP at Earth-surface range is ~0.8 m. With the minimum camera altitude c
 One custom `ShaderMaterial` (not PBR: a single sun does not need an IBL pipeline):
 
 - day/night blend with a soft `smoothstep(-0.12, 0.12, n.s)` terminator band
-- night-lights texture as emissive on the dark side
+- night side kept at a twilight floor (`uNightFloor`, ~0.3 of the day imagery) so continents stay legible in darkness, with the night-lights texture added as emissive on top
 - ocean specular from a mask texture
 - procedural fallback (graticule on ocean blue) when no textures are supplied, so everything renders offline
 
-Shells around it, ordered by `renderOrder` with `depthWrite` off: cloud sphere (+7 km, alpha-mapped, lit by the sun light), additive fresnel atmosphere (x1.025, blue on the lit limb, warm at the terminator, fading into night). Sun/moon positions come from compact ephemerides in `@earthos/gis` (sun ~0.01 deg, moon ~1 deg: both far below a pixel at globe scale); the moon renders at true position, 2.2x radius for visibility.
+Shells around it, ordered by `renderOrder` with `depthWrite` off: cloud sphere (+25 km, clearing the imagery tile drape so it never z-fights, alpha-mapped, lit by the sun light), additive fresnel atmosphere (x1.025, blue on the lit limb, warm at the terminator, fading into night). Sun/moon positions come from compact ephemerides in `@earthos/gis` (sun ~0.01 deg, moon ~1 deg: both far below a pixel at globe scale); the moon renders at true position, 2.2x radius for visibility.
 
 ## The 100,000-object pipeline
 

@@ -16,8 +16,8 @@ Think Google Earth + NASA Eyes + FlightRadar24 + MarineTraffic + Windy, as one m
 
 ## Highlights
 
-- **Realistic globe**: day/night shader with soft terminator, Black Marble night lights, clouds, atmospheric scattering rim, stars, true sun and moon positions.
-- **100,000+ moving objects at 60 FPS**: SGP4 propagation in a worker pool, transferable position/velocity buffers, GPU extrapolation in the vertex shader, one draw call per layer.
+- **Realistic globe**: day/night shader with soft terminator, a twilight-lit night side with Black Marble city lights, clouds, atmospheric scattering rim, stars, true sun and moon positions.
+- **100,000+ moving objects at 60 FPS**: SGP4 propagation in a worker pool, transferable position/velocity buffers, GPU extrapolation in the vertex shader (clamped so orbits stay on-shell at extreme time rates), one draw call per layer.
 - **Everything is a plugin**: each data source is an independently installable npm package with a small, stable contract (`plugin.ts`, `provider.ts`, `renderer.ts`, `settings.ts`, `types.ts`).
 - **Time travel**: a central simulation clock drives propagation, sun position, and every layer. Scrub past and future; orbits sweep smoothly.
 - **SDK**: `npm install earthos` and compose your own Earth:
@@ -95,14 +95,16 @@ Disabled plugins cost zero bytes: `provider` and `renderer` are dynamic-import s
 
 | Layer             | Source                | Notes                                                             |
 | ----------------- | --------------------- | ----------------------------------------------------------------- |
-| Satellite imagery | Esri / EOX Sentinel-2 | streamed web-mercator quadtree, zoom for detail                   |
-| Satellites        | CelesTrak / TLE API   | 10k+ objects, SGP4 in workers, orbit lines, follow camera         |
-| Aircraft          | OpenSky Network       | live ADS-B, heading arrows, dead-reckoned between polls           |
-| Hurricanes        | NOAA NHC              | active cyclones, intensity-scaled                                 |
-| Solar eclipse     | astronomy-engine      | umbra/penumbra on the simulation clock (try 2026-08-12 17:45 UTC) |
-| Earthquakes       | USGS                  | magnitude-scaled, depth-colored                                   |
-| Day / night       | computed              | terminator, subsolar and sublunar markers                         |
-| Custom GeoJSON    | your data             | points, lines, polygon outlines                                   |
+| Satellite imagery | Esri / EOX Sentinel-2   | streamed web-mercator quadtree, zoom for detail; twilight night side |
+| Satellites        | CelesTrak → TLE API     | dense constellation shell (gold), SGP4 in workers, orbit lines, follow camera |
+| Aircraft          | airplanes.live / OpenSky | live ADS-B (cyan arrows), viewport-scoped, dead-reckoned between polls |
+| Hurricanes        | NOAA NHC                | active cyclones, violet, intensity-scaled                            |
+| Solar eclipse     | astronomy-engine        | umbra/penumbra on the simulation clock (try 2026-08-12 17:45 UTC)    |
+| Earthquakes       | USGS                    | red, magnitude-scaled, depth-colored                                 |
+| Day / night       | computed                | terminator, subsolar and sublunar markers                            |
+| Custom GeoJSON    | your data               | points, lines, polygon outlines                                      |
+
+Each live layer has a distinct identity so nothing reads alike: gold satellite dots, cyan aircraft darts, red earthquakes, violet storms.
 
 Shareable permalinks encode camera, time, layers, and selection; `?embed` serves a chrome-free iframe with a postMessage API. See [ROADMAP.md](ROADMAP.md) for what's next (ships, wind, aurora, terrain, analytics).
 

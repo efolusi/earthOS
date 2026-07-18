@@ -27,7 +27,7 @@ import { Earth, Layer } from 'earthos';
 | --------------- | ---------- | ------------------------------------------------ |
 | `group`         | `starlink` | CelesTrak GP group                               |
 | `pointSize`     | 3 px       | sprite size                                      |
-| `color`         | `#7dd3fc`  | point color                                      |
+| `color`         | `#CE9C66`  | gold point color (distinct from other layers)     |
 | `showOrbit`     | `true`     | orbit line for the selection                     |
 | `maxSatellites` | 15000      | catalog cap                                      |
 | `endpoint`      | (blank)    | proxy override; blank fetches CelesTrak directly |

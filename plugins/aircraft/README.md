@@ -18,7 +18,7 @@ Click an aircraft for callsign, country of registry (from the ICAO 24-bit addres
 | -------------- | --------------- | ------------------------------------------------------------------------------------------- |
 | `dataSource`   | `airplaneslive` | `airplaneslive` (keyless, viewport point queries) or `opensky` (global, proxy required)      |
 | `pointSize`    | 3.5 px          |                                                                                             |
-| `color`        | `#DFB585`       | Meridian peach                                                                              |
+| `color`        | `#5EC8E6`       | sky cyan, distinct from the gold satellites                                                                              |
 | `showOnGround` | `false`         | include taxiing aircraft                                                                    |
 | `maxAircraft`  | 20000           | parse cap                                                                                   |
 | `endpoint`     | (blank)         | custom base URL for the selected source (e.g. a self-hosted readsb or an OpenSky proxy)     |
