@@ -31,6 +31,7 @@ uniform float uHasDay;
 uniform float uHasNight;
 uniform float uHasSpec;
 uniform float uNightBoost;
+uniform float uNightFloor; // keep night-side terrain dimly visible, not black
 varying vec2 vUv;
 varying vec3 vWorldNormal;
 varying vec3 vWorldPos;
@@ -51,13 +52,13 @@ void main() {
   float ndots = dot(n, uSunDir);
   float dayF = smoothstep(-0.12, 0.12, ndots);
 
-  vec3 dayCol = uHasDay > 0.5 ? texture2D(uDayMap, vUv).rgb : proceduralDay(vUv);
-  dayCol *= max(ndots, 0.0) * 1.25 + 0.02;
+  vec3 dayTex = uHasDay > 0.5 ? texture2D(uDayMap, vUv).rgb : proceduralDay(vUv);
+  vec3 dayCol = dayTex * (max(ndots, 0.0) * 1.25 + 0.04);
 
-  vec3 nightCol = uHasNight > 0.5
-    ? texture2D(uNightMap, vUv).rgb * uNightBoost
-    : vec3(0.012, 0.016, 0.030);
-  nightCol *= (1.0 - dayF);
+  // Night side: dim the day imagery to a twilight floor so continents stay
+  // legible, and add the city-lights emissive on top. Not pure black.
+  vec3 lights = uHasNight > 0.5 ? texture2D(uNightMap, vUv).rgb * uNightBoost : vec3(0.0);
+  vec3 nightCol = dayTex * uNightFloor + lights;
 
   float specMask = uHasSpec > 0.5 ? texture2D(uSpecMap, vUv).r : 0.35;
   vec3 viewDir = normalize(cameraPosition - vWorldPos);
@@ -88,6 +89,7 @@ export function createGlobeMaterial(textures: GlobeMaterialTextures = {}): Shade
       uHasNight: { value: textures.night ? 1 : 0 },
       uHasSpec: { value: textures.specular ? 1 : 0 },
       uNightBoost: { value: 1.7 },
+      uNightFloor: { value: 0.3 },
     },
   });
   return material;

@@ -47,9 +47,12 @@ void main() {
   vec3 tex = texture2D(uMap, vUv).rgb;
   // Match the base globe's day/night response so tiles blend at the terminator.
   float ndots = dot(vNormalDir, uSunDirLocal);
-  float light = max(ndots, 0.0) * 1.25 + 0.02;
+  float light = max(ndots, 0.0) * 1.25 + 0.04;
   float dayF = smoothstep(-0.12, 0.12, ndots);
-  gl_FragColor = vec4(tex * light * dayF + tex * 0.02, 1.0);
+  // Twilight floor on the night side (0.3) so satellite imagery stays visible
+  // in darkness instead of going black; matches the base globe's uNightFloor.
+  vec3 lit = tex * light * dayF + tex * 0.3 * (1.0 - dayF);
+  gl_FragColor = vec4(lit, 1.0);
   #include <colorspace_fragment>
 }
 `;
