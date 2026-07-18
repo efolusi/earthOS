@@ -20,6 +20,9 @@ export interface FetchIO {
   viewport: CameraSnapshot;
 }
 
+/** Min spacing between viewport-triggered refetches (leading-edge throttle). */
+const VIEWPORT_REFETCH_THROTTLE_MS = 4_000;
+
 /**
  * Polling provider with the stale-while-revalidate runtime built in:
  *
@@ -50,6 +53,7 @@ export abstract class DataProvider<T> implements ProviderInstance<T> {
   private removeVisibility: (() => void) | null = null;
   private removeViewport: (() => void) | null = null;
   private viewportDebounce: ReturnType<typeof setTimeout> | null = null;
+  private lastViewportFetchAt = 0;
 
   get policy(): ProviderPolicy {
     if (!this.policyCache) this.policyCache = mergePolicy(this.policyOverrides);
@@ -215,11 +219,27 @@ export abstract class DataProvider<T> implements ProviderInstance<T> {
     if (!this.policy.refresh.viewportScoped) return;
     const subscribe = this.io?.onViewportChange;
     if (!subscribe) return;
+    // Leading-edge throttle, not a pure trailing debounce: a pure debounce
+    // never fires while the camera moves continuously (idle auto-rotate,
+    // long fly-to), so the region-scoped data would never refresh. Refetch
+    // promptly on the first move, then at most once per window, plus a
+    // trailing fetch so the final resting viewport always wins.
+    const throttleMs = VIEWPORT_REFETCH_THROTTLE_MS;
+    this.lastViewportFetchAt = Date.now();
+    const fire = () => {
+      if (this.stopped) return;
+      this.lastViewportFetchAt = Date.now();
+      void this.cycle();
+    };
     this.removeViewport = subscribe(() => {
       if (this.stopped) return;
-      // Debounce to camera settle: one refetch per pan, not per notification.
+      const since = Date.now() - this.lastViewportFetchAt;
       if (this.viewportDebounce) clearTimeout(this.viewportDebounce);
-      this.viewportDebounce = setTimeout(() => void this.cycle(), 1_500);
+      if (since >= throttleMs) {
+        fire();
+      } else {
+        this.viewportDebounce = setTimeout(fire, throttleMs - since);
+      }
     });
   }
 

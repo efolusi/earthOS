@@ -106,22 +106,46 @@ describe('viewportScoped refresh', () => {
     }
   }
 
-  it('refetches once after the camera settles (debounced)', async () => {
+  it('collapses a burst into one trailing refetch at the throttle boundary', async () => {
     const { io, moveCamera } = makeIO({ group: 'x' });
     const provider = new ViewportProvider();
     await provider.start(io, () => undefined);
     await vi.advanceTimersByTimeAsync(0);
     expect(provider.fetches).toBe(1);
 
-    // A burst of camera movement collapses into one debounced refetch.
+    // Moves inside the 4s window collapse into one refetch at the boundary.
     moveCamera();
     await vi.advanceTimersByTimeAsync(500);
     moveCamera();
     moveCamera();
-    await vi.advanceTimersByTimeAsync(1_400);
-    expect(provider.fetches).toBe(1); // still inside the debounce window
-    await vi.advanceTimersByTimeAsync(200);
-    expect(provider.fetches).toBe(2);
+    await vi.advanceTimersByTimeAsync(3_000);
+    expect(provider.fetches).toBe(1); // still inside the throttle window
+    await vi.advanceTimersByTimeAsync(600);
+    expect(provider.fetches).toBe(2); // trailing refetch fired at the boundary
+
+    // Once the window has elapsed, the next move refetches promptly (leading).
+    await vi.advanceTimersByTimeAsync(5_000);
+    moveCamera();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(provider.fetches).toBe(3);
+    provider.stop();
+  });
+
+  it('keeps refetching under continuous movement (no debounce starvation)', async () => {
+    // The camera never rests (idle auto-rotate, a long fly-to): a pure trailing
+    // debounce would never settle and the region data would go stale forever.
+    const { io, moveCamera } = makeIO({ group: 'x' });
+    const provider = new ViewportProvider();
+    await provider.start(io, () => undefined);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(provider.fetches).toBe(1);
+
+    for (let i = 0; i < 48; i++) {
+      moveCamera(); // a move every 250ms for 12s
+      await vi.advanceTimersByTimeAsync(250);
+    }
+    // ~one refetch per 4s window on top of the initial fetch.
+    expect(provider.fetches).toBeGreaterThanOrEqual(3);
     provider.stop();
   });
 });

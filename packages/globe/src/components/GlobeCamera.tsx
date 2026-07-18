@@ -43,6 +43,7 @@ export function GlobeCamera({ idleCinematicAfterS = 0 }: { idleCinematicAfterS?:
   const flight = useRef<Flight | null>(null);
   const follow = useRef<{ layerId: string; entityId: string } | null>(null);
   const syncAccum = useRef(0);
+  const lastSynced = useRef<CameraSnapshot | null>(null);
   const scratch = useRef({
     pos: [0, 0, 0] as [number, number, number],
     vec: new Vector3(),
@@ -193,8 +194,20 @@ export function GlobeCamera({ idleCinematicAfterS = 0 }: { idleCinematicAfterS?:
         heading: 0,
         pitch: 0,
       };
-      engine.store.getState().setCameraSnapshot(snap);
-      engine.events.emit('core:camera:move', snap);
+      // Emit only on real movement. This fired every tick regardless, which
+      // kept viewport-scoped providers' trailing debounce from ever settling,
+      // so e.g. aircraft never refetched for a new region after navigation.
+      const prev = lastSynced.current;
+      const moved =
+        !prev ||
+        Math.abs(snap.lat - prev.lat) > 0.02 ||
+        Math.abs(snap.lon - prev.lon) > 0.02 ||
+        Math.abs(snap.altKm - prev.altKm) > Math.max(1, prev.altKm * 0.01);
+      if (moved) {
+        lastSynced.current = snap;
+        engine.store.getState().setCameraSnapshot(snap);
+        engine.events.emit('core:camera:move', snap);
+      }
     }
   });
 
