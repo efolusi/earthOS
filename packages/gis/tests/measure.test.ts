@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { pathLengthKm, sampleGreatCircle, sphericalPolygonAreaKm2 } from '../src/measure';
+import {
+  observerLookAngles,
+  pathLengthKm,
+  sampleGreatCircle,
+  sphericalPolygonAreaKm2,
+} from '../src/measure';
+import { geodeticToEcef } from '../src/geodesy';
 
 describe('pathLengthKm', () => {
   it('sums great-circle legs (JFK → LHR ≈ 5555 km)', () => {
@@ -42,6 +48,27 @@ describe('sphericalPolygonAreaKm2', () => {
     ]);
     expect(box).toBeGreaterThan(1.1e6);
     expect(box).toBeLessThan(1.3e6);
+  });
+});
+
+describe('observerLookAngles', () => {
+  it('reads ~90° elevation for an object straight overhead', () => {
+    const sat = geodeticToEcef(10, 20, 500); // 500 km above the observer
+    const { elDeg, rangeKm } = observerLookAngles(10, 20, 0, sat[0], sat[1], sat[2]);
+    expect(elDeg).toBeGreaterThan(89.5);
+    expect(rangeKm).toBeCloseTo(500, 0);
+  });
+
+  it('reads negative elevation for an object on the far side of the Earth', () => {
+    const sat = geodeticToEcef(-10, 200, 500); // antipodal-ish, below the horizon
+    const { elDeg } = observerLookAngles(10, 20, 0, sat[0], sat[1], sat[2]);
+    expect(elDeg).toBeLessThan(0);
+  });
+
+  it('azimuth points north (~0°/360°) for an object due north', () => {
+    const sat = geodeticToEcef(20, 20, 500); // 10° further north, same lon
+    const { azDeg } = observerLookAngles(10, 20, 0, sat[0], sat[1], sat[2]);
+    expect(Math.min(azDeg, 360 - azDeg)).toBeLessThan(1);
   });
 });
 

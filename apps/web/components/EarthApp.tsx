@@ -6,9 +6,10 @@ import { EarthEngineProvider } from '@earthos/core/react';
 import { createDefaultCache } from '@earthos/providers';
 import { EarthCanvas } from '@earthos/globe';
 import { CommandPalette, HoverCard, Inspector, LayerPanel, StatusBar, Timeline } from '@earthos/ui';
-import { CaptureControls } from './CaptureControls';
 import { MeasureLayer, type MeasurePoint } from './MeasureLayer';
-import { MeasureControl } from './MeasureControl';
+import { ActionBar } from './ActionBar';
+import { MyLocationPanel, type Observer } from './MyLocationPanel';
+import { MyLocationLayer } from './MyLocationLayer';
 import {
   applyPermalinkDynamics,
   isEmbed,
@@ -90,6 +91,33 @@ export function EarthApp() {
     (lat: number, lon: number) => setMeasurePoints((p) => [...p, { lat, lon }]),
     [],
   );
+
+  // My Location: what satellites are above the viewer right now.
+  const [observer, setObserver] = useState<Observer | null>(null);
+  const [locating, setLocating] = useState(false);
+  const [locateError, setLocateError] = useState<string | null>(null);
+  const locateMe = useCallback(() => {
+    if (typeof navigator === 'undefined' || !navigator.geolocation) {
+      setLocateError('Geolocation is not available in this browser.');
+      return;
+    }
+    setLocating(true);
+    setLocateError(null);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setLocating(false);
+        const next = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+        setObserver(next);
+        void engine.setLayerEnabled('satellites', true).catch(() => undefined);
+        engine.events.emit('core:camera:flyTo', { lat: next.lat, lon: next.lon, altKm: 4_000 });
+      },
+      (err) => {
+        setLocating(false);
+        setLocateError(err.code === err.PERMISSION_DENIED ? 'Location permission denied.' : 'Could not get your location.');
+      },
+      { enableHighAccuracy: false, timeout: 10_000, maximumAge: 60_000 },
+    );
+  }, [engine]);
 
   // Upgrade to the 8k set when the deployment fetched it.
   useEffect(() => {
@@ -201,6 +229,7 @@ export function EarthApp() {
               onAddPoint={addMeasurePoint}
             />
           ) : null}
+          {!embed ? <MyLocationLayer observer={observer} /> : null}
         </EarthCanvas>
 
         {/* HUD overlay: pointer events pass through except on panels. */}
@@ -220,25 +249,34 @@ export function EarthApp() {
           ) : null}
           {!embed ? (
             <div className="flex items-start justify-between gap-2 sm:gap-4">
-              <header className="pointer-events-auto select-none">
-                <h1
-                  className="font-[family-name:var(--font-display)] text-[17px] tracking-[var(--tracking-display)] text-[var(--text-primary)] sm:text-[21px]"
-                  style={{ fontWeight: 680 }}
-                >
-                  Earth<span className="text-[var(--brand-400)]">OS</span>
-                </h1>
-                <p className="hidden text-[12px] text-[var(--text-muted)] sm:block">
-                  Press{' '}
-                  <kbd className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-sunken)] px-1 font-[family-name:var(--font-mono)] text-[11px]">
-                    ⌘K
-                  </kbd>{' '}
-                  to search,{' '}
-                  <kbd className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-sunken)] px-1 font-[family-name:var(--font-mono)] text-[11px]">
-                    space
-                  </kbd>{' '}
-                  to pause time
-                </p>
-              </header>
+              <div className="flex min-w-0 flex-col items-start gap-2">
+                <header className="pointer-events-auto select-none">
+                  <h1
+                    className="font-[family-name:var(--font-display)] text-[17px] tracking-[var(--tracking-display)] text-[var(--text-primary)] sm:text-[21px]"
+                    style={{ fontWeight: 680 }}
+                  >
+                    Earth<span className="text-[var(--brand-400)]">OS</span>
+                  </h1>
+                  <p className="hidden text-[12px] text-[var(--text-muted)] sm:block">
+                    Press{' '}
+                    <kbd className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-sunken)] px-1 font-[family-name:var(--font-mono)] text-[11px]">
+                      ⌘K
+                    </kbd>{' '}
+                    to search,{' '}
+                    <kbd className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-sunken)] px-1 font-[family-name:var(--font-mono)] text-[11px]">
+                      space
+                    </kbd>{' '}
+                    to pause time
+                  </p>
+                </header>
+                <MyLocationPanel
+                  observer={observer}
+                  locating={locating}
+                  error={locateError}
+                  onLocate={locateMe}
+                  onClear={() => setObserver(null)}
+                />
+              </div>
               <div className="flex flex-col items-end gap-3">
                 {ready ? <LayerPanel plugins={PLUGINS} /> : null}
                 <Inspector />
@@ -247,18 +285,17 @@ export function EarthApp() {
           ) : null}
 
           {!embed ? (
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
-              <div className="order-2 flex items-end gap-3 sm:order-1">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+              <div className="order-2 flex items-center gap-2 sm:order-1">
                 <div className="hidden sm:block">
-                  <StatusBar attribution="CelesTrak / airplanes.live / USGS / NASA imagery" />
+                  <StatusBar />
                 </div>
-                <CaptureControls />
-                <MeasureControl
-                  active={measureActive}
-                  points={measurePoints}
-                  onToggle={() => setMeasureActive((a) => !a)}
-                  onUndo={() => setMeasurePoints((p) => p.slice(0, -1))}
-                  onClear={() => setMeasurePoints([])}
+                <ActionBar
+                  measureActive={measureActive}
+                  measurePoints={measurePoints}
+                  onMeasureToggle={() => setMeasureActive((a) => !a)}
+                  onMeasureUndo={() => setMeasurePoints((p) => p.slice(0, -1))}
+                  onMeasureClear={() => setMeasurePoints([])}
                 />
               </div>
               <div className="order-1 max-w-full overflow-x-auto sm:order-2">

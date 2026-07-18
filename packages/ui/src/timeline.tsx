@@ -37,7 +37,7 @@ export function Timeline() {
   };
 
   return (
-    <GlassPanel className="px-2.5 py-2 sm:px-4 sm:py-2.5">
+    <GlassPanel className="flex h-10 items-center px-2.5 sm:px-4">
       <div className="flex w-max items-center gap-2">
         <IconButton label="Back 1 hour" onClick={() => engine.time.offsetBy(-3_600_000)}>
           <span className="font-[family-name:var(--font-mono)]">-1h</span>

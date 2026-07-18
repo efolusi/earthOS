@@ -1,7 +1,49 @@
 import { EARTH_RADIUS_KM } from './constants';
-import { haversineKm } from './geodesy';
+import { geodeticToEcef, haversineKm } from './geodesy';
 
 const DEG2RAD = Math.PI / 180;
+const RAD2DEG = 180 / Math.PI;
+
+export interface LookAngles {
+  /** compass bearing to the object, degrees clockwise from north */
+  azDeg: number;
+  /** angle above the local horizon, degrees (negative = below horizon) */
+  elDeg: number;
+  /** straight-line distance, km */
+  rangeKm: number;
+}
+
+/**
+ * Topocentric azimuth / elevation / range of an object (ECEF, km) as seen from
+ * a ground observer — "what's above me". Elevation > 0 means above the horizon.
+ */
+export function observerLookAngles(
+  obsLatDeg: number,
+  obsLonDeg: number,
+  obsAltKm: number,
+  satX: number,
+  satY: number,
+  satZ: number,
+): LookAngles {
+  const obs = geodeticToEcef(obsLatDeg, obsLonDeg, obsAltKm);
+  const dx = satX - obs[0];
+  const dy = satY - obs[1];
+  const dz = satZ - obs[2];
+  const lat = obsLatDeg * DEG2RAD;
+  const lon = obsLonDeg * DEG2RAD;
+  const sinLat = Math.sin(lat);
+  const cosLat = Math.cos(lat);
+  const sinLon = Math.sin(lon);
+  const cosLon = Math.cos(lon);
+  const east = -sinLon * dx + cosLon * dy;
+  const north = -sinLat * cosLon * dx - sinLat * sinLon * dy + cosLat * dz;
+  const up = cosLat * cosLon * dx + cosLat * sinLon * dy + sinLat * dz;
+  const rangeKm = Math.hypot(dx, dy, dz) || 1;
+  const elDeg = Math.asin(Math.min(1, Math.max(-1, up / rangeKm))) * RAD2DEG;
+  let azDeg = Math.atan2(east, north) * RAD2DEG;
+  if (azDeg < 0) azDeg += 360;
+  return { azDeg, elDeg, rangeKm };
+}
 
 /** Total path length along the great-circle legs of a polyline, km. */
 export function pathLengthKm(points: ReadonlyArray<readonly [number, number]>): number {

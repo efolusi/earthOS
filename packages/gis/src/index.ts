@@ -41,4 +41,10 @@ export {
   type EquatorialDir,
 } from './astronomy';
 export { GeoGrid } from './geo-grid';
-export { pathLengthKm, sphericalPolygonAreaKm2, sampleGreatCircle } from './measure';
+export {
+  pathLengthKm,
+  sphericalPolygonAreaKm2,
+  sampleGreatCircle,
+  observerLookAngles,
+  type LookAngles,
+} from './measure';

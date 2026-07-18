@@ -52,7 +52,7 @@ export function LayerPanel({ plugins }: { plugins: EarthOSPlugin[] }) {
       }
     >
       {collapsed ? null : (
-      <ul className="max-h-[34vh] overflow-y-auto py-0.5 sm:max-h-[42vh]">
+      <ul className="max-h-[26vh] overflow-y-auto py-0.5 sm:max-h-[30vh]">
         {plugins.map((plugin) => {
           const layer = layers[plugin.id];
           const status = layer?.status ?? 'registered';

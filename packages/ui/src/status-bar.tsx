@@ -30,13 +30,13 @@ function formatCoord(value: number, positive: string, negative: string): string 
   return `${Math.abs(value).toFixed(2)}°${hemi}`;
 }
 
-/** Camera readout + FPS: mono numerals on a Meridian pill. */
-export function StatusBar({ attribution }: { attribution?: string }) {
+/** Camera readout + FPS: mono numerals on a fixed-height Meridian pill. */
+export function StatusBar() {
   const camera = useEarthState((s) => s.camera);
   const fps = useFps();
 
   return (
-    <div className="pointer-events-auto flex items-center gap-4 rounded-[var(--radius-full)] border border-[var(--border-default)] bg-[color-mix(in_srgb,var(--surface-card)_94%,transparent)] px-4 py-1.5 font-[family-name:var(--font-mono)] text-[12px] text-[var(--text-secondary)] shadow-[var(--shadow-md)] backdrop-blur-xl">
+    <div className="pointer-events-auto flex h-10 items-center gap-4 rounded-[var(--radius-full)] border border-[var(--border-default)] bg-[color-mix(in_srgb,var(--surface-card)_94%,transparent)] px-4 font-[family-name:var(--font-mono)] text-[12px] text-[var(--text-secondary)] shadow-[var(--shadow-md)] backdrop-blur-xl">
       <span data-testid="camera-readout">
         {formatCoord(camera.lat, 'N', 'S')} {formatCoord(camera.lon, 'E', 'W')}
       </span>
@@ -53,11 +53,6 @@ export function StatusBar({ attribution }: { attribution?: string }) {
       >
         {fps} fps
       </span>
-      {attribution ? (
-        <span className="font-[family-name:var(--font-sans)] text-[var(--text-muted)]">
-          {attribution}
-        </span>
-      ) : null}
     </div>
   );
 }
