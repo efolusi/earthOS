@@ -11,6 +11,9 @@ export const STARFIELD_RADIUS = 400_000;
 
 /** Camera limits. Min altitude keeps float32 jitter far below one pixel. */
 export const MIN_CAMERA_ALTITUDE_KM = 30;
-export const MAX_CAMERA_DISTANCE = 350_000;
+// Far enough to frame the whole geostationary belt (~42,000 km radius) with
+// Earth still a clear globe, but not so far that Earth shrinks to a speck and
+// the GEO/GPS satellites read as a detached scatter (they orbit that far out).
+export const MAX_CAMERA_DISTANCE = 120_000;
 export const DEFAULT_FOV_DEG = 50;
 export const CAMERA_FAR = 500_000;
