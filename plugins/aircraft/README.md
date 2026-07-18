@@ -1,6 +1,6 @@
 # @earthos/plugin-aircraft
 
-Live global air traffic for EarthOS from the OpenSky Network: state vectors polled every ~60 s (anonymous-friendly), rendered through the shared GPU points pipeline in the rotating Earth frame. Between polls each aircraft dead-reckons along its reported track and vertical rate, so the picture moves smoothly at one draw call for ~15,000 aircraft.
+Live air traffic for EarthOS: ADS-B state vectors polled every ~60 s and rendered through the shared GPU points pipeline in the rotating Earth frame. Between polls each aircraft dead-reckons along its reported track and vertical rate, so the picture moves smoothly at one draw call for thousands of aircraft. The default source is [airplanes.live](https://airplanes.live) (keyless, CORS-open, viewport-scoped point queries); the OpenSky Network remains selectable for proxied global coverage.
 
 ## Usage
 
@@ -14,14 +14,16 @@ Click an aircraft for callsign, country, altitude (ft), speed (kt), heading, and
 
 ## Settings
 
-| Key            | Default   | Notes                                                                                                                                                                                                      |
-| -------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pointSize`    | 3.5 px    |                                                                                                                                                                                                            |
-| `color`        | `#DFB585` | Meridian peach                                                                                                                                                                                             |
-| `showOnGround` | `false`   | include taxiing aircraft                                                                                                                                                                                   |
-| `maxAircraft`  | 20000     | parse cap                                                                                                                                                                                                  |
-| `endpoint`     | (blank)   | proxy URL. Effectively required in browsers: OpenSky's CORS policy blocks direct cross-origin fetches. The flagship app ships `/api/proxy/opensky` (with optional OAuth via `OPENSKY_CLIENT_ID`/`SECRET`). |
+| Key            | Default         | Notes                                                                                       |
+| -------------- | --------------- | ------------------------------------------------------------------------------------------- |
+| `dataSource`   | `airplaneslive` | `airplaneslive` (keyless, viewport point queries) or `opensky` (global, proxy required)      |
+| `pointSize`    | 3.5 px          |                                                                                             |
+| `color`        | `#DFB585`       | Meridian peach                                                                              |
+| `showOnGround` | `false`         | include taxiing aircraft                                                                    |
+| `maxAircraft`  | 20000           | parse cap                                                                                   |
+| `endpoint`     | (blank)         | custom base URL for the selected source (e.g. a self-hosted readsb or an OpenSky proxy)     |
 
-## Data source
+## Data sources
 
-[OpenSky Network](https://opensky-network.org) REST API. Anonymous access has a small daily credit budget and ~10 s resolution; the default policy (60 s + jitter, last-good on errors, Retry-After honored) stays within it. For production traffic, register an OpenSky account and proxy authenticated requests via the `endpoint` setting. Data is for non-commercial use per OpenSky's [terms](https://opensky-network.org/about/terms-of-use).
+- **[airplanes.live](https://airplanes.live)** (default): community ADS-B aggregator, keyless, `Access-Control-Allow-Origin: *`, readsb-style `/v2/point/{lat}/{lon}/{nm}` queries capped at 250 nm around the camera. The provider refetches when the viewport settles (debounced) and honors a polite 60 s cadence.
+- **[OpenSky Network](https://opensky-network.org)**: global state vectors, but its CORS policy blocks browser-direct fetches and it drops connections from cloud egress IPs (including Cloudflare Workers), so it needs a server proxy on infrastructure OpenSky accepts. The flagship app ships `/api/proxy/opensky` (optional OAuth via `OPENSKY_CLIENT_ID`/`SECRET`) for self-hosted deployments. Non-commercial use per OpenSky's [terms](https://opensky-network.org/about/terms-of-use).

@@ -26,8 +26,7 @@ blob-report/
 !.vscode/extensions.json
 .idea/
 
-# textures fetched by scripts (placeholders are committed, full-res is not)
-apps/web/public/textures/full/
+# full-res textures are committed: build hosts cannot reach the texture CDN
 
 # cloudflare worker build
 .open-next/

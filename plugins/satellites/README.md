@@ -33,4 +33,4 @@ import { Earth, Layer } from 'earthos';
 
 ## Data source
 
-[CelesTrak](https://celestrak.org) GP element sets, courtesy of T.S. Kelso. Please respect their [usage guidelines](https://celestrak.org/webmaster.php); the default 2-hour refresh with jitter stays well within them.
+[CelesTrak](https://celestrak.org) GP element sets, courtesy of T.S. Kelso. Please respect their [usage guidelines](https://celestrak.org/webmaster.php); the default 2-hour refresh with jitter stays well within them. CelesTrak serves `Access-Control-Allow-Origin: *`, so browsers fetch it directly. When it is unreachable (rate-limited or cloud-blocked networks), the provider automatically degrades to the popularity-sorted [TLE API](https://tle.ivanstanojevic.me), which can also be selected explicitly via `dataSource: 'tleapi'`.

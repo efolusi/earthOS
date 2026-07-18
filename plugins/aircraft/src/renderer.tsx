@@ -157,7 +157,8 @@ function AircraftLayer({ ctx }: { ctx: PluginContext }) {
           properties: {
             Callsign: a.callsign || null,
             'ICAO 24': a.icao24.toUpperCase(),
-            Country: a.country,
+            // country of registry (OpenSky) or airframe type (ADS-B v2)
+            Details: a.country || null,
             'Altitude (ft)': Math.round(a.altM * 3.28084),
             'Speed (kt)': Math.round(a.velocityMs * 1.94384),
             'Heading (deg)': Math.round(a.trackDeg),

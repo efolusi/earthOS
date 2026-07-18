@@ -1,8 +1,16 @@
 import type { PluginContext, ProviderInstance } from '@earthos/core';
 import { DataProvider, type FetchIO } from '@earthos/providers';
-import type { AircraftFeed, AircraftState, OpenSkyRaw } from './types';
+import type { AdsbV2Aircraft, AdsbV2Raw, AircraftFeed, AircraftState, OpenSkyRaw } from './types';
 
-const DEFAULT_ENDPOINT = 'https://opensky-network.org/api/states/all';
+const OPENSKY_ENDPOINT = 'https://opensky-network.org/api/states/all';
+const AIRPLANESLIVE_ENDPOINT = 'https://api.airplanes.live/v2/point';
+
+const KT_TO_MS = 0.514444;
+const FT_TO_M = 0.3048;
+const FPM_TO_MS = 0.00508;
+/** airplanes.live caps point queries at 250 nm around the center. */
+const MAX_RADIUS_NM = 250;
+const MIN_RADIUS_NM = 80;
 
 /** Parse one OpenSky positional state array; null when unusable. */
 export function parseState(raw: Array<string | number | boolean | null>): AircraftState | null {
@@ -28,35 +36,99 @@ export function parseState(raw: Array<string | number | boolean | null>): Aircra
   };
 }
 
+/** Parse one readsb-style v2 aircraft; null when it has no position. */
+export function parseAdsbV2(ac: AdsbV2Aircraft, snapshotSec: number): AircraftState | null {
+  if (typeof ac.lat !== 'number' || typeof ac.lon !== 'number' || !ac.hex) return null;
+  const onGround = ac.alt_baro === 'ground';
+  const altFt =
+    typeof ac.alt_baro === 'number' ? ac.alt_baro : typeof ac.alt_geom === 'number' ? ac.alt_geom : 0;
+  const rateFpm = typeof ac.baro_rate === 'number' ? ac.baro_rate : (ac.geom_rate ?? 0);
+  return {
+    icao24: ac.hex,
+    callsign: typeof ac.flight === 'string' ? ac.flight.trim() : '',
+    country: ac.desc ?? ac.t ?? '',
+    lon: ac.lon,
+    lat: ac.lat,
+    altM: onGround ? 0 : altFt * FT_TO_M,
+    onGround,
+    velocityMs: (ac.gs ?? 0) * KT_TO_MS,
+    trackDeg: ac.track ?? 0,
+    verticalRateMs: rateFpm * FPM_TO_MS,
+    timePosition: snapshotSec - (ac.seen_pos ?? 0),
+  };
+}
+
 /**
- * OpenSky global state vectors. Anonymous access serves ~10 s resolution
- * with a small daily credit budget: poll gently (60 s + jitter), keep
- * last-good data through 429s, and let deployments proxy authenticated
- * access via the endpoint setting.
+ * Live aircraft states. Default source is airplanes.live (keyless, CORS-open,
+ * readsb v2 point queries scoped to the viewport). OpenSky remains selectable
+ * for deployments that proxy authenticated global access via the endpoint
+ * setting; its CORS policy and its blocking of cloud egress IPs make it
+ * unusable browser-direct or from serverless hosts.
  */
-export class OpenSkyProvider extends DataProvider<AircraftFeed> {
-  readonly id = 'opensky-states';
+export class AircraftProvider extends DataProvider<AircraftFeed> {
+  readonly id = 'opensky-states'; // stable id: renderer + caches reference it
 
   constructor() {
     super();
     this.policyOverrides = {
-      refresh: { intervalMs: 60_000, jitterMs: 10_000, pauseWhenHidden: true },
+      refresh: {
+        intervalMs: 60_000,
+        jitterMs: 10_000,
+        pauseWhenHidden: true,
+        viewportScoped: true,
+      },
       cache: { staleAfterMs: 5 * 60_000, maxAgeMs: 30 * 60_000 },
       retry: { maxAttempts: 2, baseDelayMs: 15_000, honorRetryAfter: true },
-      rateLimit: { tokensPerMinute: 2, burst: 2, scope: 'origin' },
+      rateLimit: { tokensPerMinute: 6, burst: 3, scope: 'origin' },
     };
   }
 
   protected override cacheKey(settings: Record<string, unknown>): string {
+    const source =
+      typeof settings.dataSource === 'string' ? settings.dataSource : 'airplaneslive';
     const max = typeof settings.maxAircraft === 'number' ? settings.maxAircraft : 20_000;
-    return `latest:${max}`;
+    return `latest:${source}:${max}`;
   }
 
   async fetch(io: FetchIO): Promise<AircraftFeed> {
+    const source =
+      typeof io.settings.dataSource === 'string' ? io.settings.dataSource : 'airplaneslive';
+    return source === 'opensky' ? this.fetchOpenSky(io) : this.fetchAirplanesLive(io);
+  }
+
+  private async fetchAirplanesLive(io: FetchIO): Promise<AircraftFeed> {
     const endpoint =
       typeof io.settings.endpoint === 'string' && io.settings.endpoint.length > 0
         ? io.settings.endpoint
-        : DEFAULT_ENDPOINT;
+        : AIRPLANESLIVE_ENDPOINT;
+    const max = typeof io.settings.maxAircraft === 'number' ? io.settings.maxAircraft : 20_000;
+    const vp = io.viewport;
+    const radiusNm = Math.round(
+      Math.min(MAX_RADIUS_NM, Math.max(MIN_RADIUS_NM, (vp.altKm || 12_000) * 0.55)),
+    );
+    const url = `${endpoint}/${vp.lat.toFixed(2)}/${vp.lon.toFixed(2)}/${radiusNm}`;
+
+    const res = await io.fetch(url);
+    const raw = (await res.json()) as AdsbV2Raw;
+    if (!Array.isArray(raw?.ac)) throw new Error('unexpected airplanes.live response shape');
+    // `now` is unix ms in airplanes.live responses; guard seconds just in case.
+    const nowSec =
+      typeof raw.now === 'number' ? (raw.now > 1e12 ? raw.now / 1000 : raw.now) : Date.now() / 1000;
+
+    const states: AircraftState[] = [];
+    for (const entry of raw.ac) {
+      const state = parseAdsbV2(entry, nowSec);
+      if (state) states.push(state);
+      if (states.length >= max) break;
+    }
+    return { time: Math.round(nowSec), states };
+  }
+
+  private async fetchOpenSky(io: FetchIO): Promise<AircraftFeed> {
+    const endpoint =
+      typeof io.settings.endpoint === 'string' && io.settings.endpoint.length > 0
+        ? io.settings.endpoint
+        : OPENSKY_ENDPOINT;
     const max = typeof io.settings.maxAircraft === 'number' ? io.settings.maxAircraft : 20_000;
 
     const res = await io.fetch(endpoint);
@@ -73,7 +145,10 @@ export class OpenSkyProvider extends DataProvider<AircraftFeed> {
   }
 }
 
+/** @deprecated renamed; kept for import compatibility */
+export const OpenSkyProvider = AircraftProvider;
+
 const createProvider = (_ctx: PluginContext): ProviderInstance<unknown> =>
-  new OpenSkyProvider() as ProviderInstance<unknown>;
+  new AircraftProvider() as ProviderInstance<unknown>;
 
 export default createProvider;

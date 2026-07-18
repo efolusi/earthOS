@@ -106,16 +106,17 @@ export function EarthApp() {
       for (const plugin of PLUGINS) {
         await engine.register(plugin); // idempotent: StrictMode re-runs no-op
       }
-      // App default: route CelesTrak through our proxy (server-side fetch,
-      // one upstream hit per group per hour, immune to client bot-blocking).
+      // CelesTrak + airplanes.live serve CORS * and block cloud egress IPs,
+      // so browsers fetch them directly. Older builds patched Worker-proxy
+      // endpoints into persisted settings; clear those or returning visitors
+      // stay pinned to the dead proxies.
       const satSettings = engine.getContext('satellites')?.settings;
-      if (satSettings && !(satSettings.get() as { endpoint?: string }).endpoint) {
-        satSettings.patch({ endpoint: '/api/proxy/celestrak' });
+      if ((satSettings?.get() as { endpoint?: string })?.endpoint === '/api/proxy/celestrak') {
+        satSettings?.patch({ endpoint: '' });
       }
-      // OpenSky's CORS only allows its own origin: browsers must proxy.
       const airSettings = engine.getContext('aircraft')?.settings;
-      if (airSettings && !(airSettings.get() as { endpoint?: string }).endpoint) {
-        airSettings.patch({ endpoint: '/api/proxy/opensky' });
+      if ((airSettings?.get() as { endpoint?: string })?.endpoint === '/api/proxy/opensky') {
+        airSettings?.patch({ endpoint: '' });
       }
       const nhcSettings = engine.getContext('hurricanes')?.settings;
       if (nhcSettings && !(nhcSettings.get() as { endpoint?: string }).endpoint) {
@@ -193,7 +194,7 @@ export function EarthApp() {
                 Earth<span className="text-[var(--brand-400)]">OS</span>
               </span>
               <span className="text-[10px] text-[var(--text-muted)]">
-                Esri / CelesTrak / OpenSky / USGS / NASA
+                Esri / CelesTrak / airplanes.live / USGS / NASA
               </span>
             </div>
           ) : null}
@@ -228,7 +229,7 @@ export function EarthApp() {
           {!embed ? (
             <div className="flex items-end justify-between gap-4">
               <div className="flex items-end gap-3">
-                <StatusBar attribution="CelesTrak / OpenSky / USGS / NASA imagery" />
+                <StatusBar attribution="CelesTrak / airplanes.live / USGS / NASA imagery" />
                 <CaptureControls />
               </div>
               <Timeline />

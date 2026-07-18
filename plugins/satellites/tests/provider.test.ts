@@ -92,4 +92,35 @@ describe('CelestrakGpProvider', () => {
     });
     provider.stop();
   });
+
+  it('falls back to the TLE API when CelesTrak is unreachable', async () => {
+    const fetchSpy = vi.fn(async (url: string | URL | Request) => {
+      const u = String(url);
+      if (u.includes('celestrak.org')) throw new TypeError('fetch failed');
+      expect(u).toContain('https://tle.ivanstanojevic.me/api/tle');
+      return new Response(
+        JSON.stringify({
+          member: [
+            {
+              satelliteId: 25544,
+              name: 'ISS (ZARYA)',
+              line1: '1 25544U 98067A   24001.00000000  .00016717  00000-0  30777-3 0  9990',
+              line2: '2 25544  51.6416 339.5000 0004257  98.0000 262.0000 15.49564479430000',
+            },
+          ],
+        }),
+        { status: 200 },
+      );
+    });
+    vi.stubGlobal('fetch', fetchSpy);
+
+    const provider = new CelestrakGpProvider();
+    const snaps: Array<{ state: string; data: OmmRecord[] | null }> = [];
+    await provider.start(makeIO({ group: 'starlink' }), (s) => snaps.push(s as never));
+    await vi.waitFor(() => {
+      expect(snaps.at(-1)!.state).toBe('ready');
+      expect(snaps.at(-1)!.data).toHaveLength(1);
+    });
+    provider.stop();
+  });
 });

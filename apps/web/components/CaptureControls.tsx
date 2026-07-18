@@ -6,7 +6,7 @@ import { GlassPanel, IconButton } from '@earthos/ui';
 import { buildPermalink } from './permalink';
 
 const ATTRIBUTION =
-  'EarthOS · open-source digital twin · imagery: Esri/NASA · data: CelesTrak/OpenSky/USGS';
+  'EarthOS · open-source digital twin · imagery: Esri/NASA · data: CelesTrak/airplanes.live/USGS';
 
 /** Screenshot, clip recording, and copy-link: every viewer is a publisher. */
 export function CaptureControls() {

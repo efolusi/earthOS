@@ -3,7 +3,8 @@ import { DataProvider, type FetchIO } from '@earthos/providers';
 import type { CatalogRecord, OmmRecord, SatCatalog } from './types';
 
 const DEFAULT_ENDPOINT = 'https://celestrak.org/NORAD/elements/gp.php';
-const TLE_API_ENDPOINT = 'https://tle.ivanstanojevic.me/api/tle';
+// Trailing slash matters: the API 301s /api/tle?x → /api/tle/?x on every page.
+const TLE_API_ENDPOINT = 'https://tle.ivanstanojevic.me/api/tle/';
 
 interface TleApiMember {
   satelliteId: number;
@@ -44,15 +45,22 @@ export class CelestrakGpProvider extends DataProvider<SatCatalog> {
     const max = typeof io.settings.maxSatellites === 'number' ? io.settings.maxSatellites : 15_000;
 
     const url = `${endpoint}?GROUP=${encodeURIComponent(group)}&FORMAT=json`;
-    const res = await io.fetch(url);
-    const json: unknown = await res.json();
-    if (!Array.isArray(json)) {
-      throw new Error(`unexpected CelesTrak response shape from ${url}`);
+    try {
+      const res = await io.fetch(url);
+      const json: unknown = await res.json();
+      if (!Array.isArray(json)) {
+        throw new Error(`unexpected CelesTrak response shape from ${url}`);
+      }
+      const records = (json as OmmRecord[]).filter(
+        (r) => typeof r?.NORAD_CAT_ID === 'number' && typeof r?.EPOCH === 'string',
+      );
+      return records.slice(0, max);
+    } catch (err) {
+      // CelesTrak blocks some networks (cloud egress, rate-limited IPs);
+      // degrade to the popularity-sorted TLE API rather than an empty layer.
+      if (io.signal.aborted) throw err;
+      return this.fetchTleApi({ ...io, settings: { ...io.settings, endpoint: '' } });
     }
-    const records = (json as OmmRecord[]).filter(
-      (r) => typeof r?.NORAD_CAT_ID === 'number' && typeof r?.EPOCH === 'string',
-    );
-    return records.slice(0, max);
   }
 
   /**

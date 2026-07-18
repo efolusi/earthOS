@@ -7,7 +7,7 @@ import {
   type ProviderStartIO,
 } from '@earthos/core';
 import { resetRateLimiters } from '@earthos/providers';
-import { OpenSkyProvider, parseState } from '../src/provider';
+import { AircraftProvider, parseAdsbV2, parseState } from '../src/provider';
 import type { AircraftFeed } from '../src/types';
 
 const silent = { debug() {}, info() {}, warn() {}, error() {} };
@@ -76,8 +76,73 @@ describe('parseState', () => {
   });
 });
 
-describe('OpenSkyProvider', () => {
-  it('fetches, parses, and caps the feed', async () => {
+describe('parseAdsbV2', () => {
+  it('converts knots/feet/fpm units and derives the position timestamp', () => {
+    const s = parseAdsbV2(
+      {
+        hex: '4cac24',
+        flight: 'RYR94EE ',
+        desc: 'BOEING 737 MAX 8',
+        alt_baro: 38000,
+        gs: 462.2,
+        track: 352.29,
+        baro_rate: -640,
+        lat: 47.85,
+        lon: -3.38,
+        seen_pos: 2.5,
+      },
+      1_700_000_010,
+    )!;
+    expect(s.icao24).toBe('4cac24');
+    expect(s.callsign).toBe('RYR94EE');
+    expect(s.country).toBe('BOEING 737 MAX 8');
+    expect(s.altM).toBeCloseTo(38000 * 0.3048, 3);
+    expect(s.velocityMs).toBeCloseTo(462.2 * 0.514444, 3);
+    expect(s.verticalRateMs).toBeCloseTo(-640 * 0.00508, 3);
+    expect(s.timePosition).toBeCloseTo(1_700_000_007.5, 3);
+    expect(s.onGround).toBe(false);
+  });
+
+  it('handles grounded aircraft and rejects entries without a position', () => {
+    const grounded = parseAdsbV2(
+      { hex: 'abc123', alt_baro: 'ground', lat: 1, lon: 2 },
+      1_700_000_000,
+    )!;
+    expect(grounded.onGround).toBe(true);
+    expect(grounded.altM).toBe(0);
+    expect(parseAdsbV2({ hex: 'abc123' }, 1_700_000_000)).toBeNull();
+  });
+});
+
+describe('AircraftProvider', () => {
+  it('defaults to viewport-scoped airplanes.live point queries (now in ms)', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string | URL | Request) => {
+        expect(String(url)).toMatch(
+          /^https:\/\/api\.airplanes\.live\/v2\/point\/-?[\d.]+\/-?[\d.]+\/\d+$/,
+        );
+        return new Response(
+          JSON.stringify({
+            ac: [{ hex: '4cac24', lat: 47.85, lon: -3.38, gs: 400, alt_baro: 38000 }, { hex: 'nope' }],
+            now: 1_700_000_010_000,
+          }),
+          { status: 200 },
+        );
+      }),
+    );
+    const provider = new AircraftProvider();
+    const snaps: Array<{ state: string; data: AircraftFeed | null }> = [];
+    await provider.start(makeIO({}), (s) => snaps.push(s as never));
+    await vi.waitFor(() => {
+      expect(snaps.at(-1)!.state).toBe('ready');
+      expect(snaps.at(-1)!.data!.states).toHaveLength(1);
+      expect(snaps.at(-1)!.data!.time).toBe(1_700_000_010);
+    });
+    provider.stop();
+  });
+
+  it('fetches OpenSky global states when selected', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn(async (url: string | URL | Request) => {
@@ -88,9 +153,11 @@ describe('OpenSkyProvider', () => {
         );
       }),
     );
-    const provider = new OpenSkyProvider();
+    const provider = new AircraftProvider();
     const snaps: Array<{ state: string; data: AircraftFeed | null }> = [];
-    await provider.start(makeIO({ maxAircraft: 1 }), (s) => snaps.push(s as never));
+    await provider.start(makeIO({ dataSource: 'opensky', maxAircraft: 1 }), (s) =>
+      snaps.push(s as never),
+    );
     await vi.waitFor(() => {
       expect(snaps.at(-1)!.state).toBe('ready');
       expect(snaps.at(-1)!.data!.states).toHaveLength(1);

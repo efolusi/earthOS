@@ -8,7 +8,7 @@ export default definePlugin({
     name: 'Aircraft',
     category: 'aviation',
     description: 'Live ADS-B traffic, dead-reckoned along track between polls',
-    attribution: 'OpenSky Network',
+    attribution: 'airplanes.live / OpenSky Network',
     icon: 'plane',
   },
   settings,
