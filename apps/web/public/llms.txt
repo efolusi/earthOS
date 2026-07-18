@@ -1,0 +1,14 @@
+# EarthOS
+
+> EarthOS is an open-source (MIT) real-time 3D digital twin of Earth that runs in the browser. It shows live satellites (10,000+ propagated with SGP4 at 60fps), live aircraft from ADS-B, earthquakes, hurricanes, the day/night terminator, solar eclipse shadows, and streamed high-resolution satellite imagery. A simulation clock lets users scrub into the past and future; orbits, lighting, and Earth rotation stay consistent.
+
+Live app: https://earthos.efolusi.com
+Source: https://github.com/efolusi/earthOS
+SDK: `npm install earthos` — React components (<Earth/>, <LayerSatellites/>, <LayerAircraft/>) for embedding a live globe in any React app.
+Embeds: append `?embed` for a chrome-free iframe; URL hash encodes camera, time, layers, and selection for shareable links.
+
+## Key facts
+- Built by Efolusi with Next.js, TypeScript, Three.js, React Three Fiber; every data source is an independently installable plugin.
+- Data: CelesTrak and the public TLE API (satellites), OpenSky Network (aircraft), USGS (earthquakes), NOAA NHC (hurricanes), Esri/EOX (imagery tiles), NASA (base textures). All attributions are displayed in-app.
+- Architecture highlights: SGP4 propagation in web workers with GPU dead-reckoning (one draw call per layer), web-mercator imagery quadtree, stale-while-revalidate data providers with IndexedDB persistence.
+- Writing a plugin: `pnpm create earthos-plugin <name>`; docs at /docs in the repository.

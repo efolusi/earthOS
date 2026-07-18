@@ -35,8 +35,9 @@ function worldAbove(latDeg: number, lonDeg: number, altKm: number, nowMs: number
  * (~4 Hz) so UI readouts and viewport-scoped providers can react without
  * per-frame React work.
  */
-export function GlobeCamera() {
+export function GlobeCamera({ idleCinematicAfterS = 0 }: { idleCinematicAfterS?: number } = {}) {
   const engine = useEarth();
+  const lastInteraction = useRef(typeof performance !== 'undefined' ? performance.now() : 0);
   const camera = useThree((s) => s.camera) as PerspectiveCamera;
   const controlsRef = useRef<OrbitControlsImpl | null>(null);
   const flight = useRef<Flight | null>(null);
@@ -88,16 +89,28 @@ export function GlobeCamera() {
     });
   }, [engine, camera]);
 
-  // User interaction cancels follow/flight.
+  // User interaction cancels follow/flight and resets the idle timer.
   useEffect(() => {
     const controls = controlsRef.current;
     if (!controls) return;
     const onStart = () => {
       follow.current = null;
       flight.current = null;
+      lastInteraction.current = performance.now();
+      if (controls.autoRotate) controls.autoRotate = false;
     };
     controls.addEventListener('start', onStart);
-    return () => controls.removeEventListener('start', onStart);
+    const bump = () => {
+      lastInteraction.current = performance.now();
+      if (controlsRef.current?.autoRotate) controlsRef.current.autoRotate = false;
+    };
+    window.addEventListener('keydown', bump);
+    window.addEventListener('wheel', bump, { passive: true });
+    return () => {
+      controls.removeEventListener('start', onStart);
+      window.removeEventListener('keydown', bump);
+      window.removeEventListener('wheel', bump);
+    };
   }, []);
 
   useFrame((_, delta) => {
@@ -155,6 +168,13 @@ export function GlobeCamera() {
     if (Math.abs(camera.near - targetNear) / camera.near > 0.1) {
       camera.near = targetNear;
       camera.updateProjectionMatrix();
+    }
+
+    // Idle cinematic: slow auto-orbit once nothing has happened for a while.
+    if (idleCinematicAfterS > 0 && controls && !follow.current && !flight.current) {
+      const idleS = (performance.now() - lastInteraction.current) / 1000;
+      controls.autoRotate = idleS > idleCinematicAfterS;
+      controls.autoRotateSpeed = 0.25;
     }
 
     controls?.update();

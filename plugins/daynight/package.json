@@ -65,5 +65,14 @@
     "earthos-plugin",
     "terminator",
     "daynight"
-  ]
+  ],
+  "homepage": "https://earthos.efolusi.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/efolusi/earthOS.git",
+    "directory": "plugins/daynight"
+  },
+  "bugs": {
+    "url": "https://github.com/efolusi/earthOS/issues"
+  }
 }

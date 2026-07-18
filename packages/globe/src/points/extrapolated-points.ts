@@ -31,9 +31,12 @@ uniform float uNow;
 uniform float uMu;
 uniform float uOcclusionRadius;
 uniform float uPixelRatio;
+uniform float uShape; // 0 = dot, 1 = heading arrow
+uniform float uAspect;
 uniform vec3 uPalette[8];
 varying vec3 vColor;
 varying float vHighlight;
+varying float vAngle;
 
 void main() {
   float dt = uNow - aT0;
@@ -64,26 +67,54 @@ void main() {
     return;
   }
 
-  gl_Position = projectionMatrix * viewMatrix * world;
+  vec4 clipA = projectionMatrix * viewMatrix * world;
+  gl_Position = clipA;
   gl_PointSize = aMeta.y * uPixelRatio * (1.0 + aMeta.w * 0.9);
   int ci = int(aMeta.x + 0.5);
   vColor = uPalette[ci];
   vHighlight = aMeta.w;
+  vAngle = 0.0;
+  if (uShape > 0.5 && dot(aVel, aVel) > 1e-10) {
+    // Screen-space direction of motion: project a point one minute ahead.
+    vec4 worldB = modelMatrix * vec4(p + aVel * 60.0, 1.0);
+    vec4 clipB = projectionMatrix * viewMatrix * worldB;
+    vec2 dir = clipB.xy / clipB.w - clipA.xy / clipA.w;
+    dir.x *= uAspect;
+    if (dot(dir, dir) > 1e-12) vAngle = atan(dir.y, dir.x);
+  }
 }
 `;
 
 const FRAG = /* glsl */ `
 precision mediump float;
+uniform float uShape;
 varying vec3 vColor;
 varying float vHighlight;
+varying float vAngle;
 
 void main() {
   vec2 c = gl_PointCoord - 0.5;
-  float r = length(c);
-  if (r > 0.5) discard;
-  float alpha = smoothstep(0.5, 0.30, r);
+  c.y = -c.y; // gl_PointCoord is y-down
+  float alpha;
+  if (uShape > 0.5) {
+    // Dart aligned to the motion direction (nose along +x before rotation).
+    float ca = cos(vAngle);
+    float sa = sin(vAngle);
+    vec2 q = vec2(ca * c.x + sa * c.y, -sa * c.x + ca * c.y);
+    float t = clamp(q.x + 0.5, 0.0, 1.0); // tail 0 .. nose 1
+    float halfWidth = mix(0.30, 0.015, t);
+    float inside = step(abs(q.y), halfWidth) * step(-0.42, q.x) * step(q.x, 0.5);
+    // Notched tail so the dart reads as an aircraft, not a triangle.
+    inside *= 1.0 - step(abs(q.y), halfWidth * 0.4) * step(q.x, -0.22);
+    if (inside < 0.5) discard;
+    alpha = 0.95;
+  } else {
+    float r = length(c);
+    if (r > 0.5) discard;
+    alpha = smoothstep(0.5, 0.30, r) * 0.95;
+  }
   vec3 col = vColor * (1.0 + vHighlight * 1.2);
-  gl_FragColor = vec4(col, alpha * 0.95);
+  gl_FragColor = vec4(col, alpha);
   #include <colorspace_fragment>
 }
 `;
@@ -99,6 +130,8 @@ export interface ExtrapolatedPointsOptions {
   palette?: string[];
   occlusionRadiusKm?: number;
   pixelRatio?: number;
+  /** 'arrow' rotates a dart glyph along the motion direction (aircraft). */
+  shape?: 'dot' | 'arrow';
 }
 
 export interface BatchView {
@@ -164,6 +197,8 @@ export class ExtrapolatedPointsLayer {
         uMu: { value: this.mu },
         uOcclusionRadius: { value: opts.occlusionRadiusKm ?? EARTH_OCCLUSION_RADIUS_KM },
         uPixelRatio: { value: opts.pixelRatio ?? 1 },
+        uShape: { value: opts.shape === 'arrow' ? 1 : 0 },
+        uAspect: { value: 1 },
         uPalette: { value: palette },
       },
       transparent: true,
@@ -185,6 +220,11 @@ export class ExtrapolatedPointsLayer {
 
   setPixelRatio(dpr: number): void {
     this.material.uniforms.uPixelRatio!.value = dpr;
+  }
+
+  /** Viewport aspect (width/height): needed for screen-space arrow angles. */
+  setAspect(aspect: number): void {
+    this.material.uniforms.uAspect!.value = aspect;
   }
 
   /** Total number of live objects (draw range). */

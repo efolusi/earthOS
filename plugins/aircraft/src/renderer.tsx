@@ -54,7 +54,12 @@ function AircraftLayer({ ctx }: { ctx: PluginContext }) {
 
   const layer = useMemo(
     () =>
-      new ExtrapolatedPointsLayer({ capacity: CAPACITY, mu: 0, palette: ['#DFB585', '#EFCFAC'] }),
+      new ExtrapolatedPointsLayer({
+        capacity: CAPACITY,
+        mu: 0,
+        palette: ['#DFB585', '#EFCFAC'],
+        shape: 'arrow',
+      }),
     [],
   );
   useEffect(() => () => layer.dispose(), [layer]);
@@ -296,6 +301,7 @@ function AircraftLayer({ ctx }: { ctx: PluginContext }) {
         : Math.min(Math.max(now, t0 - MAX_EXTRAPOLATION_MS), t0 + MAX_EXTRAPOLATION_MS),
     );
     layer.setPixelRatio(gl.getPixelRatio());
+    layer.setAspect(size.width / size.height);
   });
 
   if (!earthFixed) return null;

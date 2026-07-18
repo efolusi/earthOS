@@ -74,5 +74,14 @@
     "satellites",
     "sgp4",
     "starlink"
-  ]
+  ],
+  "homepage": "https://earthos.efolusi.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/efolusi/earthOS.git",
+    "directory": "plugins/satellites"
+  },
+  "bugs": {
+    "url": "https://github.com/efolusi/earthOS/issues"
+  }
 }

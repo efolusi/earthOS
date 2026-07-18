@@ -70,5 +70,14 @@
     "earthos-plugin",
     "earthquakes",
     "usgs"
-  ]
+  ],
+  "homepage": "https://earthos.efolusi.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/efolusi/earthOS.git",
+    "directory": "plugins/earthquakes"
+  },
+  "bugs": {
+    "url": "https://github.com/efolusi/earthOS/issues"
+  }
 }

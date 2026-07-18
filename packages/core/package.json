@@ -50,5 +50,14 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "homepage": "https://earthos.efolusi.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/efolusi/earthOS.git",
+    "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/efolusi/earthOS/issues"
   }
 }

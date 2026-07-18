@@ -113,3 +113,21 @@ export function LayerImagery({ enabled, ...settings }: LayerImageryProps) {
     />
   );
 }
+
+export function LayerEclipse({ enabled }: CommonLayerProps) {
+  return <Layer manifest={() => import('@earthos/plugin-eclipse')} enabled={enabled} />;
+}
+
+export interface LayerHurricanesProps extends CommonLayerProps {
+  endpoint?: string;
+}
+
+export function LayerHurricanes({ enabled, ...settings }: LayerHurricanesProps) {
+  return (
+    <Layer
+      manifest={() => import('@earthos/plugin-hurricanes')}
+      enabled={enabled}
+      settings={settings}
+    />
+  );
+}

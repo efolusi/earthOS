@@ -28,5 +28,14 @@
     "earthos",
     "earthos-plugin",
     "scaffold"
-  ]
+  ],
+  "homepage": "https://earthos.efolusi.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/efolusi/earthOS.git",
+    "directory": "sdk/create-earthos-plugin"
+  },
+  "bugs": {
+    "url": "https://github.com/efolusi/earthOS/issues"
+  }
 }

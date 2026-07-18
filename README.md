@@ -2,6 +2,14 @@
 
 **A real-time interactive 3D digital twin of Earth, in your browser.**
 
+<p>
+  <a href="https://earthos.efolusi.com"><b>Live app: earthos.efolusi.com</b></a> ·
+  <a href="https://github.com/efolusi/earthOS/actions/workflows/ci.yml"><img src="https://github.com/efolusi/earthOS/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT" /></a>
+  <a href="https://www.npmjs.com/package/earthos"><img src="https://img.shields.io/badge/npm-earthos-CB3837.svg" alt="npm" /></a>
+  <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs welcome" />
+</p>
+
 EarthOS is not another globe viewer. It is a platform for visualizing real-world datasets on top of a realistic Earth in real time: satellites propagated with SGP4, aircraft, ships, weather, earthquakes, day/night, and anything else you can express as a plugin.
 
 Think Google Earth + NASA Eyes + FlightRadar24 + MarineTraffic + Windy, as one modular, extensible, open-source codebase.
@@ -83,9 +91,20 @@ export default definePlugin({
 
 Disabled plugins cost zero bytes: `provider` and `renderer` are dynamic-import split points loaded only when the layer is enabled. See [docs/PLUGIN_GUIDE.md](docs/PLUGIN_GUIDE.md).
 
-## Status
+## Layers shipped today
 
-Foundation milestone (M0-M6): monorepo, core runtime, globe renderer, provider framework, and four flagship plugins (satellites, earthquakes, day/night, GeoJSON). See [ROADMAP.md](ROADMAP.md) for the full planned plugin catalog (aircraft, ships, weather, wind, wildfires, aurora, and more).
+| Layer | Source | Notes |
+|---|---|---|
+| Satellite imagery | Esri / EOX Sentinel-2 | streamed web-mercator quadtree, zoom for detail |
+| Satellites | CelesTrak / TLE API | 10k+ objects, SGP4 in workers, orbit lines, follow camera |
+| Aircraft | OpenSky Network | live ADS-B, heading arrows, dead-reckoned between polls |
+| Hurricanes | NOAA NHC | active cyclones, intensity-scaled |
+| Solar eclipse | astronomy-engine | umbra/penumbra on the simulation clock (try 2026-08-12 17:45 UTC) |
+| Earthquakes | USGS | magnitude-scaled, depth-colored |
+| Day / night | computed | terminator, subsolar and sublunar markers |
+| Custom GeoJSON | your data | points, lines, polygon outlines |
+
+Shareable permalinks encode camera, time, layers, and selection; `?embed` serves a chrome-free iframe with a postMessage API. See [ROADMAP.md](ROADMAP.md) for what's next (ships, wind, aurora, terrain, analytics).
 
 ## Contributing
 

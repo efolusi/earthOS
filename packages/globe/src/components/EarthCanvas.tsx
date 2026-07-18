@@ -15,10 +15,13 @@ import { SelectionMarker } from './SelectionMarker';
 
 function EngineBridges({ engine }: { engine: EarthEngine }) {
   const invalidate = useThree((s) => s.invalidate);
+  const gl = useThree((s) => s.gl);
   useEffect(() => {
     engine.setInvalidate(invalidate);
+    // Capture tooling (screenshot/record buttons) reads the canvas here.
+    engine.provideExtension('globe:canvas', gl.domElement);
     return () => engine.setInvalidate(null);
-  }, [engine, invalidate]);
+  }, [engine, invalidate, gl]);
   return null;
 }
 
@@ -28,6 +31,8 @@ export interface EarthCanvasProps {
   textures?: GlobeTextureUrls;
   stars?: boolean;
   moon?: boolean;
+  /** Auto-orbit slowly after this many idle seconds (0 disables). */
+  idleCinematicAfterS?: number;
   children?: ReactNode;
   className?: string;
 }
@@ -42,6 +47,7 @@ export function EarthCanvas({
   textures,
   stars,
   moon,
+  idleCinematicAfterS = 0,
   children,
   className,
 }: EarthCanvasProps) {
@@ -57,12 +63,17 @@ export function EarthCanvas({
         frameloop="always"
         dpr={[1, 2]}
         camera={{ fov: DEFAULT_FOV_DEG, near: 50, far: CAMERA_FAR, position: [30_000, 12_000, 0] }}
-        gl={{ antialias: true, powerPreference: 'high-performance', logarithmicDepthBuffer: false }}
+        gl={{
+          antialias: true,
+          powerPreference: 'high-performance',
+          logarithmicDepthBuffer: false,
+          preserveDrawingBuffer: true, // screenshot/record support
+        }}
       >
         <EngineBridges engine={engine} />
         <EarthFixedGroup>
           <GlobeScene textures={textures} stars={stars} moon={moon} />
-          <GlobeCamera />
+          <GlobeCamera idleCinematicAfterS={idleCinematicAfterS} />
           <PluginLayersHost />
           <SelectionMarker />
           {children}

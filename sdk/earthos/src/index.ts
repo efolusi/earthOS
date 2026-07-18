@@ -7,12 +7,15 @@ export {
   LayerAircraft,
   LayerEarthquakes,
   LayerDayNight,
+  LayerEclipse,
+  LayerHurricanes,
   LayerGeoJson,
   type LayerImageryProps,
   type LayerSatellitesProps,
   type LayerAircraftProps,
   type LayerEarthquakesProps,
   type LayerDayNightProps,
+  type LayerHurricanesProps,
   type LayerGeoJsonProps,
 } from './layers';
 

@@ -6,9 +6,19 @@ import { EarthEngineProvider } from '@earthos/core/react';
 import { createDefaultCache } from '@earthos/providers';
 import { EarthCanvas } from '@earthos/globe';
 import { CommandPalette, HoverCard, Inspector, LayerPanel, StatusBar, Timeline } from '@earthos/ui';
+import { CaptureControls } from './CaptureControls';
+import {
+  applyPermalinkDynamics,
+  isEmbed,
+  readPermalink,
+  startEmbedApi,
+  startPermalinkSync,
+} from './permalink';
 
 import satellitesPlugin from '@earthos/plugin-satellites';
 import imageryPlugin from '@earthos/plugin-imagery';
+import eclipsePlugin from '@earthos/plugin-eclipse';
+import hurricanesPlugin from '@earthos/plugin-hurricanes';
 import aircraftPlugin from '@earthos/plugin-aircraft';
 import earthquakesPlugin from '@earthos/plugin-earthquakes';
 import daynightPlugin from '@earthos/plugin-daynight';
@@ -24,6 +34,8 @@ const PLUGINS: EarthOSPlugin[] = [
   satellitesPlugin,
   aircraftPlugin,
   daynightPlugin,
+  eclipsePlugin,
+  hurricanesPlugin,
   earthquakesPlugin,
   geojsonPlugin,
 ];
@@ -47,7 +59,23 @@ const TEXTURES_8K = {
 const DEFAULT_ENABLED = ['imagery', 'satellites', 'daynight'];
 
 export function EarthApp() {
-  const engine = useMemo(() => createEarthEngine({ cache: createDefaultCache() }), []);
+  const link = useMemo(() => readPermalink(), []);
+  const embed = useMemo(() => isEmbed(), []);
+  const engine = useMemo(() => {
+    const created = createEarthEngine({ cache: createDefaultCache() });
+    // Permalinked camera beats persisted state: shared links must reproduce.
+    if (link.lat !== undefined && link.lon !== undefined) {
+      created.store.getState().setCameraSnapshot({
+        lat: link.lat,
+        lon: link.lon,
+        altKm: link.altKm ?? 12_000,
+        heading: 0,
+        pitch: 0,
+      });
+    }
+    return created;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [ready, setReady] = useState(false);
   const [textures, setTextures] = useState(TEXTURES_2K);
 
@@ -89,23 +117,42 @@ export function EarthApp() {
       if (airSettings && !(airSettings.get() as { endpoint?: string }).endpoint) {
         airSettings.patch({ endpoint: '/api/proxy/opensky' });
       }
+      const nhcSettings = engine.getContext('hurricanes')?.settings;
+      if (nhcSettings && !(nhcSettings.get() as { endpoint?: string }).endpoint) {
+        nhcSettings.patch({ endpoint: '/api/proxy/nhc' });
+      }
       if (cancelled) return;
       setReady(true);
       const prefs = engine.store.getState().layerPrefs;
       for (const plugin of PLUGINS) {
-        // Per-layer: an explicit preference wins; layers the visitor has
-        // never seen (e.g. newly shipped defaults) fall back to the default.
+        // Permalink beats preference beats shipped default.
         const pref = prefs[plugin.id];
-        const wanted = pref ? pref.visible : DEFAULT_ENABLED.includes(plugin.id);
+        const wanted = link.layers
+          ? link.layers.includes(plugin.id)
+          : pref
+            ? pref.visible
+            : DEFAULT_ENABLED.includes(plugin.id);
         if (wanted) void engine.activate(plugin.id).catch(() => undefined);
       }
+      applyPermalinkDynamics(engine, link);
     })();
     // No engine.destroy() here: the engine lives for the page's lifetime, and
     // destroying in cleanup races StrictMode's remount against activation.
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [engine]);
+
+  // Keep the URL shareable; embeds also listen for parent commands.
+  useEffect(() => {
+    const stopSync = startPermalinkSync(engine);
+    const stopEmbed = embed ? startEmbedApi(engine) : undefined;
+    return () => {
+      stopSync();
+      stopEmbed?.();
+    };
+  }, [engine, embed]);
 
   // Global shortcuts (palette handles its own cmd+k).
   useEffect(() => {
@@ -128,10 +175,26 @@ export function EarthApp() {
   return (
     <EarthEngineProvider engine={engine}>
       <div className="relative h-screen w-screen overflow-hidden">
-        <EarthCanvas engine={engine} textures={textures} className="absolute inset-0" />
+        <EarthCanvas
+          engine={engine}
+          textures={textures}
+          idleCinematicAfterS={embed ? 10 : 30}
+          className="absolute inset-0"
+        />
 
         {/* HUD overlay: pointer events pass through except on panels. */}
         <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-4">
+          {embed ? (
+            <div className="flex items-start justify-between">
+              <span className="font-[family-name:var(--font-display)] text-[14px] text-[var(--text-secondary)]" style={{ fontWeight: 680 }}>
+                Earth<span className="text-[var(--brand-400)]">OS</span>
+              </span>
+              <span className="text-[10px] text-[var(--text-muted)]">
+                Esri / CelesTrak / OpenSky / USGS / NASA
+              </span>
+            </div>
+          ) : null}
+          {!embed ? (
           <div className="flex items-start justify-between gap-4">
             <header className="pointer-events-auto select-none">
               <h1
@@ -157,14 +220,20 @@ export function EarthApp() {
               <Inspector />
             </div>
           </div>
+          ) : null}
 
+          {!embed ? (
           <div className="flex items-end justify-between gap-4">
-            <StatusBar attribution="CelesTrak / OpenSky / USGS / NASA imagery" />
+            <div className="flex items-end gap-3">
+              <StatusBar attribution="CelesTrak / OpenSky / USGS / NASA imagery" />
+              <CaptureControls />
+            </div>
             <Timeline />
           </div>
+          ) : null}
         </div>
 
-        <CommandPalette />
+        {!embed ? <CommandPalette /> : null}
         <HoverCard />
       </div>
     </EarthEngineProvider>

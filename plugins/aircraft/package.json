@@ -71,5 +71,14 @@
     "aircraft",
     "adsb",
     "opensky"
-  ]
+  ],
+  "homepage": "https://earthos.efolusi.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/efolusi/earthOS.git",
+    "directory": "plugins/aircraft"
+  },
+  "bugs": {
+    "url": "https://github.com/efolusi/earthOS/issues"
+  }
 }
