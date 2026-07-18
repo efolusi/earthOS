@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { EarthOSPlugin } from '@earthos/core';
 import { useEarth, useEarthState } from '@earthos/core/react';
-import { GlassPanel, Toggle } from './panel';
+import { GlassPanel, IconButton, Toggle } from './panel';
 import { SettingsForm } from './settings-form';
 
 const STATUS_COLOR: Record<string, string> = {
@@ -22,10 +22,43 @@ export function LayerPanel({ plugins }: { plugins: EarthOSPlugin[] }) {
   const engine = useEarth();
   const layers = useEarthState((s) => s.layers);
   const [expanded, setExpanded] = useState<string | null>(null);
+  // Collapse to just the header on phones so the panel never buries the globe.
+  const [collapsed, setCollapsed] = useState(false);
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 639px)').matches) {
+      setCollapsed(true);
+    }
+  }, []);
 
   return (
-    <GlassPanel title="Layers" className="w-80">
-      <ul className="max-h-[46vh] overflow-y-auto py-1">
+    <GlassPanel
+      title="Layers"
+      className="w-[min(20rem,calc(100vw-1rem))]"
+      actions={
+        <IconButton
+          label={collapsed ? 'Expand layers' : 'Collapse layers'}
+          onClick={() => setCollapsed((c) => !c)}
+        >
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 12 12"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            aria-hidden
+            style={{
+              transform: collapsed ? 'rotate(-90deg)' : 'none',
+              transition: 'transform var(--dur-med) var(--ease-spring)',
+            }}
+          >
+            <path d="M2.5 4.5L6 8l3.5-3.5" />
+          </svg>
+        </IconButton>
+      }
+    >
+      {collapsed ? null : (
+      <ul className="max-h-[38vh] overflow-y-auto py-1 sm:max-h-[46vh]">
         {plugins.map((plugin) => {
           const layer = layers[plugin.id];
           const enabled = layer?.status === 'active' || layer?.status === 'loading';
@@ -82,6 +115,7 @@ export function LayerPanel({ plugins }: { plugins: EarthOSPlugin[] }) {
           );
         })}
       </ul>
+      )}
     </GlassPanel>
   );
 }

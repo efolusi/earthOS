@@ -37,7 +37,7 @@ export function Inspector() {
   return (
     <GlassPanel
       title="Inspector"
-      className="w-80"
+      className="w-[min(20rem,calc(100vw-1rem))]"
       actions={
         <IconButton label="Close" onClick={() => engine.store.getState().setSelected(null)}>
           <svg

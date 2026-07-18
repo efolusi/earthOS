@@ -184,7 +184,7 @@ export function EarthApp() {
         />
 
         {/* HUD overlay: pointer events pass through except on panels. */}
-        <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-4">
+        <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-2 sm:p-4">
           {embed ? (
             <div className="flex items-start justify-between">
               <span
@@ -199,15 +199,15 @@ export function EarthApp() {
             </div>
           ) : null}
           {!embed ? (
-            <div className="flex items-start justify-between gap-4">
+            <div className="flex items-start justify-between gap-2 sm:gap-4">
               <header className="pointer-events-auto select-none">
                 <h1
-                  className="font-[family-name:var(--font-display)] text-[21px] tracking-[var(--tracking-display)] text-[var(--text-primary)]"
+                  className="font-[family-name:var(--font-display)] text-[17px] tracking-[var(--tracking-display)] text-[var(--text-primary)] sm:text-[21px]"
                   style={{ fontWeight: 680 }}
                 >
                   Earth<span className="text-[var(--brand-400)]">OS</span>
                 </h1>
-                <p className="text-[12px] text-[var(--text-muted)]">
+                <p className="hidden text-[12px] text-[var(--text-muted)] sm:block">
                   Press{' '}
                   <kbd className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-sunken)] px-1 font-[family-name:var(--font-mono)] text-[11px]">
                     ⌘K
@@ -227,12 +227,16 @@ export function EarthApp() {
           ) : null}
 
           {!embed ? (
-            <div className="flex items-end justify-between gap-4">
-              <div className="flex items-end gap-3">
-                <StatusBar attribution="CelesTrak / airplanes.live / USGS / NASA imagery" />
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+              <div className="order-2 flex items-end gap-3 sm:order-1">
+                <div className="hidden sm:block">
+                  <StatusBar attribution="CelesTrak / airplanes.live / USGS / NASA imagery" />
+                </div>
                 <CaptureControls />
               </div>
-              <Timeline />
+              <div className="order-1 max-w-full overflow-x-auto sm:order-2">
+                <Timeline />
+              </div>
             </div>
           ) : null}
         </div>
