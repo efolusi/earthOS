@@ -19,10 +19,12 @@ const FILES = {
 const outDir = join(dirname(new URL(import.meta.url).pathname), '../apps/web/public/textures/full');
 mkdirSync(outDir, { recursive: true });
 
+const TIMEOUT_MS = 15_000; // fail fast on CI hosts that cannot reach the CDN
+
 function download(url, dest) {
   return new Promise((resolve, reject) => {
     const follow = (u, redirects = 0) => {
-      get(u, (res) => {
+      const req = get(u, (res) => {
         if (
           res.statusCode >= 300 &&
           res.statusCode < 400 &&
@@ -40,7 +42,9 @@ function download(url, dest) {
         res.pipe(file);
         file.on('finish', () => file.close(resolve));
         file.on('error', reject);
-      }).on('error', reject);
+      });
+      req.on('error', reject);
+      req.setTimeout(TIMEOUT_MS, () => req.destroy(new Error(`timeout after ${TIMEOUT_MS / 1000}s`)));
     };
     follow(url);
   });
