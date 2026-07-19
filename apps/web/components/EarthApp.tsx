@@ -285,8 +285,8 @@ export function EarthApp() {
           ) : null}
 
           {!embed ? (
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-              <div className="order-2 flex items-center gap-2 sm:order-1">
+            <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between lg:gap-4">
+              <div className="order-2 flex items-center gap-2 lg:order-1">
                 <div className="hidden sm:block">
                   <StatusBar />
                 </div>
@@ -298,7 +298,7 @@ export function EarthApp() {
                   onMeasureClear={() => setMeasurePoints([])}
                 />
               </div>
-              <div className="order-1 max-w-full overflow-x-auto sm:order-2">
+              <div className="order-1 max-w-full overflow-x-auto lg:order-2">
                 <Timeline />
               </div>
             </div>

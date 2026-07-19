@@ -27,7 +27,7 @@ export function LayerPanel({ plugins }: { plugins: EarthOSPlugin[] }) {
   return (
     <GlassPanel
       title="Layers"
-      className="w-[min(20rem,calc(100vw-1rem))]"
+      className={collapsed ? 'w-auto' : 'w-[min(20rem,calc(100vw-1rem))]'}
       actions={
         <IconButton
           label={collapsed ? 'Expand layers' : 'Collapse layers'}

@@ -109,7 +109,7 @@ export function MyLocationPanel({
         active={!!observer}
         className="border border-[var(--border-default)] bg-[color-mix(in_srgb,var(--surface-card)_94%,transparent)] px-2.5 shadow-[var(--shadow-md)] backdrop-blur-xl"
       >
-        <span className="flex items-center gap-1.5">
+        <span className="flex items-center gap-1.5 whitespace-nowrap">
           <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden>
             <circle cx="7" cy="7" r="2.4" />
             <path d="M7 1v1.6M7 11.4V13M1 7h1.6M11.4 7H13" />

@@ -36,7 +36,7 @@ export function StatusBar() {
   const fps = useFps();
 
   return (
-    <div className="pointer-events-auto flex h-10 items-center gap-4 rounded-[var(--radius-full)] border border-[var(--border-default)] bg-[color-mix(in_srgb,var(--surface-card)_94%,transparent)] px-4 font-[family-name:var(--font-mono)] text-[12px] text-[var(--text-secondary)] shadow-[var(--shadow-md)] backdrop-blur-xl">
+    <div className="pointer-events-auto flex h-10 shrink-0 items-center gap-4 whitespace-nowrap rounded-[var(--radius-full)] border border-[var(--border-default)] bg-[color-mix(in_srgb,var(--surface-card)_94%,transparent)] px-4 font-[family-name:var(--font-mono)] text-[12px] text-[var(--text-secondary)] shadow-[var(--shadow-md)] backdrop-blur-xl">
       <span data-testid="camera-readout">
         {formatCoord(camera.lat, 'N', 'S')} {formatCoord(camera.lon, 'E', 'W')}
       </span>

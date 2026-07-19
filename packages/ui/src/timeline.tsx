@@ -37,8 +37,8 @@ export function Timeline() {
   };
 
   return (
-    <GlassPanel className="flex h-10 items-center px-2.5 sm:px-4">
-      <div className="flex w-max items-center gap-2">
+    <GlassPanel className="flex h-10 items-center px-2 sm:px-4">
+      <div className="flex w-max items-center gap-1 sm:gap-2">
         <IconButton label="Back 1 hour" onClick={() => engine.time.offsetBy(-3_600_000)}>
           <span className="font-[family-name:var(--font-mono)]">-1h</span>
         </IconButton>
@@ -65,7 +65,7 @@ export function Timeline() {
         <IconButton label="Slower" onClick={() => cycleRate(-1)}>
           −
         </IconButton>
-        <span className="w-16 text-center font-[family-name:var(--font-mono)] text-[12px] text-[var(--text-primary)]">
+        <span className="w-14 text-center font-[family-name:var(--font-mono)] text-[12px] text-[var(--text-primary)] sm:w-16">
           {timeCtl.live ? '1x live' : `${timeCtl.rate}x`}
         </span>
         <IconButton label="Faster" onClick={() => cycleRate(1)}>
@@ -79,10 +79,10 @@ export function Timeline() {
           rev
         </IconButton>
 
-        <div className="mx-1 h-5 w-px bg-[var(--border-default)]" />
+        <div className="mx-1 hidden h-5 w-px bg-[var(--border-default)] sm:block" />
 
         <span
-          className="min-w-[8.5rem] font-[family-name:var(--font-mono)] text-[11px] text-[var(--text-secondary)] sm:min-w-44 sm:text-[12px]"
+          className="hidden font-[family-name:var(--font-mono)] text-[11px] text-[var(--text-secondary)] sm:inline-block sm:min-w-44 sm:text-[12px]"
           data-testid="sim-clock"
         >
           {formatUtc(nowMs)}
