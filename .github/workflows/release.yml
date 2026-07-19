@@ -33,4 +33,9 @@ jobs:
           publish: pnpm release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # setup-node writes an .npmrc that resolves ${NODE_AUTH_TOKEN}, so the
+          # publish step authenticates only if the secret is exposed under that
+          # exact name. NPM_TOKEN alone leaves npm anonymous and every publish
+          # comes back as a 404.
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
