@@ -24,15 +24,10 @@ Components reference two things the consuming app provides:
 2. **Meridian tokens.** Components read semantic custom properties (`--surface-card`, `--text-primary`, `--border-default`, `--accent-subtle`, `--radius-lg`, `--font-mono`, and friends). Install [`@efolusi/meridian`](https://www.npmjs.com/package/@efolusi/meridian) (MIT) and import its token sheets, or map the variables to your own system. Unset variables fall back to browser defaults, which will look broken; the tokens are not optional.
 
 ```css
-@import '@efolusi/meridian/tokens/fonts.css';
-@import '@efolusi/meridian/tokens/colors.css';
-@import '@efolusi/meridian/tokens/typography.css';
-@import '@efolusi/meridian/tokens/spacing.css';
-@import '@efolusi/meridian/tokens/effects.css';
-@import '@efolusi/meridian/tokens/base.css';
+@import '@efolusi/meridian/styles.css';
 ```
 
-Import the six sheets individually rather than the package's `styles.css`: that aggregate uses bare specifiers (`@import "tokens/fonts.css"`), which bundlers try to resolve from `node_modules` and fail on.
+Requires `@efolusi/meridian` >= 1.5.1. Earlier versions ship a `styles.css` whose inner imports use bare specifiers, which bundlers fail to resolve; on those, import the six sheets under `@efolusi/meridian/tokens/` individually.
 
 The flagship app (`apps/web`) is the reference wiring. The 3D packages (`@earthos/globe`, plugins) have no styling requirements at all.
 
