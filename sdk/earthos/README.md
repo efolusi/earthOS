@@ -42,6 +42,24 @@ export function App() {
 - Engine and plugin authoring: `createEarthEngine`, `definePlugin`, `defineSettings`, `f`, `PLUGIN_API_VERSION`, and provider bases `DataProvider`, `StaticProvider`, `StreamProvider`, `TileProvider`.
 - Lower-level building blocks: `EarthCanvas`, `ExtrapolatedPointsLayer`, `useEarthFixed`, and GIS helpers `geodeticToScene`, `eciToScene`, `subsolarPoint`, `EARTH_RADIUS_KM`.
 
+### Wildfires has no typed wrapper yet
+
+`@earthos/plugin-wildfires` ships in the EarthOS repo and runs in the demo app, but it has no `LayerWildfires` wrapper and is not a dependency of `earthos`. Add it to your own dependencies and mount it through the generic `Layer` escape hatch:
+
+```bash
+pnpm add @earthos/plugin-wildfires
+```
+
+```tsx
+import { Earth, Layer } from 'earthos';
+
+<Earth>
+  <Layer manifest={() => import('@earthos/plugin-wildfires')} />
+</Earth>;
+```
+
+Every other third-party or unwrapped plugin composes the same way: `manifest` takes the lazy import, `enabled` toggles it, `settings` patches its schema-validated settings.
+
 See [docs/ARCHITECTURE.md](../../docs/ARCHITECTURE.md) for how the engine, providers, and renderers fit together, and [docs/PLUGIN_GUIDE.md](../../docs/PLUGIN_GUIDE.md) to build your own layer.
 
 Part of [EarthOS](https://github.com/efolusi/earthOS). MIT licensed.

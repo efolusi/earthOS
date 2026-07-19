@@ -14,7 +14,7 @@ Pulls in `@earthos/core` (the runtime types and `MemoryCache`) as a dependency. 
 
 ## Usage
 
-Subclass the variant that matches the source, set a policy, implement `fetch`:
+Subclass the variant that matches the source, set a policy, implement that variant's abstract member (see [Variants](#variants) below). For an HTTP feed that is `fetch`:
 
 ```ts
 import { DataProvider, type FetchIO } from '@earthos/providers';
@@ -47,18 +47,21 @@ Override `cacheKey(settings)` when the payload depends on a setting, and `merge(
 
 ## Variants
 
-| Export           | For                                                              |
-| ---------------- | ---------------------------------------------------------------- |
-| `DataProvider`   | polling HTTP sources with the full SWR runtime                   |
-| `StaticProvider` | fetch-once datasets (bundled files, user uploads)                |
-| `StreamProvider` | WebSocket/SSE feeds; capped-backoff reconnect, snapshot to cache |
-| `TileProvider`   | raster/vector tile layers; emits a `TileDescriptor`, no fetch    |
+| Export           | For                                                              | You implement              |
+| ---------------- | ---------------------------------------------------------------- | -------------------------- |
+| `DataProvider`   | polling HTTP sources with the full SWR runtime                   | `fetch(io: FetchIO)`       |
+| `StaticProvider` | fetch-once datasets (bundled files, user uploads)                | `fetch(io: FetchIO)`       |
+| `StreamProvider` | WebSocket/SSE feeds; capped-backoff reconnect, snapshot to cache | `connect(io: StreamIO<T>)` |
+| `TileProvider`   | raster/vector tile layers; emits a `TileDescriptor`, no fetch    | `describe(settings)`       |
+
+Every variant also needs a `readonly id`. `StreamProvider.connect` returns a `Disposer` (or a promise of one) and pushes updates through `io.push`; `TileProvider.describe` returns the descriptor synchronously and is re-run on `refresh()`.
 
 ## Also exported
 
 - `createDefaultCache`, `LayeredCache`, `IdbCache`: memory LRU in front of IndexedDB (memory-only under SSR/tests), all failures degrade to cache misses.
 - `DEFAULT_POLICY`, `mergePolicy`, and the `ProviderPolicy` / `RefreshPolicy` / `CachePolicy` / `RetryPolicy` / `RateLimitPolicy` types.
 - `HttpError`, `RetryAfterError`, `parseRetryAfterMs`, `rateLimitWaitMs`, `resetRateLimiters`.
+- The per-variant IO types: `FetchIO` (`DataProvider` / `StaticProvider`) and `StreamIO` (`StreamProvider`), plus `TileDescriptor`.
 
 See [docs/PLUGIN_GUIDE.md](../../docs/PLUGIN_GUIDE.md) for wiring a provider into a layer and [docs/ARCHITECTURE.md](../../docs/ARCHITECTURE.md) for how the engine drives it.
 

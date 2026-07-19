@@ -8,3 +8,5 @@ playwright-report/
 test-results/
 CHANGELOG.md
 .changeset/
+# Generated data files: formatting them churns tens of thousands of lines
+apps/web/public/samples/*.geojson

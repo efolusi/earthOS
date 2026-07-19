@@ -34,7 +34,7 @@ interface EarthOSPlugin {
 }
 ```
 
-`definePlugin` composes these from the mandated file shape (`plugin.ts`, `provider.ts`, `renderer.ts`, `settings.ts`, `types.ts`). `plugin.ts` is the only statically imported module; provider and renderer are `import()` split points, so a disabled plugin costs zero bytes at runtime.
+`definePlugin` composes these from the mandated file shape (`plugin.ts`, `provider.ts`, `renderer.tsx`, `settings.ts`, `types.ts`). `plugin.ts` is the only statically imported module; provider and renderer are `import()` split points, so a disabled plugin costs zero bytes at runtime.
 
 `PluginContext` is the entire API a plugin sees: `time` (sim clock), `layers`, `scene`, `data` (namespaced cache), `providers`, `workers`, `settings`, `events`, `selection`, `camera`, `entities` (search/inspector integration), `logger`, `signal` (aborted on deactivate). New capabilities land behind `ctx.getExtension(key)` until an apiVersion bump; the follow-camera tracker registry (`globe:trackers`) is the first example.
 

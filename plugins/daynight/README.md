@@ -11,4 +11,4 @@ The terminator follows the simulation clock: scrub the timeline and watch the ni
 | `showTerminator` | `true`    |
 | `showSubsolar`   | `true`    |
 | `showSublunar`   | `false`   |
-| `lineColor`      | `#fbbf24` |
+| `lineColor`      | `#C08A5A` |

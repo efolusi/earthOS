@@ -25,14 +25,14 @@ The dev server runs at http://localhost:3000.
 
 Dependency rules (enforced in CI):
 
-1. No cycles. The DAG is `gis -> (nothing)`, `core -> (nothing)`, `providers -> core`, `globe -> core, gis`, `ui -> core`, `plugins -> core, providers, gis`.
-2. `react`, `three`, `@react-three/fiber`, `@react-three/drei`, `maplibre-gl` are peerDependencies everywhere except apps and examples (`pnpm check-peers`).
+1. No cycles. The DAG is `gis -> (nothing)`, `core -> (nothing)`, `providers -> core`, `globe -> core, gis`, `ui -> core`, `plugins -> core, providers, gis, globe (peer)`.
+2. `react`, `react-dom`, `three`, `@react-three/fiber`, `@react-three/drei`, `maplibre-gl` are peerDependencies everywhere except apps and examples (`pnpm check-peers`).
 
 ## The fastest contribution: a plugin
 
 Run `pnpm create earthos-plugin <name>` and follow [docs/PLUGIN_GUIDE.md](docs/PLUGIN_GUIDE.md). Every plugin must:
 
-- Follow the mandated file shape: `plugin.ts`, `provider.ts`, `renderer.ts`, `settings.ts`, `types.ts`, `tests/`, `README.md`.
+- Follow the mandated file shape: `plugin.ts`, `index.ts`, `renderer.tsx`, `tests/`, `README.md`, plus `settings.ts` when the layer is configurable and `provider.ts` / `types.ts` when it fetches data. Purely computed layers skip them: `daynight` ships without `provider.ts` and `types.ts`, `eclipse` without those and `settings.ts`.
 - Pass `runPluginContractTests` from `@earthos/testing`.
 - Keep `plugin.ts` free of heavy imports (no `three`, no provider code). Lazy-import via `definePlugin`.
 - Include attribution and terms for its data source in its README.

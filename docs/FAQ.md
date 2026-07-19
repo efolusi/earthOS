@@ -13,7 +13,7 @@ Yes. The globe, stars, day/night terminator, and the GeoJSON sample render with 
 SGP4 via satellite.js, the same model TLE/GP data is generated for: hundreds of meters to km-level, standard for visualization and pass prediction. Between worker refreshes the GPU extrapolates with a gravity-corrected quadratic; the residual is sub-pixel at any legal zoom.
 
 **How do I add my own data?**
-Quickest: the Custom GeoJSON layer with any FeatureCollection URL. Real integration: `pnpm create earthos-plugin my-layer` and see [PLUGIN_GUIDE.md](PLUGIN_GUIDE.md).
+Quickest: the Custom GeoJSON layer with any FeatureCollection URL. To see it working, paste `https://earthos.efolusi.com/samples/kdmp-merah-putih-sample.geojson` into that layer's "GeoJSON URL" setting: 1,900 Koperasi Desa/Kelurahan Merah Putih candidate locations across Indonesia, plotted as village centroids (where a KDMP is mandated, not a verified per-cooperative registry). Real integration: `pnpm create earthos-plugin my-layer` and see [PLUGIN_GUIDE.md](PLUGIN_GUIDE.md).
 
 **Does scrubbing time move the satellites correctly?**
 Yes: the simulation clock drives SGP4 propagation, the Earth's rotation (GMST), the sun, the moon, and the terminator together. Scrub hours into the future and constellations, lighting, and ground tracks stay consistent.
@@ -28,4 +28,4 @@ The UI is responsive and textures are modest (2k). The points pipeline is mobile
 Reserved for the 2D fallback mode and tile-based layers (see ROADMAP). The `TileProvider` base and the `maplibre-gl` peer slot exist so tile plugins land without new architecture.
 
 **License and data terms?**
-Code is MIT. The Earth textures are derived from public NASA imagery but the shipped files carry their own terms (Solar System Scope, CC BY 4.0, for the HD set; three.js base set), credited in [apps/web/public/textures/CREDITS.md](../apps/web/public/textures/CREDITS.md). Each plugin's README states its data source's terms (CelesTrak usage guidelines, USGS public domain, and so on); respect them when you change refresh policies.
+Code is MIT. The Earth textures are derived from public NASA imagery but the shipped files carry their own terms (Solar System Scope, CC BY 4.0, for the HD set; three.js base set), credited in [apps/web/public/textures/CREDITS.md](../apps/web/public/textures/CREDITS.md). Each plugin's README states its data source's terms (CelesTrak usage guidelines, USGS public domain, and so on); respect them when you change refresh policies. The sample dataset under `apps/web/public/samples/` is the most restrictive asset here: its geometry comes from Badan Informasi Geospasial (BIG), which declares no open-data licence, so attribute BIG and confirm reuse terms with them before redistributing it beyond this demo. Full provenance in [apps/web/public/samples/CREDITS.md](../apps/web/public/samples/CREDITS.md).

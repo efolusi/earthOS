@@ -1,6 +1,6 @@
 # @earthos/plugin-satellites
 
-Live satellite constellations for EarthOS: the CelesTrak GP catalog (Starlink, ISS and stations, GPS, OneWeb, GEO belt, or the entire active catalog) propagated with SGP4 in a worker pool and rendered as a single GPU-extrapolated points draw call. Tested with 15,000+ objects at 60 FPS.
+Live satellite constellations for EarthOS: the CelesTrak GP catalog (Starlink, ISS and stations, GPS, OneWeb, GEO belt, weather satellites, science missions, or the entire active catalog) propagated with SGP4 in a worker pool and rendered as a single GPU-extrapolated points draw call. Tested with 15,000+ objects at 60 FPS.
 
 ## Usage
 
@@ -23,14 +23,15 @@ import { Earth, Layer } from 'earthos';
 
 ## Settings
 
-| Key             | Default    | Notes                                            |
-| --------------- | ---------- | ------------------------------------------------ |
-| `group`         | `starlink` | CelesTrak GP group                               |
-| `pointSize`     | 3 px       | sprite size                                      |
-| `color`         | `#CE9C66`  | gold point color (distinct from other layers)    |
-| `showOrbit`     | `true`     | orbit line for the selection                     |
-| `maxSatellites` | 15000      | catalog cap                                      |
-| `endpoint`      | (blank)    | proxy override; blank fetches CelesTrak directly |
+| Key             | Default     | Notes                                                          |
+| --------------- | ----------- | -------------------------------------------------------------- |
+| `dataSource`    | `celestrak` | `celestrak` (grouped catalog) or `tleapi` (popular satellites) |
+| `group`         | `starlink`  | CelesTrak GP group                                             |
+| `pointSize`     | 3 px        | sprite size                                                    |
+| `color`         | `#E3B34D`   | gold point color (distinct from other layers)                  |
+| `showOrbit`     | `true`      | orbit line for the selection                                   |
+| `maxSatellites` | 15000       | catalog cap                                                    |
+| `endpoint`      | (blank)     | proxy override; blank fetches CelesTrak directly               |
 
 ## Data source
 

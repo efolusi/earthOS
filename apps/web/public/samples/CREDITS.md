@@ -11,6 +11,12 @@ desa/kelurahan. Each point here is a **village centroid** representing where a
 KDMP is mandated, **not** a verified per-cooperative office location or an
 official cooperative registry.
 
+Sampling is an equal ~50 villages per province (stride-sampled by
+`kode_wilayah`), so the point set is geographically representative but **not**
+density-proportional: every province gets the same number of points regardless
+of how many desa/kelurahan it actually has. Do not read it as a national
+density map.
+
 **Sources**
 
 - Geometry: **Badan Informasi Geospasial (BIG)** — "Batas Wilayah
@@ -21,7 +27,9 @@ official cooperative registry.
   redistributing beyond this demo sample.
 - Administrative codes (`kode_wilayah`): Kementerian Dalam Negeri
   (Kepmendagri 300.2.2-2138/2025).
-- Program context / totals: Kementerian Koperasi (simkopdes.go.id).
+- Program context / totals: Kementerian Koperasi dashboard
+  (simkopdes.go.id), as of 19/07/2026: 83,381 KDMP with legal entity status
+  across 83,765 desa/kelurahan in 38 provinces.
 
 This is a demo sample for the Custom GeoJSON 3D-location layer, not the full
-~83,000-village dataset, and not an official government dataset.
+83,765-village program footprint, and not an official government dataset.

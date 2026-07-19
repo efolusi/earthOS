@@ -2,6 +2,14 @@
 
 The EarthOS control surfaces: layer panel with schema-driven settings forms, timeline, inspector, command palette, and status bar. Styled with the Meridian design system (Efolusi) through CSS custom properties, laid out with Tailwind utility classes.
 
+## Install
+
+```bash
+pnpm add @earthos/ui framer-motion
+```
+
+`@earthos/core` comes in as a dependency. Peer dependencies, each of which must be deduped to a single instance: `react` (^19) and `framer-motion` (^11 || ^12). `framer-motion` is not optional: `GlassPanel`, `LayerPanel`, and `CommandPalette` import it directly, so a missing peer breaks rendering rather than degrading it.
+
 ## Styling requirements
 
 Components reference two things the consuming app provides:
@@ -25,8 +33,13 @@ The flagship app (`apps/web`) is the reference wiring. The 3D packages (`@eartho
 | `SettingsForm`                       | auto-rendered from any plugin's `defineSettings` schema   |
 | `Timeline`                           | play/pause, rate stepping, hour jumps, live re-sync       |
 | `Inspector`                          | selected-entity details with fly-to and follow            |
+| `HoverCard`                          | cursor-following label for the hovered entity             |
 | `CommandPalette`                     | Cmd/Ctrl+K search across all layer entity sources         |
 | `StatusBar`                          | camera readout, FPS meter, attribution                    |
 | `GlassPanel`, `IconButton`, `Toggle` | the underlying Meridian surfaces                          |
 
-All components require an `EarthEngineProvider` (or `<Earth/>`) above them.
+`LayerPanel`, `Timeline`, `Inspector`, `HoverCard`, `CommandPalette`, and `StatusBar` read the engine through `useEarth` / `useEarthState` / `useSimTime`, so they require an `EarthEngineProvider` (or `<Earth/>`) above them. `SettingsForm` and the `GlassPanel` / `IconButton` / `Toggle` surfaces have no engine dependency: they are prop-driven and render anywhere, `SettingsForm` taking a `schema` and a plugin `api` directly.
+
+See [docs/PLUGIN_GUIDE.md](../../docs/PLUGIN_GUIDE.md) for the `defineSettings` schemas `SettingsForm` renders and [docs/ARCHITECTURE.md](../../docs/ARCHITECTURE.md) for how the engine, globe, and UI fit together.
+
+Part of [EarthOS](https://github.com/efolusi/earthOS). MIT licensed.

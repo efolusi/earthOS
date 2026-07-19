@@ -4,18 +4,18 @@
 
 Synthesized from 8 competitors: satellitemap.space, Google Earth (web), NASA Eyes, Flightradar24, Windy.com, Zoom.Earth, KeepTrack.space, and CesiumJS. Gaps deduplicated and grouped into themes. Impact/effort are as scored in source research, reconciled where competitors disagreed.
 
-A note on the shape of the field: every single competitor beats EarthOS on **mobile/responsive** and **onboarding/discovery**. Those two are the universal gaps. Everything else is domain depth where one or two rivals go far deeper than EarthOS's "dots on a globe."
+A note on the shape of the field: **onboarding/discovery** is the one gap every competitor still beats EarthOS on. **Mobile** used to be the other; the responsive layout rework has since landed (the HUD reflows, the bottom bar stacks below the `lg` breakpoint, phone and tablet layouts verified), so what is left there is touch input, GPU budget and packaging rather than a desktop-only wall. Everything else is domain depth where one or two rivals go far deeper than EarthOS's "dots on a globe."
 
 ---
 
-## Theme 1: Mobile & Responsive (the universal gap)
+## Theme 1: Mobile (touch input, perf, PWA)
 
-| Gap                                        | Who has it               | Impact | Effort | How EarthOS could do it                                                                                                                                                                                                                  |
-| ------------------------------------------ | ------------------------ | ------ | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Touch/responsive UX; no desktop-only wall  | **All 8**                | High   | Large  | Touch camera handlers (pinch/pan/rotate with inertia), reflow the dense R3F HUD/panels, mobile-GPU perf budget. PWA-first responsive pass, not native apps. Even a read-only reduced-layer mobile view closes most of the practical gap. |
-| Augmented-reality "point at the sky to ID" | FR24, satellitemap.space | Med    | Large  | Device orientation + camera; niche, gate behind the responsive pass.                                                                                                                                                                     |
+| Gap                                           | Who has it               | Impact | Effort | How EarthOS could do it                                                                                                                                                                                                                           |
+| --------------------------------------------- | ------------------------ | ------ | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Touch camera gestures, mobile GPU budget, PWA | **All 8**                | High   | Med    | Layout reflow is done (HUD reflows, bottom bar stacks below `lg`, phone and tablet verified). Still open: touch camera handlers (pinch/pan/rotate with inertia), a mobile-GPU perf budget, and PWA packaging (`apps/web/public` has no manifest). |
+| Augmented-reality "point at the sky to ID"    | FR24, satellitemap.space | Med    | Large  | Device orientation + camera; niche, gate behind the touch-input pass.                                                                                                                                                                             |
 
-This is called out in EarthOS's own capability notes. It is the single biggest reach limiter: for a consumer "go look up at the sky" or "check the weather" product, mobile is where the usage actually is.
+The layout half of this is shipped; the input and packaging half is not. Touch gestures are the sharp edge: a phone user can now read the UI but still cannot pinch-zoom or two-finger rotate the globe (no `pinch`, `pointerType`, `touches` or `TouchEvent` handling anywhere in the source). For a consumer "go look up at the sky" or "check the weather" product, mobile is where the usage actually is.
 
 ---
 
@@ -35,14 +35,14 @@ Discovery is EarthOS's weakest non-technical area: cmdk search is powerful but a
 
 ## Theme 3: Interaction & Analysis Tools
 
-| Gap                                                        | Who has it                 | Impact | Effort | How EarthOS could do it                                                                                                                                             |
-| ---------------------------------------------------------- | -------------------------- | ------ | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Distance / area / elevation-profile measurement            | Google, Zoom.Earth, Cesium | High   | Med    | Great-circle distance + spherical polygon area need no new data (small); elevation profiles need the DEM layer (Theme 5). Highest utility-to-effort win in the set. |
-| Live value "picker" (sample a scalar field at cursor)      | Windy                      | High   | Med    | Sample source texture/grid at lat/lon under cursor. Only meaningful once a raster data layer exists.                                                                |
-| In-app draw/annotate (points, lines, polygons, placemarks) | Google, Cesium             | Med    | Med    | Draw mode emits GeoJSON into the existing renderer; serialize into the permalink for account-less sharing. Pairs naturally with measure tools.                      |
-| Broad file import: KML/KMZ, Shapefile                      | Google                     | Med    | Small  | Client-side `togeojson` + `shpjs` convert to the GeoJSON the custom layer already renders. Lowest-effort item; instantly widens the GIS/planning audience.          |
-| Meteogram / point time-series                              | Windy, Zoom.Earth          | Med    | Med    | Reuse the sim clock's time axis to plot model values at a picked coordinate.                                                                                        |
-| Per-location point forecast (tap → daily/hourly)           | Zoom.Earth                 | Med    | Med    | Wire Open-Meteo into the existing click/search flow.                                                                                                                |
+| Gap                                                        | Who has it                 | Impact | Effort | How EarthOS could do it                                                                                                                                                                                            |
+| ---------------------------------------------------------- | -------------------------- | ------ | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Elevation-profile measurement                              | Google, Zoom.Earth, Cesium | Med    | Med    | Distance and area shipped (`apps/web/components/MeasureLayer.tsx` over `pathLengthKm` / `sphericalPolygonAreaKm2` in `packages/gis`). Elevation profiles are the remainder and need the DEM layer (Theme 6) first. |
+| Live value "picker" (sample a scalar field at cursor)      | Windy                      | High   | Med    | Sample source texture/grid at lat/lon under cursor. Only meaningful once a raster data layer exists.                                                                                                               |
+| In-app draw/annotate (points, lines, polygons, placemarks) | Google, Cesium             | Med    | Med    | Draw mode emits GeoJSON into the existing renderer; serialize into the permalink for account-less sharing. Pairs naturally with measure tools.                                                                     |
+| Broad file import: KML/KMZ, Shapefile                      | Google                     | Med    | Small  | Client-side `togeojson` + `shpjs` convert to the GeoJSON the custom layer already renders. Lowest-effort item; instantly widens the GIS/planning audience.                                                         |
+| Meteogram / point time-series                              | Windy, Zoom.Earth          | Med    | Med    | Reuse the sim clock's time axis to plot model values at a picked coordinate.                                                                                                                                       |
+| Per-location point forecast (tap → daily/hourly)           | Zoom.Earth                 | Med    | Med    | Wire Open-Meteo into the existing click/search flow.                                                                                                                                                               |
 
 ---
 
@@ -64,12 +64,13 @@ EarthOS renders a synthetic/static cloud texture and nothing numerical. Windy an
 
 ## Theme 5: Data & Layers — Earth Science, Hazards & Time Depth
 
-| Gap                                                               | Who has it        | Impact   | Effort    | How EarthOS could do it                                                                                                                                                                                                         |
-| ----------------------------------------------------------------- | ----------------- | -------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Wildfire / active-fire heat-spot layer                            | Zoom.Earth        | Med      | **Small** | NASA FIRMS (VIIRS/MODIS) free global API drops into the existing point/GeoJSON pattern — same shape as earthquakes. Whole new hazard category for near-zero effort.                                                             |
-| Global multi-basin hurricane coverage + forecast cones + history  | Zoom.Earth        | Med      | Med       | Add JTWC/NRL/IBTrACS to the existing NHC-only plugin; add cone geometry and historical tracks.                                                                                                                                  |
-| Scientific climate rasters (CO2, sea level, soil moisture, ozone) | NASA Eyes         | High     | Large     | NASA GIBS/Worldview WMTS tiles; the heavy part is the colormap/legend/time-slice pipeline and dataset curation. Core to the "Earth twin" framing.                                                                               |
-| Historical / time-lapse basemap (satellite back to 1984)          | Google, NASA Eyes | Med–High | Large     | The sim clock is the right hook; the gap is a temporal imagery source. Sentinel-2 (2015+) / Landsat (1984+) or dated GIBS tiles, indexed by acquisition date, driven by the existing scrubber. Data pipeline is the heavy part. |
+| Gap                                                               | Who has it        | Impact   | Effort | How EarthOS could do it                                                                                                                                                                                                         |
+| ----------------------------------------------------------------- | ----------------- | -------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Global multi-basin hurricane coverage + forecast cones + history  | Zoom.Earth        | Med      | Med    | Add JTWC/NRL/IBTrACS to the existing NHC-only plugin; add cone geometry and historical tracks.                                                                                                                                  |
+| Scientific climate rasters (CO2, sea level, soil moisture, ozone) | NASA Eyes         | High     | Large  | NASA GIBS/Worldview WMTS tiles; the heavy part is the colormap/legend/time-slice pipeline and dataset curation. Core to the "Earth twin" framing.                                                                               |
+| Historical / time-lapse basemap (satellite back to 1984)          | Google, NASA Eyes | Med–High | Large  | The sim clock is the right hook; the gap is a temporal imagery source. Sentinel-2 (2015+) / Landsat (1984+) or dated GIBS tiles, indexed by acquisition date, driven by the existing scrubber. Data pipeline is the heavy part. |
+
+Shipped since this pass, so pruned from the table above: the wildfire / active-fire layer (the `wildfires` plugin). It is sourced from NASA EONET, not the NASA FIRMS feed the source research assumed.
 
 Note: EarthOS's clock can scrub backward, but **every live layer (TLE, ADS-B, USGS, NHC) is real-time only, so scrubbing into the past shows nothing.** Historical data backends are the recurring prerequisite here and in Themes 4 and 7. This is a structural weakness that undercuts EarthOS's best feature.
 
@@ -147,32 +148,28 @@ EarthOS renders aircraft as undifferentiated viewport-scoped dots with raw ADS-B
 
 ---
 
-## Top 10 — Do These Next (impact ÷ effort, ranked)
+## Top 8 — Do These Next (impact ÷ effort, ranked)
 
-Ordered to front-load cheap high-leverage wins and one strategic large bet.
+Ordered to front-load cheap high-leverage wins and one strategic large bet. Measurement tools (distance + area) and the wildfire / active-fire layer were items 1 and 2 here; both have since shipped and are pruned.
 
-1. **Measurement tools (distance + area).** High impact, small effort standalone. Universal expectation (Google, Zoom, Cesium), no new data — great-circle + spherical polygon math on click. The clearest near-term win.
+1. **Guided first-run tour + curated featured-views gallery.** High impact, small–med effort. Just scripted permalink sequences + captions. Attacks EarthOS's worst non-technical weakness (discovery) and doubles as community-authorable content.
 
-2. **Wildfire / active-fire layer (NASA FIRMS).** Med impact, small effort. Drops into the existing earthquake-style point pattern; adds a whole hazard category almost for free.
+2. **KML/KMZ/Shapefile import.** Med impact, small effort. `togeojson` + `shpjs` into the existing GeoJSON renderer; instantly opens the GIS/planning audience.
 
-3. **Guided first-run tour + curated featured-views gallery.** High impact, small–med effort. Just scripted permalink sequences + captions. Attacks EarthOS's worst non-technical weakness (discovery) and doubles as community-authorable content.
+3. **Persistent watchlist + swappable basemap picker.** Two small-effort, med-impact wins that both improve repeat engagement and discoverability over existing infra (localStorage + quadtree streamer).
 
-4. **KML/KMZ/Shapefile import.** Med impact, small effort. `togeojson` + `shpjs` into the existing GeoJSON renderer; instantly opens the GIS/planning audience.
+4. **Live observed geostationary cloud imagery (GOES/Himawari via GIBS).** High impact, med effort. Replaces the fake cloud texture with real animating weather using the existing quadtree streamer + sim clock. High-value, reuses core plumbing.
 
-5. **Persistent watchlist + swappable basemap picker.** Two small-effort, med-impact wins that both improve repeat engagement and discoverability over existing infra (localStorage + quadtree streamer).
+5. **Observer pass prediction ("visible over me tonight").** High impact, med effort. Adds an observer point + visibility math to the existing SGP4 workers. Turns the globe into a personal go-look-up tool — the highest-leverage space feature that doesn't need a backend.
 
-6. **Live observed geostationary cloud imagery (GOES/Himawari via GIBS).** High impact, med effort. Replaces the fake cloud texture with real animating weather using the existing quadtree streamer + sim clock. High-value, reuses core plumbing.
+6. **Aircraft filtering + rich per-flight panel (photos, registration, route).** High impact, med effort combined. Closes the biggest depth gap vs FR24 using the existing ADS-B feed + free planespotters/OpenSky metadata.
 
-7. **Observer pass prediction ("visible over me tonight").** High impact, med effort. Adds an observer point + visibility math to the existing SGP4 workers. Turns the globe into a personal go-look-up tool — the highest-leverage space feature that doesn't need a backend.
+7. **DEM 3D terrain relief.** High impact, med–large effort. Terrain-RGB/quantized-mesh displacement of the globe quadtree. Biggest visual-credibility fix and the prerequisite for elevation profiles, contours, and terrain clamping. Start here on the realism track before photoreal tiles.
 
-8. **Aircraft filtering + rich per-flight panel (photos, registration, route).** High impact, med effort combined. Closes the biggest depth gap vs FR24 using the existing ADS-B feed + free planespotters/OpenSky metadata.
-
-9. **DEM 3D terrain relief.** High impact, med–large effort. Terrain-RGB/quantized-mesh displacement of the globe quadtree. Biggest visual-credibility fix and the prerequisite for elevation profiles, contours, and terrain clamping. Start here on the realism track before photoreal tiles.
-
-10. **Mobile/responsive pass (PWA-first).** High impact, large effort — the strategic bet. Every competitor has it; it gates the majority of real-world usage for a "look up at the sky / check the weather" product. Won't ship in a sprint, but should start in parallel because everything above is worth more once it runs on a phone.
+8. **Touch camera gestures + mobile GPU budget + PWA packaging.** High impact, med effort. The responsive layout already landed, so this is the remaining half: pinch/pan/rotate with inertia, a frame budget that holds on phone GPUs, and a web-app manifest as the cheap follow-on. Worth running in parallel, because everything above is worth more once it works under a thumb.
 
 ---
 
-**Deliberately deferred (high effort, or conflict with EarthOS's design):** numerical weather-model + wind-particle pipeline (Windy parity — the biggest differentiator but heaviest lift; sequence after item 6 proves the data plumbing), constellation analytics dashboards, conjunction detection, ground-sensor modeling, photorealistic 3D city tiles (cost/ToS conflict with free-OSS), and anything requiring accounts (flight alerts, cloud projects, server-side historical playback) — flag these as non-goals unless the no-backend product direction changes.
+**Deliberately deferred (high effort, or conflict with EarthOS's design):** numerical weather-model + wind-particle pipeline (Windy parity — the biggest differentiator but heaviest lift; sequence after item 4 proves the data plumbing), constellation analytics dashboards, conjunction detection, ground-sensor modeling, photorealistic 3D city tiles (cost/ToS conflict with free-OSS), and anything requiring accounts (flight alerts, cloud projects, server-side historical playback) — flag these as non-goals unless the no-backend product direction changes.
 
 **Recurring structural blocker worth naming:** EarthOS's simulation clock is its best feature, but all live layers are real-time-only, so scrubbing into the past shows nothing. A time-indexed historical data backend (dated imagery tiles, recorded tracks) is the shared prerequisite behind historical imagery, flight playback, and multi-decade climate layers. Worth a deliberate architecture decision rather than solving per-layer.

@@ -20,7 +20,7 @@ Click a fire for its title, last-detected time, and coordinates; search by name;
 | `status`    | `open`    | active-only, or include recently-closed events           |
 | `days`      | 10        | only events with a detection in this window (1–60)       |
 | `pointSize` | 7 px      |                                                          |
-| `color`     | `#FF7518` | fresh-fire color (older tiers derive from the heat ramp) |
+| `color`     | `#FF8A1E` | fresh-fire color (older tiers derive from the heat ramp) |
 | `endpoint`  | (blank)   | custom EONET base URL                                    |
 
 ## Data source

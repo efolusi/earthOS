@@ -31,7 +31,11 @@ Draw-call inventory in the flagship app: globe 1, clouds 1, atmosphere 1, stars 
 
 ## Texture memory
 
-The base committed textures are 2k (~1.4 MB total): fine everywhere. An optional 8k set (~19 MB, `public/textures/full/`) is also committed and swapped in on desktop after first paint, with a hard mobile cap (~25 MB GPU memory). The upgrade path is KTX2/basis. Never ship 8k JPEGs to phones.
+The base committed textures are 2k (`public/textures/`, ~1.4 MB total): fine everywhere. An 8k set is also committed (`public/textures/full/`, ~18.5 MB: 11.1 MB clouds, 4.4 MB day, 3.0 MB night). There is no 8k specular; the 8k set reuses `earth_specular_2048.jpg`.
+
+The swap is unconditional today. `EarthApp` mounts with the 2k set, then an effect sends a `HEAD` request for the 8k daymap and calls `setTextures(TEXTURES_8K)` when the response is ok (`apps/web/components/EarthApp.tsx`). There is no desktop check and no `deviceMemory` / `isMobile` / `matchMedia` / `maxTextureSize` probe anywhere in `apps/web` or `packages`. Because the 8k files are committed, that `HEAD` always succeeds, so phones receive the 8k set too. Budget for it: ~18.5 MB of JPEG over the wire, and three 8192x4096 maps decode to roughly 134 MB of RGBA each before mipmaps.
+
+**Future work, not implemented:** device tiering behind a real capability probe (keep 2k on phones and low-memory devices), a hard GPU-memory cap, and KTX2/basis instead of JPEG. Until one of those lands, "don't ship 8k JPEGs to phones" is a goal, not the current behaviour.
 
 ## Measuring
 
