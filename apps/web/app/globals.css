@@ -1,5 +1,16 @@
 @import 'tailwindcss';
-@import './meridian.css';
+
+/* Meridian design tokens, consumed from the published package rather than a
+   vendored copy. We import the six token sheets individually instead of the
+   package's styles.css aggregate: that file uses bare specifiers
+   (@import "tokens/fonts.css") which bundlers try to resolve from node_modules
+   and fail on. Switch to styles.css once upstream ships "./tokens/...". */
+@import '@efolusi/meridian/tokens/fonts.css';
+@import '@efolusi/meridian/tokens/colors.css';
+@import '@efolusi/meridian/tokens/typography.css';
+@import '@efolusi/meridian/tokens/spacing.css';
+@import '@efolusi/meridian/tokens/effects.css';
+@import '@efolusi/meridian/tokens/base.css';
 
 @source '../../../packages/ui/src';
 @source '../components';
