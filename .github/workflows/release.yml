@@ -39,3 +39,8 @@ jobs:
           # comes back as a 404.
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Verify every package reached the public registry
+        # changeset publish can report success, and even push git tags, while the
+        # registry ends up without the package. That silent partial release ships
+        # a meta package whose dependencies nobody can install, so fail loudly.
+        run: node scripts/verify-published.mjs
