@@ -28,4 +28,4 @@ The UI is responsive and textures are modest (2k). The points pipeline is mobile
 Reserved for the 2D fallback mode and tile-based layers (see ROADMAP). The `TileProvider` base and the `maplibre-gl` peer slot exist so tile plugins land without new architecture.
 
 **License and data terms?**
-Code is MIT. NASA imagery is public domain. Each plugin's README states its data source's terms (CelesTrak usage guidelines, USGS public domain, and so on); respect them when you change refresh policies.
+Code is MIT. The Earth textures are derived from public NASA imagery but the shipped files carry their own terms (Solar System Scope, CC BY 4.0, for the HD set; three.js base set), credited in [apps/web/public/textures/CREDITS.md](../apps/web/public/textures/CREDITS.md). Each plugin's README states its data source's terms (CelesTrak usage guidelines, USGS public domain, and so on); respect them when you change refresh policies.
