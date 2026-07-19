@@ -52,70 +52,73 @@ export function LayerPanel({ plugins }: { plugins: EarthOSPlugin[] }) {
       }
     >
       {collapsed ? null : (
-      <ul className="max-h-[26vh] overflow-y-auto py-0.5 sm:max-h-[30vh]">
-        {plugins.map((plugin) => {
-          const layer = layers[plugin.id];
-          const status = layer?.status ?? 'registered';
-          const enabled = status === 'active' || status === 'loading';
-          const isOpen = expanded === plugin.id;
-          const ctx = engine.getContext(plugin.id);
-          const swatch = plugin.meta.color ?? 'var(--border-strong)';
-          return (
-            <li key={plugin.id} className="border-b border-[var(--border-default)] last:border-b-0">
-              <div className="flex items-center gap-2.5 px-3.5 py-1.5">
-                <span
-                  className={`h-2.5 w-2.5 shrink-0 rounded-full ${status === 'loading' ? 'animate-pulse' : ''}`}
-                  style={{
-                    backgroundColor: status === 'error' ? 'var(--danger-600)' : swatch,
-                    opacity: enabled ? 1 : 0.3,
-                    boxShadow: status === 'active' ? `0 0 6px ${swatch}` : 'none',
-                  }}
-                  title={layer?.error ?? status}
-                  data-testid={`layer-status-${plugin.id}`}
-                  data-status={status}
-                />
-                <button
-                  type="button"
-                  aria-expanded={isOpen}
-                  aria-label={`${plugin.meta.name} settings`}
-                  className="flex min-w-0 flex-1 flex-col rounded-[var(--radius-sm)] text-left leading-tight focus-visible:outline-none focus-visible:[box-shadow:var(--focus-ring)]"
-                  onClick={() => setExpanded(isOpen ? null : plugin.id)}
-                >
-                  <span className="truncate text-[13px] font-medium text-[var(--text-primary)]">
-                    {plugin.meta.name}
-                  </span>
-                  <span className="truncate text-[11px] text-[var(--text-muted)]">
-                    {plugin.meta.attribution ?? plugin.meta.description ?? plugin.meta.category}
-                  </span>
-                </button>
-                <Toggle
-                  checked={enabled}
-                  label={`Toggle ${plugin.meta.name}`}
-                  onChange={(next) => {
-                    void engine.setLayerEnabled(plugin.id, next).catch(() => undefined);
-                  }}
-                />
-              </div>
-              <AnimatePresence initial={false}>
-                {isOpen && plugin.settingsSchema && ctx ? (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.16, ease: [0.3, 1.04, 0.35, 1] }}
-                    className="overflow-hidden bg-[var(--surface-sunken)]"
+        <ul className="max-h-[26vh] overflow-y-auto py-0.5 sm:max-h-[30vh]">
+          {plugins.map((plugin) => {
+            const layer = layers[plugin.id];
+            const status = layer?.status ?? 'registered';
+            const enabled = status === 'active' || status === 'loading';
+            const isOpen = expanded === plugin.id;
+            const ctx = engine.getContext(plugin.id);
+            const swatch = plugin.meta.color ?? 'var(--border-strong)';
+            return (
+              <li
+                key={plugin.id}
+                className="border-b border-[var(--border-default)] last:border-b-0"
+              >
+                <div className="flex items-center gap-2.5 px-3.5 py-1.5">
+                  <span
+                    className={`h-2.5 w-2.5 shrink-0 rounded-full ${status === 'loading' ? 'animate-pulse' : ''}`}
+                    style={{
+                      backgroundColor: status === 'error' ? 'var(--danger-600)' : swatch,
+                      opacity: enabled ? 1 : 0.3,
+                      boxShadow: status === 'active' ? `0 0 6px ${swatch}` : 'none',
+                    }}
+                    title={layer?.error ?? status}
+                    data-testid={`layer-status-${plugin.id}`}
+                    data-status={status}
+                  />
+                  <button
+                    type="button"
+                    aria-expanded={isOpen}
+                    aria-label={`${plugin.meta.name} settings`}
+                    className="flex min-w-0 flex-1 flex-col rounded-[var(--radius-sm)] text-left leading-tight focus-visible:outline-none focus-visible:[box-shadow:var(--focus-ring)]"
+                    onClick={() => setExpanded(isOpen ? null : plugin.id)}
                   >
-                    <SettingsForm schema={plugin.settingsSchema} api={ctx.settings} />
-                  </motion.div>
+                    <span className="truncate text-[13px] font-medium text-[var(--text-primary)]">
+                      {plugin.meta.name}
+                    </span>
+                    <span className="truncate text-[11px] text-[var(--text-muted)]">
+                      {plugin.meta.attribution ?? plugin.meta.description ?? plugin.meta.category}
+                    </span>
+                  </button>
+                  <Toggle
+                    checked={enabled}
+                    label={`Toggle ${plugin.meta.name}`}
+                    onChange={(next) => {
+                      void engine.setLayerEnabled(plugin.id, next).catch(() => undefined);
+                    }}
+                  />
+                </div>
+                <AnimatePresence initial={false}>
+                  {isOpen && plugin.settingsSchema && ctx ? (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.16, ease: [0.3, 1.04, 0.35, 1] }}
+                      className="overflow-hidden bg-[var(--surface-sunken)]"
+                    >
+                      <SettingsForm schema={plugin.settingsSchema} api={ctx.settings} />
+                    </motion.div>
+                  ) : null}
+                </AnimatePresence>
+                {layer?.status === 'error' && layer.error ? (
+                  <p className="px-4 pb-2 text-[12px] text-[var(--danger-600)]">{layer.error}</p>
                 ) : null}
-              </AnimatePresence>
-              {layer?.status === 'error' && layer.error ? (
-                <p className="px-4 pb-2 text-[12px] text-[var(--danger-600)]">{layer.error}</p>
-              ) : null}
-            </li>
-          );
-        })}
-      </ul>
+              </li>
+            );
+          })}
+        </ul>
       )}
     </GlassPanel>
   );

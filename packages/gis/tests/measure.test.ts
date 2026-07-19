@@ -19,8 +19,15 @@ describe('pathLengthKm', () => {
 
   it('is zero for a single point and additive across legs', () => {
     expect(pathLengthKm([[0, 0]])).toBe(0);
-    const one = pathLengthKm([[0, 0], [0, 10]]);
-    const two = pathLengthKm([[0, 0], [0, 10], [0, 20]]);
+    const one = pathLengthKm([
+      [0, 0],
+      [0, 10],
+    ]);
+    const two = pathLengthKm([
+      [0, 0],
+      [0, 10],
+      [0, 20],
+    ]);
     expect(two).toBeCloseTo(one * 2, 3);
   });
 });
@@ -39,7 +46,12 @@ describe('sphericalPolygonAreaKm2', () => {
   });
 
   it('is zero for fewer than three points and robust across the dateline', () => {
-    expect(sphericalPolygonAreaKm2([[0, 0], [1, 1]])).toBe(0);
+    expect(
+      sphericalPolygonAreaKm2([
+        [0, 0],
+        [1, 1],
+      ]),
+    ).toBe(0);
     const box = sphericalPolygonAreaKm2([
       [0, 175],
       [0, -175], // crosses the antimeridian; wrapped delta keeps it a 10° box

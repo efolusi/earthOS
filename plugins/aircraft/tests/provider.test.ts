@@ -126,7 +126,10 @@ describe('AircraftProvider', () => {
         );
         return new Response(
           JSON.stringify({
-            ac: [{ hex: '4cac24', lat: 47.85, lon: -3.38, gs: 400, alt_baro: 38000 }, { hex: 'nope' }],
+            ac: [
+              { hex: '4cac24', lat: 47.85, lon: -3.38, gs: 400, alt_baro: 38000 },
+              { hex: 'nope' },
+            ],
             now: 1_700_000_010_000,
           }),
           { status: 200 },

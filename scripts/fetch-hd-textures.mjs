@@ -2,8 +2,9 @@
 /**
  * Fetch the optional 8k texture set (Solar System Scope, CC BY 4.0,
  * NASA-derived) into apps/web/public/textures/full/. That directory is
- * gitignored: the repo ships 2k textures, deployments run this script for a
- * 16x sharper globe. The app auto-detects the files at runtime.
+ * committed to the repo (build hosts often cannot reach the texture CDN); run
+ * this only to refresh it for a 16x sharper globe. The app auto-detects the
+ * files at runtime. Attribution: apps/web/public/textures/CREDITS.md.
  */
 import { createWriteStream, existsSync, mkdirSync } from 'node:fs';
 import { get } from 'node:https';
@@ -44,7 +45,9 @@ function download(url, dest) {
         file.on('error', reject);
       });
       req.on('error', reject);
-      req.setTimeout(TIMEOUT_MS, () => req.destroy(new Error(`timeout after ${TIMEOUT_MS / 1000}s`)));
+      req.setTimeout(TIMEOUT_MS, () =>
+        req.destroy(new Error(`timeout after ${TIMEOUT_MS / 1000}s`)),
+      );
     };
     follow(url);
   });
@@ -64,4 +67,6 @@ for (const [name, label] of Object.entries(FILES)) {
     console.log(`FAILED: ${err.message}`);
   }
 }
-console.log('Done. Textures credit: Solar System Scope (CC BY 4.0), NASA imagery.');
+console.log(
+  'Done. Textures: Solar System Scope (CC BY 4.0), NASA-derived. See apps/web/public/textures/CREDITS.md.',
+);

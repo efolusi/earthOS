@@ -7,8 +7,8 @@ Thanks for your interest in EarthOS. This document covers workflow, conventions,
 Requirements: Node >= 20, pnpm >= 10.
 
 ```bash
-git clone https://github.com/earthos/earthos
-cd earthos
+git clone https://github.com/efolusi/earthOS
+cd earthOS
 pnpm install
 pnpm build
 pnpm dev

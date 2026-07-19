@@ -193,10 +193,7 @@ function ndcToWorldDir(
 }
 
 /** Apply a 4x4 (column-major) matrix to a point, with perspective divide. */
-function applyMat4(
-  v: [number, number, number],
-  e: number[],
-): [number, number, number] {
+function applyMat4(v: [number, number, number], e: number[]): [number, number, number] {
   const [x, y, z] = v;
   const w = e[3]! * x + e[7]! * y + e[11]! * z + e[15]! || 1;
   return [

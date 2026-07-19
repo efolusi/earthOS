@@ -93,17 +93,17 @@ Disabled plugins cost zero bytes: `provider` and `renderer` are dynamic-import s
 
 ## Layers shipped today
 
-| Layer             | Source                | Notes                                                             |
-| ----------------- | --------------------- | ----------------------------------------------------------------- |
-| Satellite imagery | Esri / EOX Sentinel-2   | streamed web-mercator quadtree, zoom for detail; twilight night side |
-| Satellites        | CelesTrak → TLE API     | dense constellation shell (gold), SGP4 in workers, orbit lines, follow camera |
-| Aircraft          | airplanes.live / OpenSky | live ADS-B (cyan arrows), viewport-scoped, dead-reckoned between polls |
-| Hurricanes        | NOAA NHC                | active cyclones, violet, intensity-scaled                            |
-| Solar eclipse     | astronomy-engine        | umbra/penumbra on the simulation clock (try 2026-08-12 17:45 UTC)    |
-| Earthquakes       | USGS                    | red, magnitude-scaled, depth-colored                                 |
-| Wildfires         | NASA EONET              | orange fire-heat points, colored by recency                          |
-| Day / night       | computed                | terminator, subsolar and sublunar markers                            |
-| Custom GeoJSON    | your data               | points, lines, polygon outlines                                      |
+| Layer             | Source                   | Notes                                                                         |
+| ----------------- | ------------------------ | ----------------------------------------------------------------------------- |
+| Satellite imagery | Esri / EOX Sentinel-2    | streamed web-mercator quadtree, zoom for detail; twilight night side          |
+| Satellites        | CelesTrak → TLE API      | dense constellation shell (gold), SGP4 in workers, orbit lines, follow camera |
+| Aircraft          | airplanes.live / OpenSky | live ADS-B (cyan arrows), viewport-scoped, dead-reckoned between polls        |
+| Hurricanes        | NOAA NHC                 | active cyclones, violet, intensity-scaled                                     |
+| Solar eclipse     | astronomy-engine         | umbra/penumbra on the simulation clock (try 2026-08-12 17:45 UTC)             |
+| Earthquakes       | USGS                     | red, magnitude-scaled, depth-colored                                          |
+| Wildfires         | NASA EONET               | orange fire-heat points, colored by recency                                   |
+| Day / night       | computed                 | terminator, subsolar and sublunar markers                                     |
+| Custom GeoJSON    | your data                | points, lines, polygon outlines                                               |
 
 Each live layer has a distinct identity so nothing reads alike: gold satellite dots, cyan aircraft darts, red earthquakes, violet storms.
 
@@ -115,4 +115,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Plugin contributions are the primary ext
 
 ## License
 
-[MIT](LICENSE). Earth textures are NASA imagery (public domain); data feeds carry their providers' terms (CelesTrak, USGS, and others are attributed per plugin).
+[MIT](LICENSE) covers the EarthOS code. Earth textures carry their own terms and are credited in [apps/web/public/textures/CREDITS.md](apps/web/public/textures/CREDITS.md): the HD set is Solar System Scope (CC BY 4.0), the base set is the three.js planet textures (NASA-derived, free to use). Data feeds carry their providers' terms (CelesTrak, USGS, and others are attributed per plugin).

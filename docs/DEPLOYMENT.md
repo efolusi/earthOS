@@ -38,7 +38,7 @@ Environment variables consumed by the compose file (all optional, all server-sid
 
 ## Textures
 
-2k textures are committed and served from `/public/textures` (NASA imagery, public domain). Run `node scripts/fetch-hd-textures.mjs` to add the optional 8k set (Solar System Scope, CC BY 4.0, NASA-derived) under `/public/textures/full/`: the app detects it at boot and switches automatically, 16x sharper when zoomed. Long-cache all of them (`Cache-Control: immutable`): filenames are stable.
+Both the 2k base set and the optional 8k set are committed under `/public/textures` (build hosts often cannot reach the texture CDN). They are not public domain: the base set is the three.js planet textures (NASA-derived, free to use) and the 8k set is Solar System Scope (CC BY 4.0). See [apps/web/public/textures/CREDITS.md](../apps/web/public/textures/CREDITS.md). `scripts/fetch-hd-textures.mjs` re-fetches the 8k set if you need to refresh it; the app detects it at boot and switches automatically, 16x sharper when zoomed. Long-cache all of them (`Cache-Control: immutable`): filenames are stable.
 
 Single equirect textures bottom out around a ~5 km texel even at 8k: street-level sharpness requires the tiled-imagery roadmap item (quadtree tiles with per-tile origins), not bigger single textures.
 

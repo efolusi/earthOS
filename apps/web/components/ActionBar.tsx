@@ -104,27 +104,58 @@ export function ActionBar({
     });
   };
 
-  const latlon = useMemo(() => measurePoints.map((p) => [p.lat, p.lon] as [number, number]), [measurePoints]);
+  const latlon = useMemo(
+    () => measurePoints.map((p) => [p.lat, p.lon] as [number, number]),
+    [measurePoints],
+  );
   const distance = useMemo(() => pathLengthKm(latlon), [latlon]);
   const area = useMemo(() => (latlon.length >= 3 ? sphericalPolygonAreaKm2(latlon) : 0), [latlon]);
 
   return (
     <GlassPanel className="flex h-10 items-center px-1.5">
       <div className="flex items-center gap-0.5">
-        <IconButton label={copied ? 'Link copied' : 'Copy share link'} onClick={copyLink} active={copied}>
+        <IconButton
+          label={copied ? 'Link copied' : 'Copy share link'}
+          onClick={copyLink}
+          active={copied}
+        >
           {copied ? (
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 14 14"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              aria-hidden
+            >
               <path d="M2.5 7.5l3 3 6-7" />
             </svg>
           ) : (
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 14 14"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.4"
+              aria-hidden
+            >
               <path d="M5.5 8.5a2.5 2.5 0 003.5 0l2-2a2.5 2.5 0 00-3.5-3.5l-1 1" />
               <path d="M8.5 5.5a2.5 2.5 0 00-3.5 0l-2 2a2.5 2.5 0 003.5 3.5l1-1" />
             </svg>
           )}
         </IconButton>
         <IconButton label="Save screenshot" onClick={screenshot}>
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 14 14"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.4"
+            aria-hidden
+          >
             <rect x="1" y="3.5" width="12" height="9" rx="1.5" />
             <circle cx="7" cy="8" r="2.6" />
             <path d="M4.5 3.5L5.6 1.5h2.8l1.1 2" />
@@ -147,7 +178,15 @@ export function ActionBar({
           onClick={onMeasureToggle}
           active={measureActive}
         >
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 14 14"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.4"
+            aria-hidden
+          >
             <path d="M1 9.5L9.5 1l3.5 3.5L4.5 13z" />
             <path d="M4 6.5l1.2 1.2M6.2 4.3l1.2 1.2M8.4 2.1l1.2 1.2" />
           </svg>
@@ -161,17 +200,35 @@ export function ActionBar({
               ) : (
                 <>
                   {formatDistance(distance)}
-                  {area > 0 ? <span className="text-[var(--text-secondary)]"> · {formatArea(area)}</span> : null}
+                  {area > 0 ? (
+                    <span className="text-[var(--text-secondary)]"> · {formatArea(area)}</span>
+                  ) : null}
                 </>
               )}
             </span>
             <IconButton label="Undo last point" onClick={onMeasureUndo}>
-              <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden>
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 14 14"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.4"
+                aria-hidden
+              >
                 <path d="M4 4H9a3.5 3.5 0 010 7H5M4 4l2.2-2.2M4 4l2.2 2.2" />
               </svg>
             </IconButton>
             <IconButton label="Clear measurement" onClick={onMeasureClear}>
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                aria-hidden
+              >
                 <path d="M2 2l8 8M10 2l-8 8" />
               </svg>
             </IconButton>

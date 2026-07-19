@@ -77,7 +77,10 @@ describe('CelestrakGpProvider', () => {
       if (u.includes('satcat/records.php')) {
         expect(u).toContain('GROUP=stations');
         return new Response(
-          JSON.stringify([{ NORAD_CAT_ID: 25544, OWNER: 'ISS' }, { NORAD_CAT_ID: 48274, OWNER: 'PRC' }]),
+          JSON.stringify([
+            { NORAD_CAT_ID: 25544, OWNER: 'ISS' },
+            { NORAD_CAT_ID: 48274, OWNER: 'PRC' },
+          ]),
           { status: 200 },
         );
       }

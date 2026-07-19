@@ -5,20 +5,23 @@ Active wildfire events for EarthOS from [NASA EONET](https://eonet.gsfc.nasa.gov
 ## Usage
 
 ```tsx
-<Layer manifest={() => import('@earthos/plugin-wildfires')} settings={{ status: 'open', days: 10 }} />
+<Layer
+  manifest={() => import('@earthos/plugin-wildfires')}
+  settings={{ status: 'open', days: 10 }}
+/>
 ```
 
 Click a fire for its title, last-detected time, and coordinates; search by name; the follow camera tracks it. Points are colored by recency (bright orange < 2 days, amber < 7 days, dimmer beyond) so fresh fires stand out — a fire-heat ramp distinct from the earthquake red and hurricane violet.
 
 ## Settings
 
-| Key         | Default   | Notes                                                     |
-| ----------- | --------- | --------------------------------------------------------- |
-| `status`    | `open`    | active-only, or include recently-closed events            |
-| `days`      | 10        | only events with a detection in this window (1–60)        |
-| `pointSize` | 7 px      |                                                           |
-| `color`     | `#FF7518` | fresh-fire color (older tiers derive from the heat ramp)  |
-| `endpoint`  | (blank)   | custom EONET base URL                                     |
+| Key         | Default   | Notes                                                    |
+| ----------- | --------- | -------------------------------------------------------- |
+| `status`    | `open`    | active-only, or include recently-closed events           |
+| `days`      | 10        | only events with a detection in this window (1–60)       |
+| `pointSize` | 7 px      |                                                          |
+| `color`     | `#FF7518` | fresh-fire color (older tiers derive from the heat ramp) |
+| `endpoint`  | (blank)   | custom EONET base URL                                    |
 
 ## Data source
 

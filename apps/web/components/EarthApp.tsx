@@ -113,7 +113,11 @@ export function EarthApp() {
       },
       (err) => {
         setLocating(false);
-        setLocateError(err.code === err.PERMISSION_DENIED ? 'Location permission denied.' : 'Could not get your location.');
+        setLocateError(
+          err.code === err.PERMISSION_DENIED
+            ? 'Location permission denied.'
+            : 'Could not get your location.',
+        );
       },
       { enableHighAccuracy: false, timeout: 10_000, maximumAge: 60_000 },
     );

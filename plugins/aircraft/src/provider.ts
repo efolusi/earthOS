@@ -43,7 +43,11 @@ export function parseAdsbV2(ac: AdsbV2Aircraft, snapshotSec: number): AircraftSt
   if (typeof ac.lat !== 'number' || typeof ac.lon !== 'number' || !ac.hex) return null;
   const onGround = ac.alt_baro === 'ground';
   const altFt =
-    typeof ac.alt_baro === 'number' ? ac.alt_baro : typeof ac.alt_geom === 'number' ? ac.alt_geom : 0;
+    typeof ac.alt_baro === 'number'
+      ? ac.alt_baro
+      : typeof ac.alt_geom === 'number'
+        ? ac.alt_geom
+        : 0;
   const rateFpm = typeof ac.baro_rate === 'number' ? ac.baro_rate : (ac.geom_rate ?? 0);
   return {
     icao24: ac.hex,
@@ -88,8 +92,7 @@ export class AircraftProvider extends DataProvider<AircraftFeed> {
   }
 
   protected override cacheKey(settings: Record<string, unknown>): string {
-    const source =
-      typeof settings.dataSource === 'string' ? settings.dataSource : 'airplaneslive';
+    const source = typeof settings.dataSource === 'string' ? settings.dataSource : 'airplaneslive';
     const max = typeof settings.maxAircraft === 'number' ? settings.maxAircraft : 20_000;
     return `latest:${source}:${max}`;
   }

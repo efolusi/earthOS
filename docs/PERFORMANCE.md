@@ -31,7 +31,7 @@ Draw-call inventory in the flagship app: globe 1, clouds 1, atmosphere 1, stars 
 
 ## Texture memory
 
-Committed textures are 2k (~1.4 MB total): fine everywhere. The upgrade path is KTX2/basis at 4k/8k for desktop with a hard mobile cap (~25 MB GPU memory), progressive-swapped after first paint. Never ship 8k JPEGs to phones.
+The base committed textures are 2k (~1.4 MB total): fine everywhere. An optional 8k set (~19 MB, `public/textures/full/`) is also committed and swapped in on desktop after first paint, with a hard mobile cap (~25 MB GPU memory). The upgrade path is KTX2/basis. Never ship 8k JPEGs to phones.
 
 ## Measuring
 

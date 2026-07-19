@@ -67,9 +67,7 @@ function wrapLonDeltaRad(deltaDeg: number): number {
  * Duquette spherical-excess formula; longitude steps are wrapped so it is
  * robust across the antimeridian. Points are [lat, lon] in degrees.
  */
-export function sphericalPolygonAreaKm2(
-  points: ReadonlyArray<readonly [number, number]>,
-): number {
+export function sphericalPolygonAreaKm2(points: ReadonlyArray<readonly [number, number]>): number {
   const n = points.length;
   if (n < 3) return 0;
   let sum = 0;
@@ -99,7 +97,11 @@ export function sampleGreatCircle(
   const dot = Math.min(1, Math.max(-1, p1[0] * p2[0] + p1[1] * p2[1] + p1[2] * p2[2]));
   const omega = Math.acos(dot);
   const out: Array<[number, number]> = [];
-  if (omega < 1e-9) return [[lat1, lon1], [lat2, lon2]];
+  if (omega < 1e-9)
+    return [
+      [lat1, lon1],
+      [lat2, lon2],
+    ];
   const sinOmega = Math.sin(omega);
   for (let i = 0; i <= segments; i++) {
     const t = i / segments;

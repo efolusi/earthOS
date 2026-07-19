@@ -48,7 +48,11 @@ describe('latestPoint', () => {
   it('returns null for an event with no usable point', () => {
     expect(latestPoint({ id: 'x', title: 't', geometry: [] })).toBeNull();
     expect(
-      latestPoint({ id: 'x', title: 't', geometry: [{ date: 'd', type: 'Polygon', coordinates: [] }] }),
+      latestPoint({
+        id: 'x',
+        title: 't',
+        geometry: [{ date: 'd', type: 'Polygon', coordinates: [] }],
+      }),
     ).toBeNull();
   });
 });
@@ -61,9 +65,12 @@ describe('EonetWildfireProvider', () => {
         const u = String(url);
         expect(u).toContain('category=wildfires');
         expect(u).toContain('status=open');
-        return new Response(JSON.stringify({ events: [EVENT, { id: 'e2', title: 'no geo', geometry: [] }] }), {
-          status: 200,
-        });
+        return new Response(
+          JSON.stringify({ events: [EVENT, { id: 'e2', title: 'no geo', geometry: [] }] }),
+          {
+            status: 200,
+          },
+        );
       }),
     );
     const provider = new EonetWildfireProvider();

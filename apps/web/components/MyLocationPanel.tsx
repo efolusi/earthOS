@@ -3,7 +3,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { useEarth } from '@earthos/core/react';
 import { GlassPanel, IconButton } from '@earthos/ui';
-import { geodeticToEcef, observerLookAngles, parseOmm, parseTle, satGeodetic, type SatRec } from '@earthos/gis';
+import {
+  geodeticToEcef,
+  observerLookAngles,
+  parseOmm,
+  parseTle,
+  satGeodetic,
+  type SatRec,
+} from '@earthos/gis';
 
 export interface Observer {
   lat: number;
@@ -110,7 +117,15 @@ export function MyLocationPanel({
         className="border border-[var(--border-default)] bg-[color-mix(in_srgb,var(--surface-card)_94%,transparent)] px-2.5 shadow-[var(--shadow-md)] backdrop-blur-xl"
       >
         <span className="flex items-center gap-1.5 whitespace-nowrap">
-          <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden>
+          <svg
+            width="13"
+            height="13"
+            viewBox="0 0 14 14"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.4"
+            aria-hidden
+          >
             <circle cx="7" cy="7" r="2.4" />
             <path d="M7 1v1.6M7 11.4V13M1 7h1.6M11.4 7H13" />
           </svg>
@@ -125,15 +140,28 @@ export function MyLocationPanel({
       ) : null}
 
       {observer ? (
-        <GlassPanel className="w-[min(19rem,calc(100vw-1rem))]" title="Above you" actions={
-          <IconButton label="Clear my location" onClick={onClear}>
-            <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
-              <path d="M2 2l8 8M10 2l-8 8" />
-            </svg>
-          </IconButton>
-        }>
+        <GlassPanel
+          className="w-[min(19rem,calc(100vw-1rem))]"
+          title="Above you"
+          actions={
+            <IconButton label="Clear my location" onClick={onClear}>
+              <svg
+                width="11"
+                height="11"
+                viewBox="0 0 12 12"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                aria-hidden
+              >
+                <path d="M2 2l8 8M10 2l-8 8" />
+              </svg>
+            </IconButton>
+          }
+        >
           <div className="px-3.5 pb-2 pt-1 text-[11px] text-[var(--text-muted)]">
-            {observer.lat.toFixed(3)}°, {observer.lon.toFixed(3)}° · {total} satellite{total === 1 ? '' : 's'} overhead
+            {observer.lat.toFixed(3)}°, {observer.lon.toFixed(3)}° · {total} satellite
+            {total === 1 ? '' : 's'} overhead
           </div>
           {overhead.length === 0 ? (
             <p className="px-3.5 pb-3 text-[12px] text-[var(--text-muted)]">
@@ -147,12 +175,17 @@ export function MyLocationPanel({
                     type="button"
                     className="flex w-full items-center justify-between gap-2 px-3.5 py-1.5 text-left hover:bg-[var(--surface-sunken)]"
                     onClick={() =>
-                      engine.store.getState().setSelected({ layerId: 'satellites', entityId: s.norad })
+                      engine.store
+                        .getState()
+                        .setSelected({ layerId: 'satellites', entityId: s.norad })
                     }
                   >
-                    <span className="truncate text-[12px] text-[var(--text-primary)]">{s.name}</span>
+                    <span className="truncate text-[12px] text-[var(--text-primary)]">
+                      {s.name}
+                    </span>
                     <span className="shrink-0 font-[family-name:var(--font-mono)] text-[11px] text-[var(--text-secondary)]">
-                      {Math.round(s.elDeg)}° {compass(s.azDeg)} · {Math.round(s.rangeKm).toLocaleString()} km
+                      {Math.round(s.elDeg)}° {compass(s.azDeg)} ·{' '}
+                      {Math.round(s.rangeKm).toLocaleString()} km
                     </span>
                   </button>
                 </li>
