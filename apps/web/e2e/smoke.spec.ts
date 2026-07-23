@@ -10,6 +10,9 @@ test.describe('EarthOS smoke', () => {
   });
 
   test('satellites layer activates (worker chunk + renderer mount)', async ({ page }) => {
+    // Only this test waits on a live upstream catalog, so it gets its own budget
+    // rather than loosening the 60s default for every other test in the file.
+    test.setTimeout(180_000);
     await page.goto('/?dev'); // exposes window.__earthos in production builds
     await expect(page.locator('canvas')).toBeVisible({ timeout: 30_000 });
     await expect(page.getByTestId('layer-status-satellites')).toHaveAttribute(
@@ -19,6 +22,13 @@ test.describe('EarthOS smoke', () => {
     );
     // Deeper than the status dot: the provider must leave 'loading' (ready
     // with data, or a surfaced error when the network is blocked in CI).
+    //
+    // The budget is generous on purpose. CelesTrak 403s some runner IPs, and the
+    // TLE-API fallback then needs 80 paginated requests (the API caps pages at
+    // 100 items and answers wide parallelism with 508s), so a cold catalog has
+    // been measured at 45 to 65 seconds. A 30s budget made this fail whenever a
+    // runner drew a blocked IP, which read as a code regression on commits that
+    // touched no code at all.
     await expect
       .poll(
         () =>
@@ -38,7 +48,7 @@ test.describe('EarthOS smoke', () => {
             ).__earthos;
             return engine?.getContext('satellites')?.providers.handle('celestrak-gp')?.get().state;
           }),
-        { timeout: 30_000 },
+        { timeout: 120_000 },
       )
       .toMatch(/ready|stale|error/);
   });

@@ -128,6 +128,23 @@ export abstract class DataProvider<T> implements ProviderInstance<T> {
     return this.lastGood;
   }
 
+  /**
+   * Publish an intermediate result while `fetch` is still running.
+   *
+   * A paginated upstream can take tens of seconds to assemble a full catalog,
+   * and a layer that draws nothing until the last page lands is indistinguishable
+   * from a broken one. Call this as pages arrive so consumers can render what is
+   * already known and fill in the rest.
+   *
+   * Partial results are deliberately not cached and do not become last-good:
+   * only the value `fetch` finally resolves with is durable, so an aborted or
+   * failed fetch never leaves a truncated catalog behind as the cached truth.
+   */
+  protected emitPartial(data: T): void {
+    if (this.stopped || !this.emitFn) return;
+    this.emitFn({ data, state: 'ready', updatedAt: Date.now() });
+  }
+
   // -------------------------------------------------------------------------
 
   private intervalWithJitter(): number {

@@ -154,6 +154,12 @@ export class CelestrakGpProvider extends DataProvider<SatCatalog> {
     const wanted = Math.min(max, search ? TLE_DENSE_CAP : 1_000, first.totalItems ?? 1_000);
     const pages = Math.ceil(wanted / TLE_PAGE_SIZE);
 
+    // The dense catalog is 80 pages, and the API caps pages at 100 items while
+    // rejecting wide parallelism with 508s, so assembling it takes the better
+    // part of a minute. Publish what has arrived so the globe fills in instead
+    // of showing nothing until the last page lands.
+    if (records.length > 0 && pages > 1) this.emitPartial(records.slice(0, max));
+
     // Remaining pages in parallel batches; tolerate a failed page (rate limit)
     // rather than discarding the whole dense catalog.
     for (let start = 2; start <= pages && !io.signal.aborted; start += TLE_BATCH) {
