@@ -2,6 +2,14 @@
 
 Live satellite constellations for EarthOS: the CelesTrak GP catalog (Starlink, ISS and stations, GPS, OneWeb, GEO belt, weather satellites, science missions, or the entire active catalog) propagated with SGP4 in a worker pool and rendered as a single GPU-extrapolated points draw call. Tested with 15,000+ objects at 60 FPS.
 
+## Install
+
+```sh
+pnpm add @earthos/plugin-satellites
+```
+
+Single-instance peer dependencies, provided by the host app: `@earthos/globe`, `@react-three/fiber` (v9), `react` (v19), and `three` (>=0.170).
+
 ## Usage
 
 ```tsx
@@ -52,3 +60,7 @@ filter is instant and never refetches the group.
 ## Data source
 
 [CelesTrak](https://celestrak.org) GP element sets, courtesy of T.S. Kelso. Please respect their [usage guidelines](https://celestrak.org/webmaster.php); the default 2-hour refresh with jitter stays well within them. CelesTrak serves `Access-Control-Allow-Origin: *`, so browsers fetch it directly. When it is unreachable (rate-limited or cloud-blocked networks), the provider automatically degrades to the popularity-sorted [TLE API](https://tle.ivanstanojevic.me), which can also be selected explicitly via `dataSource: 'tleapi'`.
+
+See [docs/PLUGIN_GUIDE.md](../../docs/PLUGIN_GUIDE.md) for the layer contract.
+
+Part of [EarthOS](https://github.com/efolusi/earthOS). MIT licensed.

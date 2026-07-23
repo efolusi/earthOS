@@ -2,6 +2,14 @@
 
 Live air traffic for EarthOS: ADS-B state vectors polled every ~60 s and rendered through the shared GPU points pipeline in the rotating Earth frame. Between polls each aircraft dead-reckons along its reported track and vertical rate, so the picture moves smoothly at one draw call for thousands of aircraft. The default source is [airplanes.live](https://airplanes.live) (keyless, CORS-open, viewport-scoped point queries); the OpenSky Network remains selectable for proxied global coverage.
 
+## Install
+
+```sh
+pnpm add @earthos/plugin-aircraft
+```
+
+Single-instance peer dependencies, provided by the host app: `@earthos/globe`, `@react-three/fiber` (v9), `react` (v19), and `three` (>=0.170).
+
 ## Usage
 
 ```tsx
@@ -27,3 +35,7 @@ Click an aircraft for callsign, country of registry (from the ICAO 24-bit addres
 
 - **[airplanes.live](https://airplanes.live)** (default): community ADS-B aggregator, keyless, `Access-Control-Allow-Origin: *`, readsb-style `/v2/point/{lat}/{lon}/{nm}` queries capped at 250 nm around the camera. The provider refetches when the viewport settles (debounced) and honors a polite 60 s cadence.
 - **[OpenSky Network](https://opensky-network.org)**: global state vectors, but its CORS policy blocks browser-direct fetches and it drops connections from cloud egress IPs (including Cloudflare Workers), so it needs a server proxy on infrastructure OpenSky accepts. The flagship app ships `/api/proxy/opensky` (optional OAuth via `OPENSKY_CLIENT_ID`/`SECRET`) for self-hosted deployments. Non-commercial use per OpenSky's [terms](https://opensky-network.org/about/terms-of-use).
+
+See [docs/PLUGIN_GUIDE.md](../../docs/PLUGIN_GUIDE.md) for the layer contract.
+
+Part of [EarthOS](https://github.com/efolusi/earthOS). MIT licensed.

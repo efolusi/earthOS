@@ -2,6 +2,14 @@
 
 Active wildfire events for EarthOS from [NASA EONET](https://eonet.gsfc.nasa.gov) (Earth Observatory Natural Event Tracker): keyless, CORS-open, curated from many satellite fire sources. Each event is a track; the layer plots its most recent detection as a fire-heat point through the shared GPU points pipeline in the rotating Earth frame.
 
+## Install
+
+```sh
+pnpm add @earthos/plugin-wildfires
+```
+
+Single-instance peer dependencies, provided by the host app: `@earthos/globe`, `@react-three/fiber` (v9), `react` (v19), and `three` (>=0.170).
+
 ## Usage
 
 ```tsx
@@ -26,3 +34,7 @@ Click a fire for its title, last-detected time, and coordinates; search by name;
 ## Data source
 
 [NASA EONET v3](https://eonet.gsfc.nasa.gov/docs/v3). EONET curates natural events (wildfires, volcanoes, storms) rather than every thermal hotspot, so this is a clean overview layer, not a per-pixel fire-detection feed (that would be [NASA FIRMS](https://firms.modaps.eosdis.nasa.gov), which requires a free MAP_KEY). Keyless and `Access-Control-Allow-Origin: *`; polled every ~10 minutes.
+
+See [docs/PLUGIN_GUIDE.md](../../docs/PLUGIN_GUIDE.md) for the layer contract.
+
+Part of [EarthOS](https://github.com/efolusi/earthOS). MIT licensed.

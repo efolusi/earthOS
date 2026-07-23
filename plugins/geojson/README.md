@@ -4,6 +4,14 @@ Render any GeoJSON FeatureCollection on the EarthOS globe: points go through the
 
 Filled polygons (spherical triangulation) are a documented follow-up; outlines ship first.
 
+## Install
+
+```sh
+pnpm add @earthos/plugin-geojson
+```
+
+Single-instance peer dependencies, provided by the host app: `@earthos/globe`, `@react-three/fiber` (v9), `react` (v19), and `three` (>=0.170).
+
 ## Usage
 
 ```tsx
@@ -36,3 +44,7 @@ A hosted sample dataset is served alongside the flagship app for trying the laye
 | `color`      | `#5FB86E`        | points + lines                |
 | `pointSize`  | 5 px             |                               |
 | `altitudeKm` | 8                | draw height above the surface |
+
+See [docs/PLUGIN_GUIDE.md](../../docs/PLUGIN_GUIDE.md) for the layer contract.
+
+Part of [EarthOS](https://github.com/efolusi/earthOS). MIT licensed.

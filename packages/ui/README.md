@@ -10,6 +10,33 @@ pnpm add @earthos/ui framer-motion
 
 `@earthos/core` comes in as a dependency. Peer dependencies, each of which must be deduped to a single instance: `react` (^19) and `framer-motion` (^11 || ^12). `framer-motion` is not optional: `GlassPanel`, `LayerPanel`, and `CommandPalette` import it directly, so a missing peer breaks rendering rather than degrading it.
 
+## Usage
+
+Mount the panels as siblings of the globe, inside the same engine provider. `<Earth/>`
+from the `earthos` SDK supplies that provider, so the panels only need to sit under it:
+
+```tsx
+import { Earth, LayerSatellites } from 'earthos';
+import { LayerPanel, Timeline, Inspector, StatusBar } from '@earthos/ui';
+
+const plugins = [satellitesPlugin]; // the manifests you registered
+
+export default function App() {
+  return (
+    <Earth>
+      <LayerSatellites group="starlink" />
+      <LayerPanel plugins={plugins} />
+      <Inspector />
+      <StatusBar />
+      <Timeline />
+    </Earth>
+  );
+}
+```
+
+Every panel is a plain DOM overlay, not a 3D object, so position them with your own
+layout: the components bring their own surface styling but no placement.
+
 ## Styling requirements
 
 Components reference two things the consuming app provides:

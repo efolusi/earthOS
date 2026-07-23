@@ -7,6 +7,27 @@ Streamed high-resolution imagery for EarthOS: a web-mercator quadtree refines ag
 - Tiles are lit with the same day/night response as the base globe, so they blend at the terminator.
 - LRU texture cache (220 tiles, ~55 MB GPU) with full disposal on eviction.
 
+## Install
+
+```sh
+pnpm add @earthos/plugin-imagery
+```
+
+Single-instance peer dependencies, provided by the host app: `@earthos/globe`, `@react-three/fiber` (v9), `react` (v19), and `three` (>=0.170).
+
+## Usage
+
+```tsx
+import { Earth, Layer } from 'earthos';
+
+<Earth>
+  <Layer
+    manifest={() => import('@earthos/plugin-imagery')}
+    settings={{ source: 'esri', maxZoom: 12 }}
+  />
+</Earth>;
+```
+
 ## Sources
 
 | Setting          | Source                        | Terms                                                                                              |
@@ -20,3 +41,7 @@ The layer panel shows the attribution; keep it visible in your product.
 ## Limits (honest ones)
 
 `maxZoom` 12 gives a ~19 m texel: continents, cities, and coastlines are crisp, and street grids appear. True street-level (Google Maps zoom 18+) additionally needs the floating-origin camera and sub-30 km altitudes on the roadmap; raise `maxZoom` toward 15 at your own bandwidth cost.
+
+See [docs/PLUGIN_GUIDE.md](../../docs/PLUGIN_GUIDE.md) for the layer contract.
+
+Part of [EarthOS](https://github.com/efolusi/earthOS). MIT licensed.
