@@ -1,6 +1,6 @@
 {
   "name": "@earthos/providers",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "EarthOS data provider framework: SWR caching, polling, streaming, rate limits",
   "license": "MIT",
   "type": "module",

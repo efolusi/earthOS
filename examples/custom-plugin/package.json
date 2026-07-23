@@ -1,6 +1,6 @@
 {
   "name": "@earthos-examples/custom-plugin",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "A complete third-party EarthOS plugin: world capitals as a static layer",
   "type": "module",

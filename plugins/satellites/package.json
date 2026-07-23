@@ -1,6 +1,6 @@
 {
   "name": "@earthos/plugin-satellites",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "EarthOS satellites layer: CelesTrak GP catalog propagated with SGP4 in workers (Starlink, ISS, GPS, active catalog)",
   "license": "MIT",
   "type": "module",
