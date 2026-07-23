@@ -1,6 +1,6 @@
 {
   "name": "@earthos-examples/vite-spa",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "EarthOS SDK in a plain Vite React SPA (the bundler-compat gate)",
   "type": "module",
