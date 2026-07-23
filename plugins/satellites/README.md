@@ -27,11 +27,27 @@ import { Earth, Layer } from 'earthos';
 | --------------- | ----------- | -------------------------------------------------------------- |
 | `dataSource`    | `celestrak` | `celestrak` (grouped catalog) or `tleapi` (popular satellites) |
 | `group`         | `starlink`  | CelesTrak GP group                                             |
+| `exclude`       | (blank)     | comma-separated name terms to hide, e.g. `starlink`            |
 | `pointSize`     | 3 px        | sprite size                                                    |
 | `color`         | `#E3B34D`   | gold point color (distinct from other layers)                  |
 | `showOrbit`     | `true`      | orbit line for the selection                                   |
 | `maxSatellites` | 15000       | catalog cap                                                    |
 | `endpoint`      | (blank)     | proxy override; blank fetches CelesTrak directly               |
+
+### Hiding a constellation
+
+The `active` group is roughly 80% Starlink, so everything else is buried under it.
+Set `exclude` to see the rest:
+
+```ts
+settings: { group: 'active', exclude: 'starlink' }   // everything except Starlink
+settings: { group: 'active', exclude: 'starlink, oneweb' }
+```
+
+Terms are matched case-insensitively as substrings of `OBJECT_NAME`. Filtering runs
+before the catalog is sharded into the SGP4 workers, so hidden objects cost no
+propagation, and it re-derives from the catalog already in memory, so changing the
+filter is instant and never refetches the group.
 
 ## Data source
 

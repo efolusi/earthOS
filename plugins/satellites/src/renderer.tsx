@@ -33,6 +33,7 @@ import {
   type PropagateResult,
   type SatCatalog,
 } from './types';
+import { applyExclude } from './filter';
 
 const SHARD_SIZE = 5_000;
 const CAPACITY = 30_000;
@@ -66,6 +67,8 @@ function SatellitesLayer({ ctx }: { ctx: PluginContext }) {
   const size = useThree((s) => s.size);
 
   const [records, setRecords] = useState<SatCatalog>([]);
+  /** Unfiltered catalog, so the exclude spec can be re-applied without a refetch. */
+  const rawRecords = useRef<SatCatalog>([]);
   const shardsRef = useRef<Shard[]>([]);
   const satrecCache = useRef(new Map<string, SatRec | null>());
   const idToIndex = useRef(new Map<string, number>());
@@ -115,7 +118,12 @@ function SatellitesLayer({ ctx }: { ctx: PluginContext }) {
     const handle = ctx.providers.handle<SatCatalog>('celestrak-gp');
     if (!handle) return;
     const apply = (data: SatCatalog | null) => {
-      if (data && data.length > 0) setRecords(data.slice(0, CAPACITY));
+      if (!data || data.length === 0) return;
+      // Keep the unfiltered catalog so changing the exclude spec re-derives
+      // locally instead of re-downloading the group.
+      rawRecords.current = data;
+      const { exclude } = ctx.settings.get() as { exclude?: string };
+      setRecords(applyExclude(data, exclude).slice(0, CAPACITY));
     };
     apply(handle.get().data);
     return handle.subscribe((snap) => apply(snap.data));
@@ -124,6 +132,7 @@ function SatellitesLayer({ ctx }: { ctx: PluginContext }) {
   // Settings changes: recolor/resize live, refetch on group change.
   useEffect(() => {
     let prevGroup = (ctx.settings.get() as { group?: string }).group;
+    let prevExclude = (ctx.settings.get() as { exclude?: string }).exclude;
     const applyStyle = () => {
       const s = ctx.settings.get() as { pointSize?: number; color?: string };
       if (s.color) layer.setPaletteColor(0, s.color);
@@ -141,6 +150,13 @@ function SatellitesLayer({ ctx }: { ctx: PluginContext }) {
         prevGroup = group;
         ctx.providers.handle('celestrak-gp')?.refresh();
       }
+      // Exclusion is a view over the catalog we already hold: re-derive in place
+      // rather than refetching, so hiding a constellation is instant.
+      const exclude = (values as { exclude?: string }).exclude;
+      if (exclude !== prevExclude) {
+        prevExclude = exclude;
+        setRecords(applyExclude(rawRecords.current, exclude).slice(0, CAPACITY));
+      }
     });
   }, [ctx, layer, records.length]);
 
@@ -148,7 +164,13 @@ function SatellitesLayer({ ctx }: { ctx: PluginContext }) {
   // Workers: static shards, one init per catalog
   // ---------------------------------------------------------------------------
   useEffect(() => {
-    if (records.length === 0) return;
+    if (records.length === 0) {
+      // An exclude spec can empty the catalog (hiding the only constellation
+      // loaded). Drop the draw count, or the previous batch stays on screen and
+      // the filter looks broken.
+      layer.setCount(0);
+      return;
+    }
     let disposed = false;
     ctx.logger.debug(`catalog: ${records.length} records, sharding into workers`);
 
