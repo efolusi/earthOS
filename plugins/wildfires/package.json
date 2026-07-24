@@ -1,6 +1,6 @@
 {
   "name": "@earthos/plugin-wildfires",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "EarthOS wildfires layer: NASA EONET active fire events",
   "license": "MIT",
   "type": "module",

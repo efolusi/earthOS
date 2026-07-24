@@ -1,6 +1,6 @@
 {
   "name": "@earthos/plugin-geojson",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "EarthOS custom GeoJSON layer: points, lines, and polygon outlines from any URL",
   "license": "MIT",
   "type": "module",

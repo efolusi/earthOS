@@ -1,6 +1,6 @@
 {
   "name": "@earthos-examples/nextjs-minimal",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "description": "EarthOS SDK in a minimal Next.js App Router app",
   "type": "module",

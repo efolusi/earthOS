@@ -1,6 +1,6 @@
 {
   "name": "@earthos/plugin-hurricanes",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "EarthOS active tropical cyclones from the NOAA National Hurricane Center",
   "license": "MIT",
   "type": "module",

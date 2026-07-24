@@ -1,6 +1,6 @@
 {
   "name": "@earthos/plugin-earthquakes",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "EarthOS earthquakes layer: live USGS feed, magnitude-scaled markers",
   "license": "MIT",
   "type": "module",

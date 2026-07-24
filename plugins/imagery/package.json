@@ -1,6 +1,6 @@
 {
   "name": "@earthos/plugin-imagery",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "EarthOS streamed imagery tiles: web-mercator quadtree draped on the globe",
   "license": "MIT",
   "type": "module",

@@ -1,6 +1,6 @@
 {
   "name": "@earthos/plugin-aircraft",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "EarthOS aircraft layer: live ADS-B states from OpenSky, dead-reckoned between polls",
   "license": "MIT",
   "type": "module",
