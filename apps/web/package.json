@@ -31,7 +31,7 @@
     "@earthos/plugin-wildfires": "workspace:*",
     "@earthos/providers": "workspace:*",
     "@earthos/ui": "workspace:*",
-    "@efolusi/meridian": "^1.21.0",
+    "@efolusi/meridian": "^1.21.1",
     "@react-three/drei": "^10.7.0",
     "@react-three/fiber": "^9.6.0",
     "framer-motion": "^12.0.0",
