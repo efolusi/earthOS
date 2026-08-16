@@ -14,6 +14,7 @@
     "e2e": "playwright test",
     "build:worker": "opennextjs-cloudflare build",
     "deploy:cf": "opennextjs-cloudflare build && wrangler deploy",
+    "deploy:cf:production": "opennextjs-cloudflare build && wrangler deploy --env production",
     "preview:cf": "opennextjs-cloudflare build && wrangler dev"
   },
   "dependencies": {

@@ -3,7 +3,9 @@
   // Root-level config so `npx wrangler deploy` works when the Cloudflare deploy
   // command runs at the repo root (not `cd apps/web`). Points at the OpenNext
   // bundle the build step produces in apps/web. Mirror apps/web/wrangler.jsonc.
-  "name": "earthos",
+  // Safe default for Git-connected and non-main builds.
+  "name": "earthos-dev",
+  "workers_dev": true,
   "main": "apps/web/.open-next/worker.js",
   "compatibility_date": "2026-06-01",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
@@ -13,5 +15,15 @@
   },
   "observability": {
     "enabled": true,
+  },
+  "env": {
+    "production": {
+      "name": "earthos",
+      "workers_dev": false,
+      "assets": {
+        "directory": "apps/web/.open-next/assets",
+        "binding": "ASSETS",
+      },
+    },
   },
 }

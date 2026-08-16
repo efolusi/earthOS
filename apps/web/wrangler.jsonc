@@ -1,8 +1,8 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  // Rename to match the Worker your earthos.efolusi.com domain is attached
-  // to, or attach the custom domain to this Worker after the first deploy.
-  "name": "earthos",
+  // Safe default for Git-connected and non-main builds.
+  "name": "earthos-dev",
+  "workers_dev": true,
   "main": ".open-next/worker.js",
   "compatibility_date": "2026-06-01",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
@@ -12,6 +12,16 @@
   },
   "observability": {
     "enabled": true,
+  },
+  "env": {
+    "production": {
+      "name": "earthos",
+      "workers_dev": false,
+      "assets": {
+        "directory": ".open-next/assets",
+        "binding": "ASSETS",
+      },
+    },
   },
   // Optional server-side secrets (wrangler secret put NAME):
   //   OPENSKY_CLIENT_ID, OPENSKY_CLIENT_SECRET
