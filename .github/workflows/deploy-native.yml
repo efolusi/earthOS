@@ -1,0 +1,33 @@
+name: Deploy dev web natively
+
+on:
+  push:
+    branches: [dev]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-earthos-dev
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.ref_name == 'dev'
+    runs-on: [self-hosted, Linux, X64, efolusi]
+    timeout-minutes: 45
+    steps:
+      - name: Pull, build, restart, and verify
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          DEPLOY_BUILD_SCRIPT: build:web
+          EARTHOS_NATIVE_PORT: "13106"
+          EFOLUSI_DEPLOY_ENVIRONMENT: dev
+        run: |
+          /home/deploy/bin/efolusi-deploy \
+            earthos \
+            dev \
+            dev \
+            git@github.com:efolusi/earthos.git \
+            http://127.0.0.1:13106/
