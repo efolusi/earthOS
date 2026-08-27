@@ -22,7 +22,7 @@ jobs:
         env:
           GITHUB_SHA: ${{ github.sha }}
           DEPLOY_BUILD_SCRIPT: build:web
-          EARTHOS_NATIVE_PORT: "13106"
+          EARTHOS_NATIVE_PORT: '13106'
           EFOLUSI_DEPLOY_ENVIRONMENT: dev
         run: |
           /home/deploy/bin/efolusi-deploy \
