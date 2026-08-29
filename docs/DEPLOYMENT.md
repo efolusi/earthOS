@@ -2,31 +2,12 @@
 
 ## The flagship app (apps/web)
 
-### Docker (recommended)
-
-```bash
-docker compose up --build
-# or
-docker build -f apps/web/Dockerfile -t earthos-web .
-docker run -p 3000:3000 earthos-web
-```
-
-Multi-stage build: pnpm install + turbo build, then a minimal `node:22-alpine` runtime with Next standalone output, running as a non-root user.
-
-### Node
-
-```bash
-pnpm install && pnpm turbo build --filter=@earthos/web
-node apps/web/.next/standalone/apps/web/server.js
-```
-
-### Static hosts / Vercel-alikes
-
-`apps/web` is a standard Next.js 15 App Router app. Point the platform at the monorepo root with `pnpm turbo build --filter=@earthos/web` as the build command.
-
 ### Cloudflare Workers
 
-This is how the live demo (earthos.efolusi.com) deploys. `@opennextjs/cloudflare` compiles the Next build into a Worker bundle under `apps/web/.open-next` (`worker.js` plus an `assets` directory), and `wrangler` ships it.
+EarthOS deploys only to Cloudflare Workers. It has no VPS, PM2, or application-
+container deployment. `@opennextjs/cloudflare` compiles the Next build into a
+Worker bundle under `apps/web/.open-next` (`worker.js` plus an `assets`
+directory), and `wrangler` ships it.
 
 ```bash
 pnpm --filter @earthos/web build:worker   # opennextjs-cloudflare build
@@ -61,7 +42,10 @@ Three proxy routes ship under `apps/web/app/api/proxy`:
 
 Satellites and aircraft are browser-direct in the flagship app, not proxied. CelesTrak and airplanes.live both serve permissive CORS and both block cloud egress IPs, so `plugins/satellites/src/provider.ts` defaults to `https://celestrak.org/NORAD/elements/gp.php` and `plugins/aircraft/src/provider.ts` defaults to `https://api.airplanes.live/v2/point`. `EarthApp.tsx` additionally clears any persisted `/api/proxy/celestrak` or `/api/proxy/opensky` endpoint left behind by older builds, so returning visitors are not pinned to a proxy the app no longer uses. OpenSky stays selectable as an aircraft data source for deployments that do want the authenticated global feed behind the proxy.
 
-Environment variables consumed by the compose file (all optional, all server-side): `OPENSKY_CLIENT_ID` and `OPENSKY_CLIENT_SECRET`, read by `apps/web/app/api/proxy/opensky/route.ts`. `OPENWEATHER_API_KEY` is currently unused: it is reserved for a roadmap plugin.
+Optional server-side secrets `OPENSKY_CLIENT_ID` and `OPENSKY_CLIENT_SECRET`
+are read by `apps/web/app/api/proxy/opensky/route.ts` and must be configured as
+Worker secrets. `OPENWEATHER_API_KEY` is currently unused: it is reserved for
+a roadmap plugin.
 
 ## Textures
 
